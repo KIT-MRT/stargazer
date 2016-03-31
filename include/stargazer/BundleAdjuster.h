@@ -49,7 +49,6 @@ class BundleAdjuster {
 
   void Optimize();
   void SetParametersConstant();
-  void AddLandmarkPose(int id);
   void AddCameraPoses(std::vector<std::array<double, 3>> measurements);
   void ClearProblem();
 };

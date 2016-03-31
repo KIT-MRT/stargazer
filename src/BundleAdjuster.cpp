@@ -7,17 +7,6 @@
 
 BundleAdjuster::BundleAdjuster() { };
 
-void BundleAdjuster::AddLandmarkPose(int id) {
-  std::array<double, (int) POSE::N_PARAMS> lm_pose;
-  lm_pose[(int) POSE::X] = 0;
-  lm_pose[(int) POSE::Y] = 0;
-  lm_pose[(int) POSE::Z] = 3.2;
-  lm_pose[(int) POSE::Rx] = 0;
-  lm_pose[(int) POSE::Ry] = 0;
-  lm_pose[(int) POSE::Rz] = 0;
-  landmark_poses[id] = lm_pose;
-}
-
 void BundleAdjuster::AddCameraPoses(std::vector <std::array<double, 3>> measurements) {
   camera_poses.reserve(measurements.size());
 
@@ -60,11 +49,12 @@ void BundleAdjuster::AddReprojectionResidualBlocks(std::vector <std::vector<Land
         residuals[0] = u - std::get<(int) POINT::X>(observation.points[k]);
         residuals[1] = v - std::get<(int) POINT::Y>(observation.points[k]);
         double error = std::hypot(residuals[0], residuals[1]);
-        if (error > 400) {
-          std::cout << "Skipping point " << k << " of landmark " << landmark.id << " in frame " << i << ". Residual: "
-              << error << std::endl;
-          continue;
-        }
+//        std::cout << "Residual: " << error << std::endl;
+//        if (error > 100) {
+//          std::cout << "Skipping point " << k << " of landmark " << landmark.id << " in frame " << i << ". Residual: "
+//              << error << std::endl;
+//          continue;
+//        }
 
         ceres::CostFunction *cost_function = ReprojectionFunctor::Create(
             std::get<(int) POINT::X>(observation.points[k]),
@@ -115,7 +105,8 @@ void BundleAdjuster::Optimize() {
   // standard solver, SPARSE_NORMAL_CHOLESKY, also works fine but it is slower
   // for standard bundle adjustment problems.
   ceres::Solver::Options options;
-  options.linear_solver_type = ceres::SPARSE_SCHUR;
+//  options.linear_solver_type = ceres::SPARSE_SCHUR;
+  options.linear_solver_type = ceres::SPARSE_NORMAL_CHOLESKY;
   options.minimizer_progress_to_stdout = true;
   ceres::Solver::Summary summary;
   ceres::Solve(options, &problem, &summary);
@@ -134,7 +125,7 @@ void BundleAdjuster::SetParametersConstant() {
   for (auto &lm : landmark_poses) {
     if (problem.HasParameterBlock(lm.second.data()))
       problem.SetParameterization(lm.second.data(), constant_landmark_params_mask);
-    //      problem.SetParameterBlockConstant(lm.second.data());
+//          problem.SetParameterBlockConstant(lm.second.data());
   }
 
   // Set some pose parameters constant
@@ -144,10 +135,12 @@ void BundleAdjuster::SetParametersConstant() {
   for (auto &pose : camera_poses) {
     if (problem.HasParameterBlock(pose.data()))
       problem.SetParameterization(pose.data(), constant_vehicle_params_mask);
+//          problem.SetParameterBlockConstant(pose.data());
   }
 
   // Set Camera Parameters Constant
-  problem.SetParameterBlockConstant(camera_intrinsics.data());
+  if (problem.HasParameterBlock(camera_intrinsics.data()))
+    problem.SetParameterBlockConstant(camera_intrinsics.data());
 }
 
 void BundleAdjuster::ClearProblem() {
