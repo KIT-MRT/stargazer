@@ -99,7 +99,7 @@ if (CATKIN_ENABLE_TESTING)
 	foreach(PROJECT_TEST_FILE_SRC ${PROJECT_TEST_FILES_SRC})
 		get_filename_component(PROJECT_TEST_NAME ${PROJECT_TEST_FILE_SRC} NAME_WE)
 
-		catkin_add_gtest(${PROJECT_TEST_NAME}-test ${PROJECT_TEST_FILE_SRC})
+		catkin_add_gtest(${PROJECT_TEST_NAME}-test ${PROJECT_TEST_FILE_SRC} WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/test/")
 		target_link_libraries(${PROJECT_TEST_NAME}-test ${LIBRARY_NAME} ${catkin_LIBRARIES} ${mrt_LIBRARIES} gtest_main)
 	endforeach()
 endif()

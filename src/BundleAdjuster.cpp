@@ -18,7 +18,7 @@ void BundleAdjuster::AddLandmarkPose(int id) {
   landmark_poses[id] = lm_pose;
 }
 
-void BundleAdjuster::AddCameraPoses(std::vector<std::array<double, 3>> measurements) {
+void BundleAdjuster::AddCameraPoses(std::vector <std::array<double, 3>> measurements) {
   camera_poses.reserve(measurements.size());
 
   for (auto &measurement : measurements) {
@@ -33,7 +33,7 @@ void BundleAdjuster::AddCameraPoses(std::vector<std::array<double, 3>> measureme
   }
 }
 
-void BundleAdjuster::AddReprojectionResidualBlocks(std::vector<std::vector<Landmark>> measurements) {
+void BundleAdjuster::AddReprojectionResidualBlocks(std::vector <std::vector<Landmark>> measurements) {
   assert(measurements.size() == camera_poses.size());
 
   for (int i = 0; i < measurements.size(); i++) {
@@ -46,6 +46,26 @@ void BundleAdjuster::AddReprojectionResidualBlocks(std::vector<std::vector<Landm
 
       // Add residual block, for every one of the seen points.
       for (int k = 0; k < landmark.points.size(); k++) {
+
+        // Test reprojection error
+        double u, v;
+        transformPoint<double>(&std::get<(int) POINT::X>(landmark.points[k]),
+                               &std::get<(int) POINT::Y>(landmark.points[k]),
+                               landmark_poses[observation.id].data(),
+                               camera_poses[i].data(),
+                               camera_intrinsics.data(),
+                               &u,
+                               &v);
+        double residuals[2];
+        residuals[0] = u - std::get<(int) POINT::X>(observation.points[k]);
+        residuals[1] = v - std::get<(int) POINT::Y>(observation.points[k]);
+        double error = std::hypot(residuals[0], residuals[1]);
+        if (error > 400) {
+          std::cout << "Skipping point " << k << " of landmark " << landmark.id << " in frame " << i << ". Residual: "
+              << error << std::endl;
+          continue;
+        }
+
         ceres::CostFunction *cost_function = ReprojectionFunctor::Create(
             std::get<(int) POINT::X>(observation.points[k]),
             std::get<(int) POINT::Y>(observation.points[k]),
@@ -131,7 +151,7 @@ void BundleAdjuster::SetParametersConstant() {
 }
 
 void BundleAdjuster::ClearProblem() {
-  std::vector<ceres::ResidualBlockId> residual_blocks;
+  std::vector <ceres::ResidualBlockId> residual_blocks;
   problem.GetResidualBlocks(&residual_blocks);
   for (auto &block:residual_blocks) {
     problem.RemoveResidualBlock(block);
