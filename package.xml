@@ -25,10 +25,9 @@
                               <build_depend>, <build_export_depend> and
                               <exec_depend>.
   -->
+
   <depend>mrt_opencv</depend>
   <depend>mrt_ceres</depend>
-
-  <depend>util_print</depend>
   <depend>yaml-cpp</depend>
 
   <export>

@@ -132,23 +132,4 @@ void BundleAdjuster::ClearProblem() {
   for (auto &block:parameter_blocks) {
     problem.RemoveParameterBlock(block);
   }
-
 }
-
-
-void BundleAdjuster::showSetup() {
-    std::cout << std::endl;
-    std::cout << "Bundle Adjuster Setup" << std::endl;
-    std::cout << "=====================" << std::endl;
-    std::cout << std::endl;
-    std::cout << "Intrinsics (" << camera_intrinsics.data() << "): " << camera_intrinsics << std::endl;
-    std::cout << std::endl;
-    std::cout << "Landmarks:" << std::endl;
-    for (auto &lm :landmarks)
-      std::cout << "ID: " << lm.first << " Pose (" << lm.second.pose.data() << "): " << lm.second.pose << std::endl;
-    std::cout << std::endl;
-    std::cout << "Poses:" << std::endl;
-    for (auto &lm :camera_poses)
-      std::cout << "Pose (" << lm.data() << "): " << lm << std::endl;
-}
-

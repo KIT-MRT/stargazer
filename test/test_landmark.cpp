@@ -31,9 +31,7 @@
 //}
 //=======================================================================================================================================================
 #include "gtest/gtest.h"
-#include <iostream>
 #include "StargazerTypes.h"
-#include "util_print/prettyprint.h"
 
 TEST(Landmark, CornerPoints) {
 Landmark a = Landmark(0);
@@ -41,37 +39,19 @@ Landmark a = Landmark(0);
 //Count
 ASSERT_EQ(3, a.points.size());
 
-// IDS
-ASSERT_EQ(0, std::get<(int)POINT::ID>(a.points[0]));
-ASSERT_EQ(3, std::get<(int)POINT::ID>(a.points[1]));
-ASSERT_EQ(15, std::get<(int)POINT::ID>(a.points[2]));
-
 // Coordinates
-ASSERT_EQ(0, std::get<(int)POINT::X>(a.points[0]));
-ASSERT_EQ(0, std::get<(int)POINT::Y>(a.points[0]));
+ASSERT_EQ(0, a.points[0][(int)POINT::X]);
+ASSERT_EQ(0, a.points[0][(int)POINT::Y]);
 
-ASSERT_EQ(3 * Landmark::kGridDistance, std::get<(int)POINT::X>(a.points[1]));
-ASSERT_EQ(0 * Landmark::kGridDistance, std::get<(int)POINT::Y>(a.points[1]));
+ASSERT_EQ(3 * Landmark::kGridDistance, a.points[1][(int)POINT::X]);
+ASSERT_EQ(0 * Landmark::kGridDistance, a.points[1][(int)POINT::Y]);
 
-ASSERT_EQ(3 * Landmark::kGridDistance, std::get<(int)POINT::X>(a.points[2]));
-ASSERT_EQ(3 * Landmark::kGridDistance, std::get<(int)POINT::Y>(a.points[2]));
-
-}
-
-
-TEST(Landmark, TestID2) {
-  Landmark a = Landmark(2);
-
-//Count
-  ASSERT_EQ(4, a.points.size());
-
-// IDS
-  ASSERT_EQ(0, std::get<(int)POINT::ID>(a.points[0]));
-  ASSERT_EQ(3, std::get<(int)POINT::ID>(a.points[1]));
-  ASSERT_EQ(15, std::get<(int)POINT::ID>(a.points[2]));
-  ASSERT_EQ(1, std::get<(int)POINT::ID>(a.points[3]));
+ASSERT_EQ(3 * Landmark::kGridDistance, a.points[2][(int)POINT::X]);
+ASSERT_EQ(3 * Landmark::kGridDistance, a.points[2][(int)POINT::Y]);
 
 }
+
+
 
 TEST(Landmark, TestID4184) {
   // 4184 in Hex is 16772 in decimal
@@ -80,27 +60,18 @@ TEST(Landmark, TestID4184) {
 //Count
   ASSERT_EQ(7, a.points.size());
 
-// IDS
-//  for (auto& i:a.points) std::cout << std::get<(int)POINT::ID>(i) << std::endl;
-  ASSERT_EQ(0,  std::get<(int)POINT::ID>(a.points[0]));
-  ASSERT_EQ(3,  std::get<(int)POINT::ID>(a.points[1]));
-  ASSERT_EQ(15, std::get<(int)POINT::ID>(a.points[2]));
 
-  ASSERT_EQ(2,  std::get<(int)POINT::ID>(a.points[3]));  //0x04
-  ASSERT_EQ(2 * Landmark::kGridDistance, std::get<(int)POINT::X>(a.points[3]));
-  ASSERT_EQ(0 * Landmark::kGridDistance, std::get<(int)POINT::Y>(a.points[3]));
+  ASSERT_EQ(2 * Landmark::kGridDistance, a.points[3][(int)POINT::X]);
+  ASSERT_EQ(0 * Landmark::kGridDistance, a.points[3][(int)POINT::Y]);
 
-  ASSERT_EQ(7,  std::get<(int)POINT::ID>(a.points[4]));  //0x20
-  ASSERT_EQ(3 * Landmark::kGridDistance, std::get<(int)POINT::X>(a.points[4]));
-  ASSERT_EQ(1 * Landmark::kGridDistance, std::get<(int)POINT::Y>(a.points[4]));
+  ASSERT_EQ(3 * Landmark::kGridDistance, a.points[4][(int)POINT::X]);
+  ASSERT_EQ(1 * Landmark::kGridDistance, a.points[4][(int)POINT::Y]);
 
-  ASSERT_EQ(8, std::get<(int)POINT::ID>(a.points[5])); // 0x200
-  ASSERT_EQ(0 * Landmark::kGridDistance, std::get<(int)POINT::X>(a.points[5]));
-  ASSERT_EQ(2 * Landmark::kGridDistance, std::get<(int)POINT::Y>(a.points[5]));
+  ASSERT_EQ(0 * Landmark::kGridDistance, a.points[5][(int)POINT::X]);
+  ASSERT_EQ(2 * Landmark::kGridDistance, a.points[5][(int)POINT::Y]);
 
-  ASSERT_EQ(14, std::get<(int)POINT::ID>(a.points[6])); // 0x400
-  ASSERT_EQ(2 * Landmark::kGridDistance, std::get<(int)POINT::X>(a.points[6]));
-  ASSERT_EQ(3 * Landmark::kGridDistance, std::get<(int)POINT::Y>(a.points[6]));
+  ASSERT_EQ(2 * Landmark::kGridDistance, a.points[6][(int)POINT::X]);
+  ASSERT_EQ(3 * Landmark::kGridDistance, a.points[6][(int)POINT::Y]);
 }
 
 

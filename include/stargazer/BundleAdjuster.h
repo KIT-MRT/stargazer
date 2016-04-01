@@ -9,8 +9,6 @@
 #include "StargazerTypes.h"
 #include "CoordinateTransformations.h"
 
-#include "util_print/prettyprint.h"
-
 #include <ceres/ceres.h>
 #include <vector>
 #include <map>
@@ -27,8 +25,6 @@ class BundleAdjuster {
   landmark_map_t landmarks;
   std::vector<pose_t> camera_poses;
 
-
-  void showSetup();
   void Optimize();
   void SetParametersConstant();
   void AddCameraPoses(std::vector<std::array<double, 3>> measurements);

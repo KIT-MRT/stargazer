@@ -11,7 +11,6 @@
 #include <fstream>
 
 #include "StargazerTypes.h"
-#include "util_print/prettyprint.h"
 
 
 inline bool readConfig(std::string cfgfile, camera_params_t &camera_intrinsics, landmark_map_t &landmarks) {
@@ -24,18 +23,15 @@ inline bool readConfig(std::string cfgfile, camera_params_t &camera_intrinsics, 
     camera_intrinsics[(int) INTRINSICS::alpha] = config["CameraIntrinsics"]["alpha"].as<double>();
     camera_intrinsics[(int) INTRINSICS::beta] = config["CameraIntrinsics"]["beta"].as<double>();
     camera_intrinsics[(int) INTRINSICS::theta] = config["CameraIntrinsics"]["theta"].as<double>();
-//    std::cout << "Read in the following CameraIntrinsics: " << std::endl << config["CameraIntrinsics"] << std::endl;
   } else {
     std::cerr << "Config file is missing camera_intrinsics!" << std::endl;
     return false;
   }
 
   if (config["Landmarks"]) {
-//    std::cout << "Reading in landmark: ";
     for (int i = 0; i < config["Landmarks"].size(); i++) {
       auto lm = config["Landmarks"][i];
       int id = lm["HexID"].as<int>();
-//      std::cout << id << ", ";
       pose_t lm_pose;
       lm_pose[(int) POSE::X] = lm["x"].as<double>();
       lm_pose[(int) POSE::Y] = lm["y"].as<double>();
@@ -46,7 +42,6 @@ inline bool readConfig(std::string cfgfile, camera_params_t &camera_intrinsics, 
       landmarks[id] = Landmark(id);
       landmarks[id].pose = lm_pose;
     }
-//    std::cout << "\nRead in " << landmarks.size() << " Landmarks." << std::endl;
   } else {
     std::cerr << "Config file is missing landmarks!" << std::endl;
     return false;
