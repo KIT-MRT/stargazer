@@ -27,17 +27,17 @@ Localizer::Localizer(std::string cfgfile) {
 }
 
 void Localizer::UpdatePose(std::vector<Landmark> img_landmarks) {
-  if (img_landmarks.empty()){
+  if (img_landmarks.empty()) {
     std::cout << "Localizer received empty landmarks vector" << std::endl;
     return;
   }
-  if (!is_initialized){
-    for(auto&el:img_landmarks){
-      ego_pose[(int)POSE::X] += el.pose[(int)POSE::X];
-      ego_pose[(int)POSE::Y] += el.pose[(int)POSE::Y];
+  if (!is_initialized) {
+    for (auto &el:img_landmarks) {
+      ego_pose[(int) POSE::X] += el.pose[(int) POSE::X];
+      ego_pose[(int) POSE::Y] += el.pose[(int) POSE::Y];
     }
-    ego_pose[(int)POSE::X] /= img_landmarks.size();
-    ego_pose[(int)POSE::Y] /= img_landmarks.size();
+    ego_pose[(int) POSE::X] /= img_landmarks.size();
+    ego_pose[(int) POSE::Y] /= img_landmarks.size();
     is_initialized = true;
   }
 
@@ -62,7 +62,11 @@ void Localizer::ClearResidualBlocks() {
 void Localizer::AddResidualBlocks(std::vector<Landmark> img_landmarks) {
   for (auto &lm_obs : img_landmarks) {
 
-    assert(lm_obs.points.size() == landmarks[lm_obs.id].points.size());
+    if (lm_obs.points.size() != landmarks[lm_obs.id].points.size()) {
+      std::cerr << "point count does not match! " << lm_obs.points.size() << "(observed) vs. "
+          << landmarks[lm_obs.id].points.size() << "(map)" << std::endl;
+      return;
+    };
 
     // Add residual block, for every one of the seen points.
     for (int k = 0; k < lm_obs.points.size(); k++) {
@@ -96,9 +100,9 @@ void Localizer::SetCameraParamsConstant() {
 void Localizer::Optimize() {
   ceres::Solver::Options options;
   options.linear_solver_type = ceres::SPARSE_NORMAL_CHOLESKY;
-  options.minimizer_progress_to_stdout = true;
+  options.minimizer_progress_to_stdout = false;
   ceres::Solver::Summary summary;
   ceres::Solve(options, &problem, &summary);
-  std::cout << summary.FullReport() << std::endl;
+//  std::cout << summary.FullReport() << std::endl;
 }
 

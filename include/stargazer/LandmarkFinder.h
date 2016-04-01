@@ -1,40 +1,41 @@
-//
-// Created by bandera on 28.03.16.
-//
+#ifndef LANDMARKFINDER_H
+#define LANDMARKFINDER_H
 
-#pragma once
-
-#include "StargazerTypes.h"
-#include "StargazerImgTypes.h"
 #include "StargazerConfig.h"
-#include "DebugVisualizer.h"
+#include "StargazerImgTypes.h"
+#include "StargazerTypes.h"
 
 #include "opencv/cv.h"
-#include <vector>
-#include <string>
+#include "opencv/highgui.h"
+#include "math.h"
+#include "iostream"
+#include "vector"
+#include <iostream>
+#include <fstream>
+#include <boost/lexical_cast.hpp>
 
+#include "libCalibIO/CalibIO.hpp"
 
 class LandmarkFinder {
  public:
   /// constructors and destructors
   LandmarkFinder(std::string cfgfile);
-
-  ~LandmarkFinder() { };
-
-
-  /// methods
-  std::vector<Landmark> FindLandmarks(cv::Mat &i_oImage);
+  ~LandmarkFinder();
 
   /// accessors
   void SetImage(cv::Mat &i_oImage);
 
+  /// methods
+  int FindLandmarks(std::vector<ImgLandmark> &o_vLandmarks);
+
   cv::Mat_<cv::Vec3b> m_oImage;
   cv::Mat m_oGrayImage;
 
-  void setDebug_mode(bool value) { debug_mode = value; };
+  void setDebug_mode(bool value);
 
-  DebugVisualizer debugVisualizer;
  private:
+  cv::Mat                       m_oCalibMap_u;
+  cv::Mat                       m_oCalibMap_v;
 
   char m_cThreshold;
   float m_fMaxRadiusForPixelCluster;
@@ -44,50 +45,20 @@ class LandmarkFinder {
   unsigned int m_nMinPointsPerLandmark;
   unsigned int m_nMaxPointsPerLandmark;
   float m_fMaxCosForRightAngle;
-  camera_params_t m_camera_intrinsics;
-  landmark_map_t m_landmarks;
   std::vector<int> m_vnIDs;
   std::vector<cv::Point> m_vStuckPixels;
   bool debug_mode;
 
+  std::vector<ImgLandmark> FindCorners(std::vector<Cluster> &Clusters);
   std::vector<cv::Point> FindPoints(cv::Mat &i_oGrayImage);
-
-  std::vector<Cluster> FindClusters(std::vector<cv::Point> &i_voPoints,
-                                    const float i_fRadiusThreshold,
-                                    const unsigned int i_nMinPointsThreshold,
-                                    const unsigned int i_nMaxPointsThreshold);
-
-  std::vector<Landmark> IdentifyLandmarks(std::vector<Cluster> &Clusters);
-
-  std::vector<Landmark> FindCorners(std::vector<Cluster> &Clusters);
-
-  int ThisLandmarkSucks(Landmark &io_oLandmark);
-  int GetIDs(std::vector<Landmark> &io_voLandmarks);
+  void FindClusters(std::vector<cv::Point> &i_voPoints,
+                    std::vector<Cluster> &o_voCluster,
+                    const float i_fRadiusThreshold,
+                    const unsigned int i_nMinPointsThreshold,
+                    const unsigned int i_nMaxPointsThreshold);
+  int GetIDs(std::vector<ImgLandmark> &io_voLandmarks);
   void Check(cv::Mat &Filtered, int XPos, int YPos, int Threshold, int &Pixelcount, int &SummedX, int &SummedY);
   void vec_sort(std::vector<int> &ids, std::vector<cv::Point> &points);
 };
 
-/// inlined accessors
-inline void LandmarkFinder::SetMaxRadiusForPixelCluster(float i_fMaxRadiusForPixelCluster) {
-  m_fMaxRadiusForPixelCluster = i_fMaxRadiusForPixelCluster;
-}
-
-inline void LandmarkFinder::SetMinPixelForCluster(unsigned int i_nMinPixelForCluster) {
-  m_nMinPixelForCluster = i_nMinPixelForCluster;
-}
-
-inline void LandmarkFinder::SetMaxPixelForCluster(unsigned int i_nMaxPixelForCluster) {
-  m_nMaxPixelForCluster = i_nMaxPixelForCluster;
-}
-
-inline void LandmarkFinder::SetMaxRadiusForCluster(float i_fMaxRadiusForCluster) {
-  m_fMaxRadiusForCluster = i_fMaxRadiusForCluster;
-}
-
-inline void LandmarkFinder::SetMinPointsPerLandmark(unsigned int i_nMinPointsPerLandmark) {
-  m_nMinPointsPerLandmark = i_nMinPointsPerLandmark;
-}
-
-inline void LandmarkFinder::SetMaxPointsPerLandmark(unsigned int i_nMaxPointsPerLandmark) {
-  m_nMaxPointsPerLandmark = i_nMaxPointsPerLandmark;
-}
+#endif /// ifndef LANDMARKFINDER_H
