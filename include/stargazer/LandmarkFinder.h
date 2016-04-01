@@ -27,17 +27,9 @@ class LandmarkFinder {
 
   /// accessors
   void SetImage(cv::Mat &i_oImage);
-  void SetMaxRadiusForPixelCluster(float i_fMaxRadiusForPixelCluster);
-  void SetMinPixelForCluster(unsigned int i_nMinPixelForCluster);
-  void SetMaxPixelForCluster(unsigned int i_nMaxPixelForCluster);
-  void SetMaxRadiusForCluster(float i_fMaxRadiusForCluster);
-  void SetMinPointsPerLandmark(unsigned int i_nMinPointsPerLandmark);
-  void SetMaxPointsPerLandmark(unsigned int i_nMaxPointsPerLandmark);
 
   cv::Mat_<cv::Vec3b> m_oImage;
-  cv::Mat m_oOutputImage;
   cv::Mat m_oGrayImage;
-  bool perform_undistort;
 
   void setDebug_mode(bool value) { debug_mode = value; };
 
