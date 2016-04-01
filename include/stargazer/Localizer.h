@@ -29,6 +29,8 @@ class Localizer {
   pose_t ego_pose;
   ceres::Problem problem;
 
+  bool is_initialized;
+
   void ClearResidualBlocks();
   void AddResidualBlocks(std::vector<Landmark> img_landmarks);
   void SetCameraParamsConstant();

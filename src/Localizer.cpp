@@ -22,9 +22,25 @@ Localizer::Localizer(std::string cfgfile) {
       pt = {x, y, z};
     }
   }
+
+  is_initialized = false;
 }
 
 void Localizer::UpdatePose(std::vector<Landmark> img_landmarks) {
+  if (img_landmarks.empty()){
+    std::cout << "Localizer received empty landmarks vector" << std::endl;
+    return;
+  }
+  if (!is_initialized){
+    for(auto&el:img_landmarks){
+      ego_pose[(int)POSE::X] += el.pose[(int)POSE::X];
+      ego_pose[(int)POSE::Y] += el.pose[(int)POSE::Y];
+    }
+    ego_pose[(int)POSE::X] /= img_landmarks.size();
+    ego_pose[(int)POSE::Y] /= img_landmarks.size();
+    is_initialized = true;
+  }
+
   // Delete old data
   ClearResidualBlocks();
 
