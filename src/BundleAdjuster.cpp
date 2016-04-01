@@ -10,9 +10,8 @@ BundleAdjuster::BundleAdjuster() { };
 void BundleAdjuster::AddCameraPoses(std::vector<std::array<double, 3>> measurements) {
   camera_poses.reserve(measurements.size());
 
-  for (int i = 0; i < measurements.size(); i++) {
-    auto &measurement = measurements[i];
-    std::array<double, (int) POSE::N_PARAMS> camera_pose;
+  for (auto &measurement : measurements) {
+    pose_t camera_pose;
     camera_pose[(int) POSE::X] = measurement[0];
     camera_pose[(int) POSE::Y] = measurement[1];
     camera_pose[(int) POSE::Z] = 0.2;
@@ -83,6 +82,8 @@ void BundleAdjuster::Optimize() {
   // for standard bundle adjustment problems.
   ceres::Solver::Options options;
 //  options.linear_solver_type = ceres::SPARSE_SCHUR;
+  options.num_threads = 8;
+  options.num_linear_solver_threads = 8;
   options.linear_solver_type = ceres::SPARSE_NORMAL_CHOLESKY;
   options.minimizer_progress_to_stdout = true;
   ceres::Solver::Summary summary;

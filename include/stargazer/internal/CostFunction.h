@@ -27,6 +27,7 @@ struct LM2ImgReprojectionFunctor {
     T u_marker, v_marker;
     T x_marker_tmp = T(x_marker);
     T y_marker_tmp = T(y_marker);
+
     transformLM2Img<T>(&x_marker_tmp, &y_marker_tmp, lm_pose, camera_pose, camera_intrinsics, &u_marker, &v_marker);
 
     // Compute residual
