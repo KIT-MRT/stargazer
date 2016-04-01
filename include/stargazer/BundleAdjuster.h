@@ -7,6 +7,7 @@
 #include "ros/ros.h"
 #include "internal/CostFunction.h"
 #include "StargazerTypes.h"
+#include "CoordinateTransformations.h"
 
 #include "util_print/prettyprint.h"
 
@@ -19,34 +20,15 @@ class BundleAdjuster {
  public:
   BundleAdjuster();
 
-  static constexpr double w_dist = 1000;
-  static constexpr double w_orient = 1000;
-
   void AddReprojectionResidualBlocks(std::vector<std::vector<Landmark>> measurements);
-  void AddDistanceResidualBlocks();
-  void AddOrientationResidualBlocks();
 
-  landmark_map_t landmark_poses;
-  std::vector<pose_t> camera_poses;
-  camera_params_t camera_intrinsics;
   ceres::Problem problem;
+  camera_params_t camera_intrinsics;
+  landmark_map_t landmarks;
+  std::vector<pose_t> camera_poses;
 
-  void showSetup() {
-    std::cout << std::endl;
-    std::cout << "Bundle Adjuster Setup" << std::endl;
-    std::cout << "=====================" << std::endl;
-    std::cout << std::endl;
-    std::cout << "Intrinsics (" << camera_intrinsics.data() << "): " << camera_intrinsics << std::endl;
-    std::cout << std::endl;
-    std::cout << "Landmarks:" << std::endl;
-    for (auto &lm :landmark_poses)
-      std::cout << "ID: " << lm.first << " Pose (" << lm.second.data() << "): " << lm.second << std::endl;
-    std::cout << std::endl;
-    std::cout << "Poses:" << std::endl;
-    for (auto &lm :camera_poses)
-      std::cout << "Pose (" << lm.data() << "): " << lm << std::endl;
-  }
 
+  void showSetup();
   void Optimize();
   void SetParametersConstant();
   void AddCameraPoses(std::vector<std::array<double, 3>> measurements);

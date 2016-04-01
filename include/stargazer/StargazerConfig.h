@@ -43,7 +43,8 @@ inline bool readConfig(std::string cfgfile, camera_params_t &camera_intrinsics, 
       lm_pose[(int) POSE::Rx] = lm["rx"].as<double>();
       lm_pose[(int) POSE::Ry] = lm["ry"].as<double>();
       lm_pose[(int) POSE::Rz] = lm["rz"].as<double>();
-      landmarks[id] = lm_pose;
+      landmarks[id] = Landmark(id);
+      landmarks[id].pose = lm_pose;
     }
 //    std::cout << "\nRead in " << landmarks.size() << " Landmarks." << std::endl;
   } else {
@@ -72,12 +73,12 @@ inline bool writeConfig(std::string cfgfile,
   for (auto &entry: landmarks) {
     fout << " - {";
     fout << " HexID: " << "0x" << std::setfill('0') << std::setw(4) << std::hex << entry.first << std::setfill(' ');
-    fout << ", x: " << std::setw(8) << entry.second[(int) POSE::X];
-    fout << ", y: " << std::setw(8) << entry.second[(int) POSE::Y];
-    fout << ", z: " << std::setw(8) << entry.second[(int) POSE::Z];
-    fout << ", rx: " << std::setw(8) << entry.second[(int) POSE::Rx];
-    fout << ", ry: " << std::setw(8) << entry.second[(int) POSE::Ry];
-    fout << ", rz: " << std::setw(8) << entry.second[(int) POSE::Rz];
+    fout << ", x: " << std::setw(8) << entry.second.pose[(int) POSE::X];
+    fout << ", y: " << std::setw(8) << entry.second.pose[(int) POSE::Y];
+    fout << ", z: " << std::setw(8) << entry.second.pose[(int) POSE::Z];
+    fout << ", rx: " << std::setw(8) << entry.second.pose[(int) POSE::Rx];
+    fout << ", ry: " << std::setw(8) << entry.second.pose[(int) POSE::Ry];
+    fout << ", rz: " << std::setw(8) << entry.second.pose[(int) POSE::Rz];
     fout << " }\n";
   }
   return true;

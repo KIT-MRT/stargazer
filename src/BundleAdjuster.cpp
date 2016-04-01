@@ -7,10 +7,11 @@
 
 BundleAdjuster::BundleAdjuster() { };
 
-void BundleAdjuster::AddCameraPoses(std::vector <std::array<double, 3>> measurements) {
+void BundleAdjuster::AddCameraPoses(std::vector<std::array<double, 3>> measurements) {
   camera_poses.reserve(measurements.size());
 
-  for (auto &measurement : measurements) {
+  for (int i = 0; i < measurements.size(); i++) {
+    auto &measurement = measurements[i];
     std::array<double, (int) POSE::N_PARAMS> camera_pose;
     camera_pose[(int) POSE::X] = measurement[0];
     camera_pose[(int) POSE::Y] = measurement[1];
@@ -22,7 +23,7 @@ void BundleAdjuster::AddCameraPoses(std::vector <std::array<double, 3>> measurem
   }
 }
 
-void BundleAdjuster::AddReprojectionResidualBlocks(std::vector <std::vector<Landmark>> measurements) {
+void BundleAdjuster::AddReprojectionResidualBlocks(std::vector<std::vector<Landmark>> measurements) {
   assert(measurements.size() == camera_poses.size());
 
   for (int i = 0; i < measurements.size(); i++) {
@@ -30,7 +31,7 @@ void BundleAdjuster::AddReprojectionResidualBlocks(std::vector <std::vector<Land
       auto &observation = measurements[i][j];
 
       Landmark landmark(observation.id);
-      assert(landmark_poses.count(observation.id) > 0);
+      assert(landmarks.count(observation.id) > 0);
       assert(observation.points.size() == landmark.points.size());
 
       // Add residual block, for every one of the seen points.
@@ -38,16 +39,16 @@ void BundleAdjuster::AddReprojectionResidualBlocks(std::vector <std::vector<Land
 
         // Test reprojection error
         double u, v;
-        transformPoint<double>(&std::get<(int) POINT::X>(landmark.points[k]),
-                               &std::get<(int) POINT::Y>(landmark.points[k]),
-                               landmark_poses[observation.id].data(),
-                               camera_poses[i].data(),
-                               camera_intrinsics.data(),
-                               &u,
-                               &v);
+        transformLM2Img<double>(&landmark.points[k][(int) POINT::X],
+                                &landmark.points[k][(int) POINT::Y],
+                                landmarks.at(observation.id).pose.data(),
+                                camera_poses[i].data(),
+                                camera_intrinsics.data(),
+                                &u,
+                                &v);
         double residuals[2];
-        residuals[0] = u - std::get<(int) POINT::X>(observation.points[k]);
-        residuals[1] = v - std::get<(int) POINT::Y>(observation.points[k]);
+        residuals[0] = u - observation.points[k][(int) POINT::X];
+        residuals[1] = v - observation.points[k][(int) POINT::Y];
         double error = std::hypot(residuals[0], residuals[1]);
 //        std::cout << "Residual: " << error << std::endl;
 //        if (error > 100) {
@@ -56,16 +57,16 @@ void BundleAdjuster::AddReprojectionResidualBlocks(std::vector <std::vector<Land
 //          continue;
 //        }
 
-        ceres::CostFunction *cost_function = ReprojectionFunctor::Create(
-            std::get<(int) POINT::X>(observation.points[k]),
-            std::get<(int) POINT::Y>(observation.points[k]),
-            std::get<(int) POINT::X>(landmark.points[k]),
-            std::get<(int) POINT::Y>(landmark.points[k])
+        ceres::CostFunction *cost_function = LM2ImgReprojectionFunctor::Create(
+            observation.points[k][(int) POINT::X],
+            observation.points[k][(int) POINT::Y],
+            landmark.points[k][(int) POINT::X],
+            landmark.points[k][(int) POINT::Y]
         );
 
         problem.AddResidualBlock(cost_function,
                                  new ceres::CauchyLoss(50), // NULL /* squared loss */, // Alternatively: new ceres::ScaledLoss(NULL, w_v_des, ceres::TAKE_OWNERSHIP),
-                                 landmark_poses[observation.id].data(),
+                                 landmarks.at(observation.id).pose.data(),
                                  camera_poses[i].data(),
                                  camera_intrinsics.data());
       }
@@ -73,30 +74,6 @@ void BundleAdjuster::AddReprojectionResidualBlocks(std::vector <std::vector<Land
   }
 }
 
-void BundleAdjuster::AddDistanceResidualBlocks() {
-  for (int i = 1; i < camera_poses.size(); i++) {
-    ceres::CostFunction *cost_function = DistanceFunctor::Create();
-    problem.AddResidualBlock(cost_function,
-                             new ceres::ScaledLoss(NULL, w_dist, ceres::TAKE_OWNERSHIP),
-                             camera_poses[i - 1].data(),
-                             camera_poses[i].data());
-  }
-}
-
-void BundleAdjuster::AddOrientationResidualBlocks() {
-  for (auto &pose : landmark_poses) {
-    ceres::CostFunction *cost_function = OrientationFunctor::Create();
-    problem.AddResidualBlock(cost_function,
-                             new ceres::ScaledLoss(NULL, w_orient, ceres::TAKE_OWNERSHIP),
-                             pose.second.data());
-  }
-  for (auto &pose : camera_poses) {
-    ceres::CostFunction *cost_function = OrientationFunctor::Create();
-    problem.AddResidualBlock(cost_function,
-                             new ceres::ScaledLoss(NULL, w_orient, ceres::TAKE_OWNERSHIP),
-                             pose.data());
-  }
-}
 
 
 void BundleAdjuster::Optimize() {
@@ -122,9 +99,9 @@ void BundleAdjuster::SetParametersConstant() {
   std::vector<int> constant_landmark_params = {(int) POSE::Rx, (int) POSE::Ry, (int) POSE::Rz};
   ceres::SubsetParameterization *constant_landmark_params_mask =
       new ceres::SubsetParameterization((int) POSE::N_PARAMS, constant_landmark_params);
-  for (auto &lm : landmark_poses) {
-    if (problem.HasParameterBlock(lm.second.data()))
-      problem.SetParameterization(lm.second.data(), constant_landmark_params_mask);
+  for (auto &lm : landmarks) {
+    if (problem.HasParameterBlock(lm.second.pose.data()))
+      problem.SetParameterization(lm.second.pose.data(), constant_landmark_params_mask);
 //          problem.SetParameterBlockConstant(lm.second.data());
   }
 
@@ -144,7 +121,7 @@ void BundleAdjuster::SetParametersConstant() {
 }
 
 void BundleAdjuster::ClearProblem() {
-  std::vector <ceres::ResidualBlockId> residual_blocks;
+  std::vector<ceres::ResidualBlockId> residual_blocks;
   problem.GetResidualBlocks(&residual_blocks);
   for (auto &block:residual_blocks) {
     problem.RemoveResidualBlock(block);
@@ -156,3 +133,21 @@ void BundleAdjuster::ClearProblem() {
   }
 
 }
+
+
+void BundleAdjuster::showSetup() {
+    std::cout << std::endl;
+    std::cout << "Bundle Adjuster Setup" << std::endl;
+    std::cout << "=====================" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Intrinsics (" << camera_intrinsics.data() << "): " << camera_intrinsics << std::endl;
+    std::cout << std::endl;
+    std::cout << "Landmarks:" << std::endl;
+    for (auto &lm :landmarks)
+      std::cout << "ID: " << lm.first << " Pose (" << lm.second.pose.data() << "): " << lm.second.pose << std::endl;
+    std::cout << std::endl;
+    std::cout << "Poses:" << std::endl;
+    for (auto &lm :camera_poses)
+      std::cout << "Pose (" << lm.data() << "): " << lm << std::endl;
+}
+

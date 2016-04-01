@@ -33,17 +33,17 @@ enum struct INTRINSICS {
 };
 
 enum struct POINT {
-  ID,
   X,
-  Y
+  Y,
+  Z,
+  N_PARAMS
 };
 
-typedef std::tuple<int, double, double> Point;
+typedef std::array<double, (int) POINT::N_PARAMS> Point;
 typedef std::array<double, (int) INTRINSICS::N_PARAMS> camera_params_t;
 typedef std::array<double, (int) POSE::N_PARAMS> pose_t;
-typedef std::map<int, pose_t> landmark_map_t;
 
-std::vector <Point> getLandmarkPoints(int ID); // Forward declaration
+std::vector<Point> getLandmarkPoints(int ID); // Forward declaration
 
 struct Landmark {
   ///--------------------------------------------------------------------------------------///
@@ -66,11 +66,13 @@ struct Landmark {
    *      3   7   11  15
    */
 
+  Landmark() { };
+
   Landmark(int ID) : id(ID), points(getLandmarkPoints(ID)) { };
 
   int id;
-  double pose[6];
-  std::vector <Point> points;
+  std::array<double, (int) POSE::N_PARAMS> pose;
+  std::vector<Point> points; // TODO make this a map?
   static constexpr int kGridCount = 4; //4x4 Grid
   static constexpr double kGridDistance = 0.08; //80mm = 8cm = 0.08 m
 
@@ -83,13 +85,16 @@ inline int pow(int x, int p) {
   return x * pow(x, p - 1);
 }
 
-inline std::vector <Point> getLandmarkPoints(int ID) {
-  std::vector <Point> points;
+inline std::vector<Point> getLandmarkPoints(int ID) {
+  std::vector<Point> points;
 
   // Add corner points
-  points.push_back(std::make_tuple(0, 0 * Landmark::kGridDistance, 0 * Landmark::kGridDistance));
-  points.push_back(std::make_tuple(3, 3 * Landmark::kGridDistance, 0 * Landmark::kGridDistance));
-  points.push_back(std::make_tuple(15, 3 * Landmark::kGridDistance, 3 * Landmark::kGridDistance));
+  Point pt1 = {0 * Landmark::kGridDistance, 0 * Landmark::kGridDistance, 0};
+  Point pt3 = {3 * Landmark::kGridDistance, 0 * Landmark::kGridDistance, 0};
+  Point pt15 = {3 * Landmark::kGridDistance, 3 * Landmark::kGridDistance, 0};
+  points.push_back(pt1);
+  points.push_back(pt3);
+  points.push_back(pt15);
 
   /// Add ID points
   int col = 0;
@@ -109,10 +114,13 @@ inline std::vector <Point> getLandmarkPoints(int ID) {
       if (col % 2 != 0) {   // Modulo 2 effectively converts the number to binary. If this returns 1, we have a point
         // Point found
         int id = y * Landmark::kGridCount + x;
-        points.push_back(Point(id, x * Landmark::kGridDistance, y * Landmark::kGridDistance));
+        Point pt = {x * Landmark::kGridDistance, y * Landmark::kGridDistance, 0};
+        points.push_back(pt);
       }
       col /= 2;
     }
   }
   return points;
 }
+
+typedef std::map<int, Landmark> landmark_map_t;

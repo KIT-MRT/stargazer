@@ -37,7 +37,7 @@
 //A google test function (uncomment the next function, add code and
 //change the names TestGroupName and TestName)
 TEST(CostFunctor, identity) {
-  ReprojectionFunctor f = ReprojectionFunctor(0, 0, 2, 1);
+  LM2ImgReprojectionFunctor f = LM2ImgReprojectionFunctor(0, 0, 2, 1);
   double residuals[2];
   std::array<double, (int) POSE::N_PARAMS> lm_pose = {0, 0, 10, 0, 0, 0};
   std::array<double, (int) POSE::N_PARAMS> camera_pose = {0, 0, 0, 0, 0, 0};
@@ -54,7 +54,7 @@ TEST(CostFunctor, identity) {
 //!TODO Deprecated
 //TEST(CostFunctor, Landmark2Img) {
 //  // See matlab file
-//  ReprojectionFunctor f = ReprojectionFunctor(5.177542142857143e+02,-14.674357142857131, 2, 1);
+//  LM2ImgReprojectionFunctor f = LM2ImgReprojectionFunctor(5.177542142857143e+02,-14.674357142857131, 2, 1);
 //  double residuals[2];
 //  std::array<double, (int) POSE::N_PARAMS> lm_pose = {2, 5, 3, 0, 0, -90};
 //  std::array<double, (int) POSE::N_PARAMS> camera_pose = {1.5, 5.5, 0.2, 0, 0, 0};
