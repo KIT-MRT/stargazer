@@ -4,7 +4,9 @@
 
 #pragma once
 
+#include "StargazerTypes.h"
 #include "ceres/rotation.h"
+#include <iostream>
 
 template <typename T>
 void transformLM2World(const T *const x_in, const T *const y_in,
