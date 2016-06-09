@@ -26,13 +26,6 @@ LandmarkFinder::LandmarkFinder(std::string cfgfile)
         "readLandmarks: key CameraLocalization::landmarks not found");
   }
   for(auto& el:landmarks) m_vnIDs.push_back(el.first);
-
-  CalibIO calibration;
-  if (calibration.readCalibFromFile("/home/bandera/repos/kitcar/kitcar-config/calibUndistorted.bin") == false) {
-    throw std::runtime_error("cannot read calibration file");
-  }
-  calibration.computeLUT(0, 0, m_oCalibMap_u, m_oCalibMap_v);
-
 }
 
 ///--------------------------------------------------------------------------------------///
@@ -46,21 +39,7 @@ LandmarkFinder::~LandmarkFinder() {}
 ///
 ///--------------------------------------------------------------------------------------///
 void LandmarkFinder::SetImage(cv::Mat& i_oImage) {
-  /// create temporary image of right format
-  cv::Mat Image3C;
-  i_oImage.assignTo(Image3C, CV_8UC3);
-
-  // Undistort the input image
-  cv::remap(Image3C, m_oImage, m_oCalibMap_u, m_oCalibMap_v,cv::INTER_LINEAR);
-
-  if (debug_mode) {
-    cv::namedWindow("Orig", CV_WINDOW_NORMAL);
-    cv::imshow("Orig", i_oImage);
-    cv::waitKey(10);
-    cv::namedWindow("Undistort", CV_WINDOW_NORMAL);
-    cv::imshow("Undistort", m_oImage);
-    cv::waitKey(10);
-  }
+  i_oImage.assignTo(m_oImage, CV_8UC3);
 }
 
 ///--------------------------------------------------------------------------------------///

@@ -14,8 +14,6 @@
 #include <fstream>
 #include <boost/lexical_cast.hpp>
 
-#include "libCalibIO/CalibIO.hpp"
-
 class LandmarkFinder {
  public:
   /// constructors and destructors
@@ -34,9 +32,6 @@ class LandmarkFinder {
   void setDebug_mode(bool value);
 
  private:
-  cv::Mat                       m_oCalibMap_u;
-  cv::Mat                       m_oCalibMap_v;
-
   char m_cThreshold;
   float m_fMaxRadiusForPixelCluster;
   unsigned int m_nMinPixelForCluster;
