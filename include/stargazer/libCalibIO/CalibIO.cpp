@@ -1,11 +1,11 @@
 #include "CalibIO.hpp"
 
-#include <sstream>
 #include <fstream>
+#include <sstream>
 
+#include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/trim.hpp>
-#include <boost/algorithm/string/classification.hpp>
 
 #include <opencv/cv.h>
 
@@ -22,7 +22,7 @@ CalibIO::Camera::Camera() {
   P_rect = 0;
 }
 
-CalibIO::Camera::Camera(const CalibIO::Camera& that) {
+CalibIO::Camera::Camera(const CalibIO::Camera &that) {
   S = 0;
   K = 0;
   D = 0;
@@ -86,7 +86,7 @@ CalibIO::Camera::Camera(const CalibIO::Camera& that) {
   };
 }
 
-CalibIO::Camera& CalibIO::Camera::operator=(const CalibIO::Camera& that) {
+CalibIO::Camera &CalibIO::Camera::operator=(const CalibIO::Camera &that) {
   printf("assign that.S @ %x\n", that.S);
   if (S) {
     cvReleaseMat(&S);
@@ -202,8 +202,8 @@ CalibIO::~CalibIO() {}
 template <typename _Tp, int _rows, int _cols, int _options, int _maxRows,
           int _maxCols>
 void eigen2cvMat(
-    const Eigen::Matrix<_Tp, _rows, _cols, _options, _maxRows, _maxCols>& src,
-    CvMat*& dstCvMat) {
+    const Eigen::Matrix<_Tp, _rows, _cols, _options, _maxRows, _maxCols> &src,
+    CvMat *&dstCvMat) {
   dstCvMat = cvCreateMat(src.rows(), src.cols(), CV_32FC1);
 
   for (int v = 0; v < src.rows(); ++v) {
@@ -224,10 +224,11 @@ bool CalibIO::readCalibFromFile(string calib_file_name) {
     std::vector<UndistortedCamera> undistortedCamera;
     auto success = cerealRead(
         calib_file_name,
-        [&undistortedCamera](cereal::PortableBinaryInputArchive& archive) {
+        [&undistortedCamera](cereal::PortableBinaryInputArchive &archive) {
           archive(undistortedCamera);
         });
-    if (!success) return false;
+    if (!success)
+      return false;
 
     cameras.resize(undistortedCamera.size());
     cus_TS.resize(undistortedCamera.size());
@@ -235,7 +236,7 @@ bool CalibIO::readCalibFromFile(string calib_file_name) {
 
     for (int i = 0; i < undistortedCamera.size(); ++i) {
       // convert data
-      const auto& cam = undistortedCamera[i];
+      const auto &cam = undistortedCamera[i];
 
       std::cout << "Loading config of camera " << i << "..." << std::endl;
       eigen2cvMat(cam.R_rect, cameras[i].R_rect);
@@ -256,7 +257,7 @@ bool CalibIO::readCalibFromFile(string calib_file_name) {
 
   bool is_TS_style = false;
 
-  {  // peek into file to see if it is a Tobi Strauss file
+  { // peek into file to see if it is a Tobi Strauss file
 
     std::ifstream file(calib_file_name);
     std::string first_line;
@@ -273,8 +274,9 @@ bool CalibIO::readCalibFromFile(string calib_file_name) {
 
   {
     // open calibration file
-    FILE* calib_file = fopen(calib_file_name.c_str(), "r");
-    if (calib_file == NULL) return false;
+    FILE *calib_file = fopen(calib_file_name.c_str(), "r");
+    if (calib_file == NULL)
+      return false;
 
     // read time and dist
     bool success = true;
@@ -298,42 +300,58 @@ bool CalibIO::readCalibFromFile(string calib_file_name) {
     // cameras.reserve( 10 );
     for (uint32_t i = 0; i < 100; i++) {
       Camera camera;
-      if (i > 0) printf("pre: cameras[0].S @ %x\n", cameras[0].S);
+      if (i > 0)
+        printf("pre: cameras[0].S @ %x\n", cameras[0].S);
 
       printf("pre: camera.S @ %x\n", camera.S);
 
       if (!is_TS_style) {
         camera.S = readMatrix(calib_file, "S", i, 1, 2, success);
-        if (!success) break;
+        if (!success)
+          break;
         camera.K = readMatrix(calib_file, "K", i, 3, 3, success);
-        if (!success) break;
+        if (!success)
+          break;
         camera.D = readMatrix(calib_file, "D", i, 1, 5, success);
-        if (!success) break;
+        if (!success)
+          break;
         camera.R = readMatrix(calib_file, "R", i, 3, 3, success);
-        if (!success) break;
+        if (!success)
+          break;
         camera.T = readMatrix(calib_file, "T", i, 3, 1, success);
-        if (!success) break;
+        if (!success)
+          break;
         camera.K_rect = readMatrix(calib_file, "K_rect", i, 3, 3, success);
-        if (!success) break;
+        if (!success)
+          break;
         camera.S_rect = readMatrix(calib_file, "S_rect", i, 1, 2, success);
-        if (!success) break;
+        if (!success)
+          break;
         camera.R_rect = readMatrix(calib_file, "R_rect", i, 3, 3, success);
-        if (!success) break;
+        if (!success)
+          break;
         camera.P_rect = readMatrix(calib_file, "P_rect", i, 3, 4, success);
-        if (!success) break;
+        if (!success)
+          break;
       } else {
         // camera.S      = readMatrix(calib_file,"S_input",     i,1,2,success);
         camera.R_rect = readMatrix(calib_file, "R", i, 3, 3, success);
-        if (!success) break;
+        if (!success)
+          break;
         camera.T = readMatrix(calib_file, "T", i, 3, 1, success);
-        if (!success) break;
+        if (!success)
+          break;
         camera.S_rect = readMatrix(calib_file, "S_rect", i, 1, 2, success);
-        if (!success) break;
+        if (!success)
+          break;
         camera.P_rect = readMatrix(calib_file, "P_rect", i, 3, 4, success);
-        if (!success) break;
+        if (!success)
+          break;
         camera.K = readMatrix(calib_file, "K_rect", i, 3, 3, success);
-        if (!success) break;
-        if (!success) break;
+        if (!success)
+          break;
+        if (!success)
+          break;
 
         std::cout << camera.S_rect->rows << " " << camera.S_rect->cols << "\n";
 
@@ -343,9 +361,11 @@ bool CalibIO::readCalibFromFile(string calib_file_name) {
         std::cout << "w h: " << w << " " << h << "\n";
 
         cus_TS.push_back(readMatrix(calib_file, "CU", i, h, w, success));
-        if (!success) break;
+        if (!success)
+          break;
         cvs_TS.push_back(readMatrix(calib_file, "CV", i, h, w, success));
-        if (!success) break;
+        if (!success)
+          break;
       }
 
       if (!success)
@@ -390,12 +410,9 @@ void CalibIO::showCalibrationParameters(bool compact) {
     }
     cout << endl;
   } else {
-    cout << endl
-         << "========================" << endl;
+    cout << endl << "========================" << endl;
     cout << "Calibration parameters:";
-    cout << endl
-         << "========================" << endl
-         << endl;
+    cout << endl << "========================" << endl << endl;
     cout << "Calibration time: " << calib_time << endl;
     cout << "Corner distance: " << corner_dist << endl;
     for (uint32_t i = 0; i < cameras.size(); i++) {
@@ -412,11 +429,11 @@ void CalibIO::showCalibrationParameters(bool compact) {
   }
 }
 
-void CalibIO::computeLUT(int camera_index, bool unwarp_only, cv::Mat& cu_out,
-                         cv::Mat& cv_out) {
-  CvMat* cu;
-  CvMat* cv;
-  if (cus_TS.size() > 0)  // this is a TS style calibration
+void CalibIO::computeLUT(int camera_index, bool unwarp_only, cv::Mat &cu_out,
+                         cv::Mat &cv_out) {
+  CvMat *cu;
+  CvMat *cv;
+  if (cus_TS.size() > 0) // this is a TS style calibration
   {
     cu = cus_TS.at(camera_index);
     cv = cvs_TS.at(camera_index);
@@ -445,7 +462,7 @@ void CalibIO::computeLUT(int camera_index, bool unwarp_only, cv::Mat& cu_out,
 /////////////////////////////////////////////////////////////////////////////////
 
 // displays an opencv matrix
-void CalibIO::showCvMat(CvMat* m, string matrix_name, uint32_t cam) {
+void CalibIO::showCvMat(CvMat *m, string matrix_name, uint32_t cam) {
   // show full matrix name
   char matrix_name_full[1024];
   sprintf(matrix_name_full, "%s_%02d:", matrix_name.c_str(), cam);
@@ -476,8 +493,8 @@ vector<string> CalibIO::splitLine(string line) {
 }
 
 // read a string from 'calib_file'
-string CalibIO::readString(FILE* calib_file, const char* string_name,
-                           bool& success) {
+string CalibIO::readString(FILE *calib_file, const char *string_name,
+                           bool &success) {
   // init result
   string str = "";
 
@@ -487,7 +504,7 @@ string CalibIO::readString(FILE* calib_file, const char* string_name,
   std::vector<char> linebuffer(500000000);
 
   // buffer for lines of file
-  char* line = linebuffer.data();
+  char *line = linebuffer.data();
 
   // for all lines of calib file do
   while (calib_file != NULL &&
@@ -509,8 +526,8 @@ string CalibIO::readString(FILE* calib_file, const char* string_name,
 }
 
 // read a single value from 'calib_file'
-float CalibIO::readValue(FILE* calib_file, const char* value_name,
-                         bool& success) {
+float CalibIO::readValue(FILE *calib_file, const char *value_name,
+                         bool &success) {
   // go to beginning of file
   rewind(calib_file);
 
@@ -547,9 +564,9 @@ float CalibIO::readValue(FILE* calib_file, const char* value_name,
 }
 
 // read an opencv matrix from 'calib_file'
-CvMat* CalibIO::readMatrix(FILE* calib_file, const char* matrix_name,
+CvMat *CalibIO::readMatrix(FILE *calib_file, const char *matrix_name,
                            uint32_t cam, uint32_t m, uint32_t n,
-                           bool& success) {
+                           bool &success) {
   // compose full matrix name
   char matrix_name_full[1024];
   sprintf(matrix_name_full, "%s_%02d:", matrix_name, cam);
@@ -561,7 +578,7 @@ CvMat* CalibIO::readMatrix(FILE* calib_file, const char* matrix_name,
 
   // buffer for lines of file
   std::vector<char> linebuffer(500000000);
-  char* line = linebuffer.data();
+  char *line = linebuffer.data();
 
   // for all lines of calib file do
   while (calib_file != NULL &&
@@ -583,7 +600,7 @@ CvMat* CalibIO::readMatrix(FILE* calib_file, const char* matrix_name,
       }
 
       // create opencv matrix
-      CvMat* M = cvCreateMat(m, n, CV_32FC1);
+      CvMat *M = cvCreateMat(m, n, CV_32FC1);
       float val;
 
       // set matrix elements

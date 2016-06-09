@@ -4,33 +4,27 @@
 
 #pragma once
 
-#include "opencv/highgui.h"
 #include "opencv/cv.h"
-
+#include "opencv/highgui.h"
 
 class DebugVisualizer {
- public:
+public:
   DebugVisualizer();
 
-  ~DebugVisualizer() { };
+  ~DebugVisualizer(){};
 
   void ShowImage(cv::Mat &img, std::string name = "Image");
 
   // Setters
-  void SetWaitTime(int milliseconds) {
-    m_wait_time = milliseconds;
-  };
+  void SetWaitTime(int milliseconds) { m_wait_time = milliseconds; };
 
-  void SetWindowMode(int mode) {
-    m_window_mode = mode;
-  }
+  void SetWindowMode(int mode) { m_window_mode = mode; }
 
   void DrawPoints(cv::Mat &img, std::vector<cv::Point> points);
   void DrawPoints(cv::Mat &img, std::vector<std::vector<cv::Point>> points);
- private:
+
+private:
   int m_wait_time;
   int m_window_mode;
   cv::Mat baseImg;
 };
-
-

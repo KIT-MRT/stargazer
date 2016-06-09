@@ -4,26 +4,24 @@
 
 #pragma once
 
-
-#include <string>
-#include "StargazerTypes.h"
-#include "StargazerConfig.h"
 #include "CoordinateTransformations.h"
+#include "StargazerConfig.h"
+#include "StargazerTypes.h"
 #include "internal/CostFunction.h"
-
+#include <string>
 
 class Localizer {
 
- public:
+public:
   Localizer(std::string cfgfile);
 
-  ~Localizer() { };
+  ~Localizer(){};
 
   void UpdatePose(std::vector<Landmark> img_landmarks);
 
   const pose_t &getPose() const { return ego_pose; };
 
- private:
+private:
   std::map<int, Landmark> landmarks;
   camera_params_t camera_intrinsics;
   pose_t ego_pose;
@@ -36,5 +34,3 @@ class Localizer {
   void SetCameraParamsConstant();
   void Optimize();
 };
-
-

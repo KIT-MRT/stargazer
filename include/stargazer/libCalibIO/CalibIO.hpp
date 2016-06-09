@@ -4,26 +4,26 @@
 #ifndef __CALIB_IO_H__
 #define __CALIB_IO_H__
 
-#include <iostream>
 #include <iomanip>
-#include <stdio.h>
+#include <iostream>
 #include <stdint.h>
-#include <vector>
+#include <stdio.h>
 #include <string>
+#include <vector>
 
-class CvMat;  // forward declaration to avoid OpenCV compile time dependency
-              // (jz)
+class CvMat; // forward declaration to avoid OpenCV compile time dependency
+             // (jz)
 namespace cv {
-class Mat;  // forward declaration to avoid OpenCV compile time dependency (jz)
+class Mat; // forward declaration to avoid OpenCV compile time dependency (jz)
 }
 #include <Eigen/Dense>
 
+#include "../cereal/types/Eigen.h" //! This file originaly comes from MRT/libPersistantMap !!!
 #include <boost/filesystem.hpp>
-#include <fstream>
 #include <cereal/archives/portable_binary.hpp>
 #include <cereal/cereal.hpp>
 #include <cereal/types/vector.hpp>
-#include "../cereal/types/Eigen.h"  //! This file originaly comes from MRT/libPersistantMap !!!
+#include <fstream>
 
 template <typename Func>
 bool cerealRead(const boost::filesystem::path &path, Func &&func) {
@@ -107,18 +107,18 @@ inline void load(Archive &archive, Eigen::Affine3d &c) {
 }
 
 class CalibIO {
- public:
+public:
   // calibration parameters of a single camera
   struct Camera {
-    CvMat *S;       // image size before rectification
-    CvMat *K;       // calibration matrix before rectification
-    CvMat *D;       // distortion parameters before rectification
-    CvMat *R;       // extrinsic rotation before rectification
-    CvMat *T;       // extrinsic translation before rectification
-    CvMat *S_rect;  // image size after rectification
-    CvMat *R_rect;  // rectifying rotation
-    CvMat *K_rect;  // projection matrix after rectification
-    CvMat *P_rect;  // projection matrix after rectification
+    CvMat *S;      // image size before rectification
+    CvMat *K;      // calibration matrix before rectification
+    CvMat *D;      // distortion parameters before rectification
+    CvMat *R;      // extrinsic rotation before rectification
+    CvMat *T;      // extrinsic translation before rectification
+    CvMat *S_rect; // image size after rectification
+    CvMat *R_rect; // rectifying rotation
+    CvMat *K_rect; // projection matrix after rectification
+    CvMat *P_rect; // projection matrix after rectification
     Camera();
     Camera(const Camera &that);
     Camera &operator=(const Camera &that);
@@ -134,11 +134,11 @@ class CalibIO {
   void computeLUT(int camera_index, bool unwarp_only, cv::Mat &cu_out,
                   cv::Mat &cv_out);
 
-  std::string calib_time;       // calibration time
-  float corner_dist;            // corner dist
-  std::vector<Camera> cameras;  // camera calibration
+  std::string calib_time;      // calibration time
+  float corner_dist;           // corner dist
+  std::vector<Camera> cameras; // camera calibration
 
- private:
+private:
   void showCvMat(CvMat *m, std::string matrix_name, uint32_t cam);
   std::vector<std::string> splitLine(std::string line);
   std::string readString(FILE *calib_file, const char *string_name,

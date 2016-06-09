@@ -5,23 +5,24 @@
 #include "StargazerImgTypes.h"
 #include "StargazerTypes.h"
 
+#include "iostream"
+#include "math.h"
 #include "opencv/cv.h"
 #include "opencv/highgui.h"
-#include "math.h"
-#include "iostream"
 #include "vector"
-#include <iostream>
-#include <fstream>
 #include <boost/lexical_cast.hpp>
+#include <fstream>
+#include <iostream>
 
 class LandmarkFinder {
- public:
+public:
   /// constructors and destructors
   LandmarkFinder(std::string cfgfile);
   ~LandmarkFinder();
 
   /// methods
-  int FindLandmarks(const cv::Mat& i_oImage, std::vector<ImgLandmark> &o_vLandmarks);
+  int FindLandmarks(const cv::Mat &i_oImage,
+                    std::vector<ImgLandmark> &o_vLandmarks);
 
   cv::Mat_<cv::Vec3b> m_oImage;
   cv::Mat m_oGrayImage;
@@ -38,7 +39,7 @@ class LandmarkFinder {
   std::vector<int> m_vnIDs;
   bool debug_mode;
 
- private:
+private:
   std::vector<ImgLandmark> FindCorners(std::vector<Cluster> &Clusters);
   std::vector<cv::Point> FindPoints(cv::Mat &i_oGrayImage);
   void FindClusters(std::vector<cv::Point> &i_voPoints,
@@ -47,7 +48,8 @@ class LandmarkFinder {
                     const unsigned int i_nMinPointsThreshold,
                     const unsigned int i_nMaxPointsThreshold);
   int GetIDs(std::vector<ImgLandmark> &io_voLandmarks);
-  void Check(cv::Mat &Filtered, int XPos, int YPos, int Threshold, int &Pixelcount, int &SummedX, int &SummedY);
+  void Check(cv::Mat &Filtered, int XPos, int YPos, int Threshold,
+             int &Pixelcount, int &SummedX, int &SummedY);
   void vec_sort(std::vector<int> &ids, std::vector<cv::Point> &points);
 };
 

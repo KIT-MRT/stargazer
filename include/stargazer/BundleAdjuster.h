@@ -4,21 +4,21 @@
 
 #pragma once
 
-#include "ros/ros.h"
-#include "internal/CostFunction.h"
-#include "StargazerTypes.h"
 #include "CoordinateTransformations.h"
+#include "StargazerTypes.h"
+#include "internal/CostFunction.h"
+#include "ros/ros.h"
 
 #include <ceres/ceres.h>
-#include <vector>
 #include <map>
-
+#include <vector>
 
 class BundleAdjuster {
- public:
+public:
   BundleAdjuster();
 
-  void AddReprojectionResidualBlocks(std::vector<std::vector<Landmark>> measurements);
+  void AddReprojectionResidualBlocks(
+      std::vector<std::vector<Landmark>> measurements);
 
   ceres::Problem problem;
   camera_params_t camera_intrinsics;
@@ -30,5 +30,3 @@ class BundleAdjuster {
   void AddCameraPoses(std::vector<std::array<double, 3>> measurements);
   void ClearProblem();
 };
-
-

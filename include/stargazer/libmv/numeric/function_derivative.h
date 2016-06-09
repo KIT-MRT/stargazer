@@ -36,16 +36,16 @@ enum NumericJacobianMode {
   FORWARD,
 };
 
-template<typename Function, NumericJacobianMode mode = CENTRAL>
+template <typename Function, NumericJacobianMode mode = CENTRAL>
 class NumericJacobian {
- public:
+public:
   typedef typename Function::XMatrixType Parameters;
   typedef typename Function::XMatrixType::RealScalar XScalar;
   typedef typename Function::FMatrixType FMatrixType;
   typedef Matrix<typename Function::FMatrixType::RealScalar,
                  Function::FMatrixType::RowsAtCompileTime,
                  Function::XMatrixType::RowsAtCompileTime>
-          JMatrixType;
+      JMatrixType;
 
   NumericJacobian(const Function &f) : f_(f) {}
 
@@ -58,7 +58,7 @@ class NumericJacobian {
     XScalar mean_eps = eps.sum() / eps.rows();
     if (mean_eps == XScalar(0)) {
       // TODO(keir): Do something better here.
-      mean_eps = 1e-8;  // ~sqrt(machine precision).
+      mean_eps = 1e-8; // ~sqrt(machine precision).
     }
     // TODO(keir): Elimininate this needless function evaluation for the
     // central difference case.
@@ -87,21 +87,22 @@ class NumericJacobian {
     }
     return jacobian;
   }
- private:
+
+private:
   const Function &f_;
 };
 
-template<typename Function, typename Jacobian>
+template <typename Function, typename Jacobian>
 bool CheckJacobian(const Function &f, const typename Function::XMatrixType &x) {
   Jacobian j_analytic(f);
   NumericJacobian<Function> j_numeric(f);
 
   typename NumericJacobian<Function>::JMatrixType J_numeric = j_numeric(x);
   typename NumericJacobian<Function>::JMatrixType J_analytic = j_analytic(x);
-  //LIBMV_LOGGING_LG << J_numeric - J_analytic;
+  // LIBMV_LOGGING_LG << J_numeric - J_analytic;
   return true;
 }
 
-}  // namespace libmv
+} // namespace libmv
 
-#endif  // LIBMV_NUMERIC_DERIVATIVE_H
+#endif // LIBMV_NUMERIC_DERIVATIVE_H

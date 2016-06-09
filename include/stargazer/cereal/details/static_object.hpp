@@ -14,10 +14,12 @@
       * Neither the name of cereal nor the
         names of its contributors may be used to endorse or promote products
         derived from this software without specific prior written permission.
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  AND
   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  DISCLAIMED. IN NO EVENT SHALL RANDOLPH VOORHIES OR SHANE GRANT BE LIABLE FOR ANY
+  DISCLAIMED. IN NO EVENT SHALL RANDOLPH VOORHIES OR SHANE GRANT BE LIABLE FOR
+  ANY
   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -39,52 +41,44 @@
     http://www.boost.org/LICENSE_1_0.txt) */
 
 #ifdef _MSC_VER
-#   define CEREAL_DLL_EXPORT __declspec(dllexport)
-#   define CEREAL_USED
+#define CEREAL_DLL_EXPORT __declspec(dllexport)
+#define CEREAL_USED
 #else // clang or gcc
-#   define CEREAL_DLL_EXPORT
-#   define CEREAL_USED __attribute__ ((__used__))
+#define CEREAL_DLL_EXPORT
+#define CEREAL_USED __attribute__((__used__))
 #endif
 
-namespace cereal
-{
-  namespace detail
-  {
-    //! A static, pre-execution object
-    /*! This class will create a single copy (singleton) of some
-        type and ensures that merely referencing this type will
-        cause it to be instantiated and initialized pre-execution.
-        For example, this is used heavily in the polymorphic pointer
-        serialization mechanisms to bind various archive types with
-        different polymorphic classes */
-    template <class T>
-    class CEREAL_DLL_EXPORT StaticObject
-    {
-      private:
-        //! Forces instantiation at pre-execution time
-        static void instantiate( T const & ) {}
+namespace cereal {
+namespace detail {
+//! A static, pre-execution object
+/*! This class will create a single copy (singleton) of some
+    type and ensures that merely referencing this type will
+    cause it to be instantiated and initialized pre-execution.
+    For example, this is used heavily in the polymorphic pointer
+    serialization mechanisms to bind various archive types with
+    different polymorphic classes */
+template <class T> class CEREAL_DLL_EXPORT StaticObject {
+private:
+  //! Forces instantiation at pre-execution time
+  static void instantiate(T const &) {}
 
-        static T & create()
-        {
-          static T t;
-          instantiate(instance);
-          return t;
-        }
+  static T &create() {
+    static T t;
+    instantiate(instance);
+    return t;
+  }
 
-        StaticObject( StaticObject const & /*other*/ ) {}
+  StaticObject(StaticObject const & /*other*/) {}
 
-      public:
-        static T & getInstance()
-        {
-          return create();
-        }
+public:
+  static T &getInstance() { return create(); }
 
-      private:
-        static T & instance;
-    };
+private:
+  static T &instance;
+};
 
-    template <class T> T & StaticObject<T>::instance = StaticObject<T>::create();
-  } // namespace detail
+template <class T> T &StaticObject<T>::instance = StaticObject<T>::create();
+} // namespace detail
 } // namespace cereal
 
 #endif // CEREAL_DETAILS_STATIC_OBJECT_HPP_

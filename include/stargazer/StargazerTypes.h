@@ -5,50 +5,29 @@
 #pragma once
 
 #include <cmath>
+#include <map>
 #include <tuple>
 #include <vector>
-#include <map>
-
 
 using std::pow;
 
-enum struct POSE {
-  X,
-  Y,
-  Z,
-  Rx,
-  Ry,
-  Rz,
-  N_PARAMS
-};
+enum struct POSE { X, Y, Z, Rx, Ry, Rz, N_PARAMS };
 
-enum struct INTRINSICS {
-  f,
-  u0,
-  v0,
-  alpha,
-  beta,
-  theta,
-  N_PARAMS
-};
+enum struct INTRINSICS { f, u0, v0, alpha, beta, theta, N_PARAMS };
 
-enum struct POINT {
-  X,
-  Y,
-  Z,
-  N_PARAMS
-};
+enum struct POINT { X, Y, Z, N_PARAMS };
 
-typedef std::array<double, (int) POINT::N_PARAMS> Point;
-typedef std::array<double, (int) INTRINSICS::N_PARAMS> camera_params_t;
-typedef std::array<double, (int) POSE::N_PARAMS> pose_t;
+typedef std::array<double, (int)POINT::N_PARAMS> Point;
+typedef std::array<double, (int)INTRINSICS::N_PARAMS> camera_params_t;
+typedef std::array<double, (int)POSE::N_PARAMS> pose_t;
 
 std::vector<Point> getLandmarkPoints(int ID); // Forward declaration
 
 struct Landmark {
   ///--------------------------------------------------------------------------------------///
   /// The Landmarks are made similar to those from Hagisonic.
-  /// ID of a landmark is coded see http://hagisonic.com/ for information on pattern
+  /// ID of a landmark is coded see http://hagisonic.com/ for information on
+  /// pattern
   ///--------------------------------------------------------------------------------------///
 
   /*  Numbering of corners and coordinate frame
@@ -66,22 +45,23 @@ struct Landmark {
    *      3   7   11  15
    */
 
-  Landmark() { };
+  Landmark(){};
 
-  Landmark(int ID) : id(ID), points(getLandmarkPoints(ID)) { };
+  Landmark(int ID) : id(ID), points(getLandmarkPoints(ID)){};
 
   int id;
-  std::array<double, (int) POSE::N_PARAMS> pose;
-  std::vector<Point> points; // TODO make this a map?
-  static constexpr int kGridCount = 4; //4x4 Grid
-  static constexpr double kGridDistance = 0.08; //80mm = 8cm = 0.08 m
-
+  std::array<double, (int)POSE::N_PARAMS> pose;
+  std::vector<Point> points;                    // TODO make this a map?
+  static constexpr int kGridCount = 4;          // 4x4 Grid
+  static constexpr double kGridDistance = 0.08; // 80mm = 8cm = 0.08 m
 };
 
 // Computes x^p assuring, to return an int
 inline int pow(int x, int p) {
-  if (p == 0) return 1;
-  if (p == 1) return x;
+  if (p == 0)
+    return 1;
+  if (p == 1)
+    return x;
   return x * pow(x, p - 1);
 }
 
@@ -98,7 +78,7 @@ inline std::vector<Point> getLandmarkPoints(int ID) {
 
   /// Add ID points
   int col = 0;
-  for (int y = 0; y < Landmark::kGridCount; y++)   // For every column
+  for (int y = 0; y < Landmark::kGridCount; y++) // For every column
   {
     /* StarLandmark IDs are coded:
     * the binary values ar coded:  x steps are binary shifts within 4 bit blocks
@@ -111,10 +91,12 @@ inline std::vector<Point> getLandmarkPoints(int ID) {
     ID -= col;
     // Convert to binary
     for (int x = 0; x < Landmark::kGridCount; x++) { // For every row
-      if (col % 2 != 0) {   // Modulo 2 effectively converts the number to binary. If this returns 1, we have a point
+      if (col % 2 != 0) { // Modulo 2 effectively converts the number to binary.
+                          // If this returns 1, we have a point
         // Point found
         int id = y * Landmark::kGridCount + x;
-        Point pt = {x * Landmark::kGridDistance, y * Landmark::kGridDistance, 0};
+        Point pt = {x * Landmark::kGridDistance, y * Landmark::kGridDistance,
+                    0};
         points.push_back(pt);
       }
       col /= 2;

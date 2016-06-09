@@ -2,23 +2,18 @@
 // Created by bandera on 28.03.16.
 //
 
-#include <ceres/ceres.h>
 #include "Localizer.h"
-
+#include <ceres/ceres.h>
 
 Localizer::Localizer(std::string cfgfile) {
   readConfig(cfgfile, camera_intrinsics, landmarks);
 
   // Convert landmark points to worldcoordinates once.
-  for (auto &el:landmarks) {
+  for (auto &el : landmarks) {
     for (auto &pt : el.second.points) {
       double x, y, z;
-      transformLM2World(&pt[(int) POINT::X],
-                        &pt[(int) POINT::Y],
-                        el.second.pose.data(),
-                        &x,
-                        &y,
-                        &z);
+      transformLM2World(&pt[(int)POINT::X], &pt[(int)POINT::Y],
+                        el.second.pose.data(), &x, &y, &z);
       pt = {x, y, z};
     }
   }
@@ -32,12 +27,12 @@ void Localizer::UpdatePose(std::vector<Landmark> img_landmarks) {
     return;
   }
   if (!is_initialized) {
-    for (auto &el:img_landmarks) {
-      ego_pose[(int) POSE::X] += el.pose[(int) POSE::X];
-      ego_pose[(int) POSE::Y] += el.pose[(int) POSE::Y];
+    for (auto &el : img_landmarks) {
+      ego_pose[(int)POSE::X] += el.pose[(int)POSE::X];
+      ego_pose[(int)POSE::Y] += el.pose[(int)POSE::Y];
     }
-    ego_pose[(int) POSE::X] /= img_landmarks.size();
-    ego_pose[(int) POSE::Y] /= img_landmarks.size();
+    ego_pose[(int)POSE::X] /= img_landmarks.size();
+    ego_pose[(int)POSE::Y] /= img_landmarks.size();
     is_initialized = true;
   }
 
@@ -54,7 +49,7 @@ void Localizer::UpdatePose(std::vector<Landmark> img_landmarks) {
 void Localizer::ClearResidualBlocks() {
   std::vector<ceres::ResidualBlockId> residual_blocks;
   problem.GetResidualBlocks(&residual_blocks);
-  for (auto &block:residual_blocks) {
+  for (auto &block : residual_blocks) {
     problem.RemoveResidualBlock(block);
   }
 }
@@ -63,8 +58,9 @@ void Localizer::AddResidualBlocks(std::vector<Landmark> img_landmarks) {
   for (auto &lm_obs : img_landmarks) {
 
     if (lm_obs.points.size() != landmarks[lm_obs.id].points.size()) {
-      std::cerr << "point count does not match! " << lm_obs.points.size() << "(observed) vs. "
-          << landmarks[lm_obs.id].points.size() << "(map)" << std::endl;
+      std::cerr << "point count does not match! " << lm_obs.points.size()
+                << "(observed) vs. " << landmarks[lm_obs.id].points.size()
+                << "(map)" << std::endl;
       return;
     };
 
@@ -72,23 +68,23 @@ void Localizer::AddResidualBlocks(std::vector<Landmark> img_landmarks) {
     for (int k = 0; k < lm_obs.points.size(); k++) {
 
       ceres::CostFunction *cost_function = World2ImgReprojectionFunctor::Create(
-          lm_obs.points[k][(int) POINT::X],
-          lm_obs.points[k][(int) POINT::Y],
-          landmarks[lm_obs.id].points[k][(int) POINT::X],
-          landmarks[lm_obs.id].points[k][(int) POINT::Y],
-          landmarks[lm_obs.id].points[k][(int) POINT::Z]);
+          lm_obs.points[k][(int)POINT::X], lm_obs.points[k][(int)POINT::Y],
+          landmarks[lm_obs.id].points[k][(int)POINT::X],
+          landmarks[lm_obs.id].points[k][(int)POINT::Y],
+          landmarks[lm_obs.id].points[k][(int)POINT::Z]);
 
-      problem.AddResidualBlock(cost_function,
-                               new ceres::CauchyLoss(50), // NULL /* squared loss */, // Alternatively: new ceres::ScaledLoss(NULL, w_v_des, ceres::TAKE_OWNERSHIP),
-                               ego_pose.data(),
-                               camera_intrinsics.data());
+      problem.AddResidualBlock(
+          cost_function,
+          new ceres::CauchyLoss(50), // NULL /* squared loss */, //
+                                     // Alternatively: new
+                                     // ceres::ScaledLoss(NULL, w_v_des,
+                                     // ceres::TAKE_OWNERSHIP),
+          ego_pose.data(), camera_intrinsics.data());
     }
   }
 
   SetCameraParamsConstant();
-
 }
-
 
 void Localizer::SetCameraParamsConstant() {
   // Set Camera Parameters Constant
@@ -96,13 +92,11 @@ void Localizer::SetCameraParamsConstant() {
     problem.SetParameterBlockConstant(camera_intrinsics.data());
 }
 
-
 void Localizer::Optimize() {
   ceres::Solver::Options options;
   options.linear_solver_type = ceres::SPARSE_NORMAL_CHOLESKY;
   options.minimizer_progress_to_stdout = false;
   ceres::Solver::Summary summary;
   ceres::Solve(options, &problem, &summary);
-//  std::cout << summary.FullReport() << std::endl;
+  //  std::cout << summary.FullReport() << std::endl;
 }
-

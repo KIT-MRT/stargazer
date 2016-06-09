@@ -29,10 +29,12 @@
         names of its contributors may be used to endorse or promote products
         derived from this software without specific prior written permission.
 
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  AND
   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  DISCLAIMED. IN NO EVENT SHALL RANDOLPH VOORHIES OR SHANE GRANT BE LIABLE FOR ANY
+  DISCLAIMED. IN NO EVENT SHALL RANDOLPH VOORHIES OR SHANE GRANT BE LIABLE FOR
+  ANY
   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -53,28 +55,32 @@
 
 #ifndef CEREAL_LOAD_FUNCTION_NAME
 //! The deserialization (load) function name to search for.
-/*! You can define @c CEREAL_LOAD_FUNCTION_NAME to be different assuming you do so
+/*! You can define @c CEREAL_LOAD_FUNCTION_NAME to be different assuming you do
+   so
     before this file is included. */
 #define CEREAL_LOAD_FUNCTION_NAME load
 #endif // CEREAL_LOAD_FUNCTION_NAME
 
 #ifndef CEREAL_SAVE_FUNCTION_NAME
 //! The serialization (save) function name to search for.
-/*! You can define @c CEREAL_SAVE_FUNCTION_NAME to be different assuming you do so
+/*! You can define @c CEREAL_SAVE_FUNCTION_NAME to be different assuming you do
+   so
     before this file is included. */
 #define CEREAL_SAVE_FUNCTION_NAME save
 #endif // CEREAL_SAVE_FUNCTION_NAME
 
 #ifndef CEREAL_LOAD_MINIMAL_FUNCTION_NAME
 //! The deserialization (load_minimal) function name to search for.
-/*! You can define @c CEREAL_LOAD_MINIMAL_FUNCTION_NAME to be different assuming you do so
+/*! You can define @c CEREAL_LOAD_MINIMAL_FUNCTION_NAME to be different assuming
+   you do so
     before this file is included. */
 #define CEREAL_LOAD_MINIMAL_FUNCTION_NAME load_minimal
 #endif // CEREAL_LOAD_MINIMAL_FUNCTION_NAME
 
 #ifndef CEREAL_SAVE_MINIMAL_FUNCTION_NAME
 //! The serialization (save_minimal) function name to search for.
-/*! You can define @c CEREAL_SAVE_MINIMAL_FUNCTION_NAME to be different assuming you do so
+/*! You can define @c CEREAL_SAVE_MINIMAL_FUNCTION_NAME to be different assuming
+   you do so
     before this file is included. */
 #define CEREAL_SAVE_MINIMAL_FUNCTION_NAME save_minimal
 #endif // CEREAL_SAVE_MINIMAL_FUNCTION_NAME
