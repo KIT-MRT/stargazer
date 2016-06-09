@@ -20,18 +20,14 @@ class LandmarkFinder {
   LandmarkFinder(std::string cfgfile);
   ~LandmarkFinder();
 
-  /// accessors
-  void SetImage(cv::Mat &i_oImage);
-
   /// methods
-  int FindLandmarks(std::vector<ImgLandmark> &o_vLandmarks);
+  int FindLandmarks(const cv::Mat& i_oImage, std::vector<ImgLandmark> &o_vLandmarks);
 
   cv::Mat_<cv::Vec3b> m_oImage;
   cv::Mat m_oGrayImage;
 
   void setDebug_mode(bool value);
 
- private:
   char m_cThreshold;
   float m_fMaxRadiusForPixelCluster;
   unsigned int m_nMinPixelForCluster;
@@ -39,11 +35,10 @@ class LandmarkFinder {
   float m_fMaxRadiusForCluster;
   unsigned int m_nMinPointsPerLandmark;
   unsigned int m_nMaxPointsPerLandmark;
-  float m_fMaxCosForRightAngle;
   std::vector<int> m_vnIDs;
-  std::vector<cv::Point> m_vStuckPixels;
   bool debug_mode;
 
+ private:
   std::vector<ImgLandmark> FindCorners(std::vector<Cluster> &Clusters);
   std::vector<cv::Point> FindPoints(cv::Mat &i_oGrayImage);
   void FindClusters(std::vector<cv::Point> &i_voPoints,

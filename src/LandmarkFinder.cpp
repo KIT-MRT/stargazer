@@ -35,18 +35,10 @@ LandmarkFinder::LandmarkFinder(std::string cfgfile)
 LandmarkFinder::~LandmarkFinder() {}
 
 ///--------------------------------------------------------------------------------------///
-/// Get image and prepare for further prcoessing
-///
-///--------------------------------------------------------------------------------------///
-void LandmarkFinder::SetImage(cv::Mat& i_oImage) {
-  i_oImage.assignTo(m_oImage, CV_8UC3);
-}
-
-///--------------------------------------------------------------------------------------///
 /// FindMarker processing method
 /// Handles the complete processing
 ///--------------------------------------------------------------------------------------///
-int LandmarkFinder::FindLandmarks(std::vector<ImgLandmark>& o_vLandmarks) {
+int LandmarkFinder::FindLandmarks(const cv::Mat& i_oImage, std::vector<ImgLandmark>& o_vLandmarks) {
   stringstream out1;
   string sID;
   std::vector<cv::Point> ClusteredPixels;
@@ -55,7 +47,8 @@ int LandmarkFinder::FindLandmarks(std::vector<ImgLandmark>& o_vLandmarks) {
   std::vector<cv::Point>::iterator pClusteredPixels;
   std::vector<ImgLandmark>::iterator pLandmark;
   cv::Point Test(0, 0);
-
+  i_oImage.assignTo(m_oImage, CV_8UC3);
+  
   /// check if input is valid
   if (!m_oImage.data) {  /// otherwise: return with error
     std::cerr << "Input data is invalid"<< std::endl;
@@ -278,8 +271,8 @@ std::vector<cv::Point> LandmarkFinder::FindPoints(cv::Mat& i_oGrayImage) {
         for(int y = 0; y < m_oGrayImage.rows; y++)
         {
             XPos=0; YPos=0; Pixelcount=0; SummedX=0; SummedY=0;
-            Check(filtered, x, y, m_cThreshold, Pixelcount, SummedX,SummedY);
-            if((Pixelcount>m_nMinPixelForCluster) && (Pixelcount<m_nMaxPixelForCluster))
+            Check(filtered, x, y, threshold, Pixelcount, SummedX,SummedY);
+            if((Pixelcount>minPixelForCluster) && (Pixelcount<maxPixelForCluster))
             {
               TPoint= cv::Point(int(SummedX/Pixelcount),int(SummedY/Pixelcount));
               Pixels.push_back(TPoint);
