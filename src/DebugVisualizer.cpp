@@ -7,7 +7,7 @@
 
 using namespace stargazer;
 
-DebugVisualizer::DebugVisualizer() : m_window_mode(CV_WINDOW_NORMAL), m_wait_time(0) {
+DebugVisualizer::DebugVisualizer() : m_window_mode(CV_WINDOW_NORMAL), m_wait_time(1) {
 }
 
 void DebugVisualizer::ShowImage(cv::Mat& img, std::string name) {
@@ -31,7 +31,7 @@ void DebugVisualizer::DrawPoints(cv::Mat& img, std::vector<std::vector<cv::Point
     ShowImage(temp, "PointGroups");
 }
 
-void DebugVisualizer::DrawLandmarks(cv::Mat& img, std::vector<ImgLandmark>& landmarks) {
+void DebugVisualizer::DrawLandmarks(cv::Mat& img, const std::vector<ImgLandmark>& landmarks) {
 
     for (auto& lm : landmarks) {
         for (auto& imgPoint : lm.voCorners) {

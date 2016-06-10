@@ -30,7 +30,7 @@ public:
 
     void DrawPoints(cv::Mat& img, std::vector<cv::Point> points);
     void DrawPoints(cv::Mat& img, std::vector<std::vector<cv::Point>> points);
-    void DrawLandmarks(cv::Mat& img, std::vector<ImgLandmark>& landmarks);
+    void DrawLandmarks(cv::Mat& img, const std::vector<ImgLandmark>& landmarks);
     void DrawLandmarks(cv::Mat& img, const landmark_map_t& landmarks, const camera_params_t& camera_intrinsics,
                        const pose_t& ego_pose);
 
