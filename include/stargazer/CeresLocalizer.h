@@ -7,6 +7,7 @@
 #include <string>
 #include "CoordinateTransformations.h"
 #include "StargazerConfig.h"
+#include "StargazerImgTypes.h"
 #include "StargazerTypes.h"
 #include "internal/CostFunction.h"
 
@@ -19,19 +20,19 @@ public:
 
     ~CeresLocalizer(){};
 
-    void UpdatePose(std::vector<Landmark>& img_landmarks);
+    void UpdatePose(std::vector<ImgLandmark>& img_landmarks);
 
     const pose_t& getPose() const {
         return ego_pose;
     };
 
-  const std::map<int, Landmark>& getLandmarks() const {
-    return landmarks;
-  }
+    const std::map<int, Landmark>& getLandmarks() const {
+        return landmarks;
+    }
 
-  const camera_params_t& getIntrinsics() const {
-    return camera_intrinsics;
-  }
+    const camera_params_t& getIntrinsics() const {
+        return camera_intrinsics;
+    }
 
 private:
     std::map<int, Landmark> landmarks;
@@ -42,7 +43,7 @@ private:
     bool is_initialized;
 
     void ClearResidualBlocks();
-    void AddResidualBlocks(std::vector<Landmark> img_landmarks);
+    void AddResidualBlocks(std::vector<ImgLandmark> img_landmarks);
     void SetCameraParamsConstant();
     void Optimize();
 };

@@ -23,19 +23,16 @@ CeresLocalizer::CeresLocalizer(std::string cfgfile) {
     is_initialized = false;
 }
 
-void CeresLocalizer::UpdatePose(std::vector<Landmark>& img_landmarks) {
+void CeresLocalizer::UpdatePose(std::vector<ImgLandmark>& img_landmarks) {
     if (img_landmarks.empty()) {
         std::cout << "Localizer received empty landmarks vector" << std::endl;
         return;
     }
-    for (auto& img_lm : img_landmarks) {
-        img_lm.pose = landmarks[img_lm.id].pose;
-    }
 
     if (!is_initialized) {
         for (auto& el : img_landmarks) {
-            ego_pose[(int)POSE::X] += el.pose[(int)POSE::X];
-            ego_pose[(int)POSE::Y] += el.pose[(int)POSE::Y];
+            ego_pose[(int)POSE::X] += landmarks[el.nID].pose[(int)POSE::X];
+            ego_pose[(int)POSE::Y] += landmarks[el.nID].pose[(int)POSE::Y];
         }
         ego_pose[(int)POSE::X] /= img_landmarks.size();
         ego_pose[(int)POSE::Y] /= img_landmarks.size();
@@ -60,23 +57,28 @@ void CeresLocalizer::ClearResidualBlocks() {
     }
 }
 
-void CeresLocalizer::AddResidualBlocks(std::vector<Landmark> img_landmarks) {
-    for (auto& lm_obs : img_landmarks) {
+void CeresLocalizer::AddResidualBlocks(std::vector<ImgLandmark> img_landmarks) {
+    for (auto& img_lm : img_landmarks) {
 
-        if (lm_obs.points.size() != landmarks[lm_obs.id].points.size()) {
-            std::cerr << "point count does not match! " << lm_obs.points.size() << "(observed) vs. "
-                      << landmarks[lm_obs.id].points.size() << "(map)" << std::endl;
+        if (img_lm.voIDPoints.size() + img_lm.voCorners.size() != landmarks[img_lm.nID].points.size()) {
+            std::cerr << "point count does not match! " << img_lm.voIDPoints.size() + img_lm.voCorners.size()
+                      << "(observed) vs. " << landmarks[img_lm.nID].points.size() << "(map)" << std::endl;
             return;
         };
 
         // Add residual block, for every one of the seen points.
-        for (size_t k = 0; k < lm_obs.points.size(); k++) {
-
-            ceres::CostFunction* cost_function = World2ImgReprojectionFunctor::Create(
-                lm_obs.points[k][(int)POINT::X], lm_obs.points[k][(int)POINT::Y],
-                landmarks[lm_obs.id].points[k][(int)POINT::X], landmarks[lm_obs.id].points[k][(int)POINT::Y],
-                landmarks[lm_obs.id].points[k][(int)POINT::Z]);
-
+        for (size_t k = 0; k < landmarks[img_lm.nID].points.size(); k++) {
+            ceres::CostFunction* cost_function;
+            if (k < 3) {
+                cost_function = World2ImgReprojectionFunctor::Create(
+                    img_lm.voCorners[k].x, img_lm.voCorners[k].y, landmarks[img_lm.nID].points[k][(int)POINT::X],
+                    landmarks[img_lm.nID].points[k][(int)POINT::Y], landmarks[img_lm.nID].points[k][(int)POINT::Z]);
+            } else {
+                cost_function = World2ImgReprojectionFunctor::Create(
+                    img_lm.voIDPoints[k - 3].x, img_lm.voIDPoints[k - 3].y,
+                    landmarks[img_lm.nID].points[k][(int)POINT::X], landmarks[img_lm.nID].points[k][(int)POINT::Y],
+                    landmarks[img_lm.nID].points[k][(int)POINT::Z]);
+            }
             problem.AddResidualBlock(cost_function,
                                      new ceres::CauchyLoss(50), // NULL /* squared loss */, //
                                                                 // Alternatively: new
