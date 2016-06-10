@@ -28,8 +28,8 @@ void BundleAdjuster::AddReprojectionResidualBlocks(
     std::vector<std::vector<Landmark>> measurements) {
   assert(measurements.size() == camera_poses.size());
 
-  for (int i = 0; i < measurements.size(); i++) {
-    for (int j = 0; j < measurements[i].size(); j++) {
+  for (size_t i = 0; i < measurements.size(); i++) {
+    for (size_t j = 0; j < measurements[i].size(); j++) {
       auto &observation = measurements[i][j];
 
       Landmark landmark(observation.id);

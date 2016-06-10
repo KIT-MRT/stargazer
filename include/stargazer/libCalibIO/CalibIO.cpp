@@ -32,7 +32,7 @@ CalibIO::Camera::Camera(const CalibIO::Camera &that) {
   R_rect = 0;
   P_rect = 0;
 
-  printf("that.S @ %x\n", that.S);
+  std::cout << "that.S @ " << that.S << std::endl;
   if (that.S) {
     this->S = cvCreateMat(that.S->rows, that.S->cols, that.S->type);
     cvCopy(that.S, this->S);
@@ -87,7 +87,7 @@ CalibIO::Camera::Camera(const CalibIO::Camera &that) {
 }
 
 CalibIO::Camera &CalibIO::Camera::operator=(const CalibIO::Camera &that) {
-  printf("assign that.S @ %x\n", that.S);
+  std::cout << "assign that.S @ " << that.S << std::endl;
   if (S) {
     cvReleaseMat(&S);
     S = 0;
@@ -234,7 +234,7 @@ bool CalibIO::readCalibFromFile(string calib_file_name) {
     cus_TS.resize(undistortedCamera.size());
     cvs_TS.resize(undistortedCamera.size());
 
-    for (int i = 0; i < undistortedCamera.size(); ++i) {
+    for (size_t i = 0; i < undistortedCamera.size(); ++i) {
       // convert data
       const auto &cam = undistortedCamera[i];
 
@@ -301,9 +301,9 @@ bool CalibIO::readCalibFromFile(string calib_file_name) {
     for (uint32_t i = 0; i < 100; i++) {
       Camera camera;
       if (i > 0)
-        printf("pre: cameras[0].S @ %x\n", cameras[0].S);
+        std::cout << "pre: cameras[0].S @ " << cameras[0].S << std::endl;
 
-      printf("pre: camera.S @ %x\n", camera.S);
+      std::cout << "pre: cameras.S @ " << camera.S << std::endl;
 
       if (!is_TS_style) {
         camera.S = readMatrix(calib_file, "S", i, 1, 2, success);
@@ -371,7 +371,7 @@ bool CalibIO::readCalibFromFile(string calib_file_name) {
       if (!success)
         break;
       else {
-        printf("post: camera.S@%x\n", camera.S);
+        std::cout << "post: cameras.S @ " << camera.S << std::endl;
         cameras.push_back(camera);
       }
     }

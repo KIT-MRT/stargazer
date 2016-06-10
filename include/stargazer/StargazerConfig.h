@@ -40,7 +40,7 @@ inline void readConfig(std::string cfgfile, camera_params_t& camera_intrinsics, 
     }
 
     if (config["Landmarks"]) {
-        for (int i = 0; i < config["Landmarks"].size(); i++) {
+        for (size_t i = 0; i < config["Landmarks"].size(); i++) {
             auto lm = config["Landmarks"][i];
             int id = lm["HexID"].as<int>();
             pose_t lm_pose;

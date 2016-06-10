@@ -58,7 +58,9 @@ struct World2ImgReprojectionFunctor {
     bool operator()(const T* const camera_pose, const T* const camera_intrinsics, T* residuals) const {
 
         // Transform landmark point to camera
-        T u_marker, v_marker;
+        T u_marker = T(0.0);
+        T v_marker = T(0.0);
+
         T x_marker_tmp = T(x_marker);
         T y_marker_tmp = T(y_marker);
         T z_marker_tmp = T(z_marker);

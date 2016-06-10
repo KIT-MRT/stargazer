@@ -71,7 +71,7 @@ void Localizer::AddResidualBlocks(std::vector<Landmark> img_landmarks) {
     };
 
     // Add residual block, for every one of the seen points.
-    for (int k = 0; k < lm_obs.points.size(); k++) {
+    for (size_t k = 0; k < lm_obs.points.size(); k++) {
 
       ceres::CostFunction *cost_function = World2ImgReprojectionFunctor::Create(
           lm_obs.points[k][(int)POINT::X], lm_obs.points[k][(int)POINT::Y],
