@@ -38,8 +38,8 @@ public:
 
 protected:
     std::map<int, Landmark> landmarks;
-    camera_params_t camera_intrinsics = {};
-    pose_t ego_pose = {};
+    camera_params_t camera_intrinsics = {{0., 0., 0., 0., 0., 0.}};
+    pose_t ego_pose = {{0., 0., 0., 0., 0., 0.}};
 };
 
 } // namespace stargazer

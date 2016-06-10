@@ -52,7 +52,7 @@ struct Landmark {
     Landmark(int ID) : id(ID), points(getLandmarkPoints(ID)){};
 
     int id;
-    std::array<double, (int)POSE::N_PARAMS> pose = {};
+    std::array<double, (int)POSE::N_PARAMS> pose = {{0., 0., 0., 0., 0., 0.}};
     std::vector<Point> points;                    // TODO make this a map?
     static constexpr int kGridCount = 4;          // 4x4 Grid
     static constexpr double kGridDistance = 0.08; // 80mm = 8cm = 0.08 m
