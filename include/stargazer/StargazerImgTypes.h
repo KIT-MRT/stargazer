@@ -8,6 +8,8 @@
 #include "opencv/cv.h"
 #include <vector>
 
+namespace stargazer {
+
 typedef std::vector<cv::Point> Cluster;
 
 struct ImgLandmark {
@@ -34,3 +36,5 @@ inline Landmark convert2Landmark(ImgLandmark &lm_in) {
 
   return lm_out;
 };
+
+} // namespace stargazer

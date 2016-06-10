@@ -7,6 +7,8 @@
 #include "opencv/cv.h"
 #include "opencv/highgui.h"
 
+namespace stargazer {
+
 class DebugVisualizer {
 public:
   DebugVisualizer();
@@ -28,3 +30,5 @@ private:
   int m_window_mode;
   cv::Mat baseImg;
 };
+
+} // namespace stargazer

@@ -2,6 +2,7 @@
 #include "LandmarkFinder.h"
 
 using namespace std;
+using namespace stargazer;
 
 ///--------------------------------------------------------------------------------------///
 /// Default constructor
@@ -20,10 +21,7 @@ LandmarkFinder::LandmarkFinder(std::string cfgfile) : debug_mode(false) {
   /// Read in Landmark ids
   camera_params_t dummy;
   landmark_map_t landmarks;
-  if (!readConfig(cfgfile, dummy, landmarks)) {
-    throw std::invalid_argument(
-        "readLandmarks: key CameraLocalization::landmarks not found");
-  }
+  readConfig(cfgfile, dummy, landmarks);
   for (auto &el : landmarks)
     m_vnIDs.push_back(el.first);
 }

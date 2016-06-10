@@ -12,6 +12,7 @@
 #include <ceres/ceres.h>
 #include <map>
 #include <vector>
+namespace stargazer {
 
 class BundleAdjuster {
 public:
@@ -30,3 +31,5 @@ public:
   void AddCameraPoses(std::vector<std::array<double, 3>> measurements);
   void ClearProblem();
 };
+
+} // namespace stargazer

@@ -5,6 +5,8 @@
 #include "Localizer.h"
 #include <ceres/ceres.h>
 
+using namespace stargazer;
+
 Localizer::Localizer(std::string cfgfile) {
   readConfig(cfgfile, camera_intrinsics, landmarks);
 
@@ -26,6 +28,10 @@ void Localizer::UpdatePose(std::vector<Landmark> img_landmarks) {
     std::cout << "Localizer received empty landmarks vector" << std::endl;
     return;
   }
+  for (auto &img_lm : img_landmarks) {
+    img_lm.pose = landmarks[img_lm.id].pose;
+  }
+
   if (!is_initialized) {
     for (auto &el : img_landmarks) {
       ego_pose[(int)POSE::X] += el.pose[(int)POSE::X];

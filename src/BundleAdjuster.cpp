@@ -4,6 +4,8 @@
 
 #include "BundleAdjuster.h"
 
+using namespace stargazer;
+
 BundleAdjuster::BundleAdjuster(){};
 
 void BundleAdjuster::AddCameraPoses(

@@ -39,6 +39,8 @@
 #include "StargazerTypes.h"
 #include "gtest/gtest.h"
 
+using namespace stargazer;
+
 TEST(Landmark, CornerPoints) {
   Landmark a = Landmark(0);
 

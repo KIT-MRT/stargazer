@@ -4,6 +4,8 @@
 
 #include "DebugVisualizer.h"
 
+using namespace stargazer;
+
 DebugVisualizer::DebugVisualizer()
     : m_window_mode(CV_WINDOW_NORMAL), m_wait_time(0) {}
 

@@ -10,6 +10,8 @@
 #include "internal/CostFunction.h"
 #include <string>
 
+namespace stargazer {
+
 class Localizer {
 
 public:
@@ -34,3 +36,5 @@ private:
   void SetCameraParamsConstant();
   void Optimize();
 };
+
+} // namespace stargazer

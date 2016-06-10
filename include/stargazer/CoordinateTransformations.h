@@ -8,6 +8,8 @@
 #include "ceres/rotation.h"
 #include <iostream>
 
+namespace stargazer {
+
 template <typename T>
 void transformLM2World(const T *const x_in, const T *const y_in,
                        const T *const lm_pose, T *const x_out, T *const y_out,
@@ -100,3 +102,5 @@ void transformLM2Img(const T *const x_in, const T *const y_in,
   transformWorld2Img(&x_w, &y_w, &z_w, camera_pose, camera_intrinsics, x_out,
                      y_out);
 }
+
+} // namespace stargazer
