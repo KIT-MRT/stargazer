@@ -8,8 +8,7 @@
 
 using namespace stargazer;
 
-CeresLocalizer::CeresLocalizer(std::string cfgfile) {
-    readConfig(cfgfile, camera_intrinsics, landmarks);
+CeresLocalizer::CeresLocalizer(std::string cfgfile) : Localizer(cfgfile) {
 
     // Convert landmark points to worldcoordinates once.
     for (auto& el : landmarks) {
@@ -23,7 +22,7 @@ CeresLocalizer::CeresLocalizer(std::string cfgfile) {
     is_initialized = false;
 }
 
-void CeresLocalizer::UpdatePose(std::vector<ImgLandmark>& img_landmarks) {
+void CeresLocalizer::UpdatePose(std::vector<ImgLandmark>& img_landmarks, float dt) {
     if (img_landmarks.empty()) {
         std::cout << "Localizer received empty landmarks vector" << std::endl;
         return;

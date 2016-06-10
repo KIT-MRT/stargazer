@@ -2,20 +2,18 @@
 // Created by bandera on 10.06.16.
 //
 
-#include "Localizer.h"
+#include "TriangulationLocalizer.h"
 
 using namespace stargazer;
 
-Localizer::Localizer(std::string cfgfile)
-        : m_oStateVector(5, 1, CV_32FC1), m_oCovarianceMatrix(5, 5, CV_32FC1), m_oStateTransitionMatrix(5, 5, CV_32FC1),
-          m_oProcessNoise(5, 5, CV_32FC1), m_oCameraIntrinsics(3, 3, CV_32FC1), m_oMeasModel(3, 5, CV_32FC1) {
-    m_bLocalizerInit = false;
-
-    /// Read in Landmark ids
-    readConfig(cfgfile, camera_intrinsics, landmarks);
+TriangulationLocalizer::TriangulationLocalizer(std::string cfgfile)
+        : Localizer(cfgfile), m_oStateVector(5, 1, CV_32FC1), m_oCovarianceMatrix(5, 5, CV_32FC1),
+          m_oStateTransitionMatrix(5, 5, CV_32FC1), m_oProcessNoise(5, 5, CV_32FC1),
+          m_oCameraIntrinsics(3, 3, CV_32FC1), m_oMeasModel(3, 5, CV_32FC1) {
+    m_bTriangulationLocalizerInit = false;
 }
 
-void Localizer::UpdatePose(std::vector<ImgLandmark>& img_landmarks, float fDeltaT) {
+void TriangulationLocalizer::UpdatePose(std::vector<ImgLandmark>& img_landmarks, float fDeltaT) {
     std::vector<pose_t> assumptions;
     std::vector<std::vector<int>> supporters;
     std::vector<double> errors;
@@ -133,7 +131,7 @@ void Localizer::UpdatePose(std::vector<ImgLandmark>& img_landmarks, float fDelta
     PoseFunctor a;
     a.pLandmarks = &img_landmarks;
     a.pSupporters = &supporters[i_winnerIndex];
-    a.localizer = this;
+    a.triangulationLocalizer = this;
     libmv::LevenbergMarquardt<PoseFunctor> optimizer(a);
     libmv::LevenbergMarquardt<PoseFunctor>::SolverParameters Param;
     optimizer.minimize(Param, &pose_guess);
@@ -150,7 +148,7 @@ void Localizer::UpdatePose(std::vector<ImgLandmark>& img_landmarks, float fDelta
     }
 
     /// Step 4: Update Kalmanfilter
-    if (!m_bLocalizerInit) {
+    if (!m_bTriangulationLocalizerInit) {
         cv::Mat oCovariance = 1000 * cv::Mat::eye(5, 5, CV_32FC1);
         oCovariance.at<float>(2, 2) = 100;
         oCovariance.at<float>(4, 4) = 100;
@@ -174,12 +172,20 @@ void Localizer::UpdatePose(std::vector<ImgLandmark>& img_landmarks, float fDelta
     //    m_oStateVector.at<float>(0,0) = pose_measurement.at<float>(0,0);
     //    m_oStateVector.at<float>(1,0) = pose_measurement.at<float>(1,0);
     //    m_oStateVector.at<float>(2,0) = pose_measurement.at<float>(2,0);
+
+    ego_pose[(int)POSE::X] = m_oStateVector.at<float>(0, 0);
+    ego_pose[(int)POSE::Y] = m_oStateVector.at<float>(1, 0);
+    ego_pose[(int)POSE::Z] = 0;
+    ego_pose[(int)POSE::Rx] = 0.;
+    ego_pose[(int)POSE::Ry] = 0.;
+    // TODO is this correct (angle axis)?
+    ego_pose[(int)POSE::Rz] = m_oStateVector.at<float>(2, 0);
 }
 
 /////////////////////////////////////
 /// KALMAN FILTER
 /////////////////////////////////////
-int Localizer::InitKF(cv::Mat& i_oInitialState, cv::Mat& i_oInitialCovariance) {
+int TriangulationLocalizer::InitKF(cv::Mat& i_oInitialState, cv::Mat& i_oInitialCovariance) {
     /// set initial state vector
     m_oStateVector = cv::Mat::zeros(5, 1, CV_32FC1);
     m_oStateVector.at<float>(0, 0) = i_oInitialState.at<float>(0, 0);
@@ -200,11 +206,11 @@ int Localizer::InitKF(cv::Mat& i_oInitialState, cv::Mat& i_oInitialCovariance) {
     m_oMeasModel.at<float>(1, 1) = 1;
     m_oMeasModel.at<float>(2, 2) = 1;
 
-    m_bLocalizerInit = true;
+    m_bTriangulationLocalizerInit = true;
     return 0;
 }
 
-int Localizer::PredictKF(float fDeltaT) {
+int TriangulationLocalizer::PredictKF(float fDeltaT) {
     float fTheta = m_oStateVector.at<float>(2, 0);
     float fV = m_oStateVector.at<float>(3, 0);
     float fThetaDot = m_oStateVector.at<float>(4, 0);
@@ -269,7 +275,7 @@ int Localizer::PredictKF(float fDeltaT) {
     return 0;
 }
 
-int Localizer::UpdateKF(cv::Mat& i_oMeasurement, cv::Mat& i_oMeasurementNoise) {
+int TriangulationLocalizer::UpdateKF(cv::Mat& i_oMeasurement, cv::Mat& i_oMeasurementNoise) {
     /// Discrete Kalman filter measurement update
     /* Measurement is of the form
      *      (X)
@@ -322,7 +328,7 @@ int Localizer::UpdateKF(cv::Mat& i_oMeasurement, cv::Mat& i_oMeasurementNoise) {
 /////////////////////////////////////
 /// HELPER FUNCTIONS
 /////////////////////////////////////
-cv::Mat Localizer::calcReprojectionError(ImgLandmark& lm, pose_t position) {
+cv::Mat TriangulationLocalizer::calcReprojectionError(ImgLandmark& lm, pose_t position) {
     cv::Mat errorMatrix = cv::Mat::zeros(3, 3, CV_32FC1);
 
     for (size_t i = 0; i < landmarks[lm.nID].points.size(); i++) {
@@ -357,8 +363,8 @@ cv::Mat Localizer::calcReprojectionError(ImgLandmark& lm, pose_t position) {
     return errorMatrix;
 }
 
-pose_t Localizer::TriangulateTwoPoints(const Point& p_world_1, const cv::Point& p_img_1, const Point& p_world_2,
-                                       const cv::Point& p_img_2) {
+pose_t TriangulationLocalizer::TriangulateTwoPoints(const Point& p_world_1, const cv::Point& p_img_1,
+                                                    const Point& p_world_2, const cv::Point& p_img_2) {
     ///    Pos = Vehicle Position
     ///    a1  = angle from landmark 1 to vehicle
     ///    b1  = viewing angle of landmark 1
@@ -489,7 +495,7 @@ Eigen::VectorXd PoseFunctor::operator()(Eigen::Vector3d Input) const {
     pose[(int)POSE::Rz] = Input(2);
 
     for (size_t nI = 0; nI < pSupporters->size(); nI++) {
-        cv::Mat errorMatrix = localizer->calcReprojectionError(pLandmarks->at(nI), pose);
+        cv::Mat errorMatrix = triangulationLocalizer->calcReprojectionError(pLandmarks->at(nI), pose);
         Output(nI) = cv::norm(errorMatrix);
     }
 

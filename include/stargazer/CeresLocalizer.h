@@ -6,38 +6,19 @@
 
 #include <string>
 #include "CoordinateTransformations.h"
-#include "StargazerConfig.h"
-#include "StargazerImgTypes.h"
-#include "StargazerTypes.h"
+#include "Localizer.h"
 #include "internal/CostFunction.h"
 
 namespace stargazer {
 
-class CeresLocalizer {
+class CeresLocalizer : public Localizer {
 
 public:
     CeresLocalizer(std::string cfgfile);
 
-    ~CeresLocalizer(){};
-
-    void UpdatePose(std::vector<ImgLandmark>& img_landmarks);
-
-    const pose_t& getPose() const {
-        return ego_pose;
-    };
-
-    const std::map<int, Landmark>& getLandmarks() const {
-        return landmarks;
-    }
-
-    const camera_params_t& getIntrinsics() const {
-        return camera_intrinsics;
-    }
+    virtual void UpdatePose(std::vector<ImgLandmark>& img_landmarks, float dt) override;
 
 private:
-    std::map<int, Landmark> landmarks;
-    camera_params_t camera_intrinsics = {};
-    pose_t ego_pose = {};
     ceres::Problem problem;
 
     bool is_initialized;
