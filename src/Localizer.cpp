@@ -322,21 +322,6 @@ int Localizer::UpdateKF(cv::Mat& i_oMeasurement, cv::Mat& i_oMeasurementNoise) {
 /////////////////////////////////////
 /// HELPER FUNCTIONS
 /////////////////////////////////////
-
-void Localizer::GetPointsFromID(int ID, std::vector<cv::Mat>& corner_points, std::vector<cv::Mat>& id_points) {
-    for (size_t i = 0; i < landmarks[ID].points.size(); i++) {
-        cv::Mat pt(3, 1, CV_32FC1);
-        pt.at<float>(0, 0) = landmarks[ID].points[i][(int)POINT::X];
-        pt.at<float>(1, 0) = landmarks[ID].points[i][(int)POINT::Y];
-        pt.at<float>(2, 0) = landmarks[ID].pose[(int)POSE::Z];
-        if (i < 3) {
-            corner_points.push_back(pt);
-        } else {
-            id_points.push_back(pt);
-        }
-    }
-}
-
 cv::Mat Localizer::calcReprojectionError(ImgLandmark& lm, pose_t position) {
     cv::Mat errorMatrix = cv::Mat::zeros(3, 3, CV_32FC1);
 
@@ -486,61 +471,6 @@ pose_t Localizer::TriangulateTwoPoints(const Point& p_world_1, const cv::Point& 
     pose[(int)POSE::Rz] = fOrientation - M_PI / 2;
 
     return pose;
-}
-
-void Localizer::visualizeLandmarks(std::vector<ImgLandmark>& img_landmarks, pose_t position) {
-    std::stringstream out1;
-    std::string txt;
-    cv::Mat img = cv::Mat::zeros(1048, 1363, CV_8UC3); ///@todo read those in from somewhere!
-    cv::Point reprojectedPoint;
-    double max_error = 0;
-    double error = 0;
-    for (auto& lm : img_landmarks) {
-        /// Step 1: Get individual points of landmark in world coordinates
-
-        for (size_t i = 0; i < landmarks[lm.nID].points.size(); i++) {
-            /// Step 3: Convert every point into camera frame
-            double x_out = 0.;
-            double y_out = 0.;
-            transformLM2Img(&landmarks[lm.nID].points[i][(int)POINT::X], &landmarks[lm.nID].points[i][(int)POINT::Y],
-                            landmarks[lm.nID].pose.data(), position.data(), camera_intrinsics.data(), &x_out, &y_out);
-            reprojectedPoint = cvPoint(x_out, y_out);
-
-            /// Step 4: Add up error
-            if (i < 3) {
-                /// Corner Points
-                error += pow(x_out - lm.voCorners[i].x, 2) + pow(y_out - lm.voCorners[i].y, 2);
-                circle(img, reprojectedPoint, 3, cv::Scalar(255, 0, 255), 2); // Orange
-                circle(img, lm.voCorners[i], 2, cv::Scalar(255, 128, 0), 2);  // Magenta
-                std::cout << x_out << "/" << lm.voCorners[i].x << " - " << y_out << "/" << lm.voCorners[i].y
-                          << std::endl;
-            } else {
-                /// ID Points
-                error += pow(x_out - lm.voIDPoints[i - 3].x, 2) + pow(y_out - lm.voIDPoints[i - 3].y, 2);
-                std::cout << x_out << "/" << lm.voIDPoints[i - 3].x << " - " << y_out << "/" << lm.voIDPoints[i - 3].y
-                          << std::endl;
-                circle(img, reprojectedPoint, 3, cv::Scalar(0, 0, 255), 2);     // Red
-                circle(img, lm.voIDPoints[i - 3], 2, cv::Scalar(255, 0, 0), 2); // Blue
-            }
-        }
-
-        reprojectedPoint = cvPoint(lm.oPosition.x + 25, lm.oPosition.y + 25);
-        out1 << "Error: " << error;
-        txt = out1.str();
-        putText(img, txt, reprojectedPoint, 2, 0.4, cvScalar(0, 255, 0));
-        out1.str(std::string());
-        reprojectedPoint = cvPoint(lm.oPosition.x + 25, lm.oPosition.y - 25);
-        out1 << "ID: " << lm.nID;
-        txt = out1.str();
-        putText(img, txt, reprojectedPoint, 2, 0.4, cvScalar(255, 255, 0));
-        out1.str(std::string());
-        if (error > max_error)
-            max_error = error;
-    }
-
-    cv::namedWindow("Reprojection Image", CV_WINDOW_NORMAL);
-    cv::imshow("Reprojection Image", img);
-    cv::waitKey(1);
 }
 
 Eigen::VectorXd PoseFunctor::operator()(Eigen::Vector3d Input) const {

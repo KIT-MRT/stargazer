@@ -25,7 +25,13 @@ public:
         return ego_pose;
     };
 
-    void visualizeLandmarks(std::vector<Landmark>& img_landmarks);
+  const std::map<int, Landmark>& getLandmarks() const {
+    return landmarks;
+  }
+
+  const camera_params_t& getIntrinsics() const {
+    return camera_intrinsics;
+  }
 
 private:
     std::map<int, Landmark> landmarks;

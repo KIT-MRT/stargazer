@@ -69,9 +69,16 @@ public:
     int UpdateKF(cv::Mat& i_oMeasurement, cv::Mat& i_oMeasurementNoise);
 
     /// Public Helper Functions
-    void GetPointsFromID(int ID, std::vector<cv::Mat>& corner_points, std::vector<cv::Mat>& id_points);
     cv::Mat calcReprojectionError(ImgLandmark& lm, pose_t position);
-    void visualizeLandmarks(std::vector<ImgLandmark>&, pose_t);
+
+    /// Getter
+    const std::map<int, Landmark>& getLandmarks() const {
+        return landmarks;
+    }
+
+    const camera_params_t& getIntrinsics() const {
+        return camera_intrinsics;
+    }
 
 private:
     std::map<int, Landmark> landmarks;
