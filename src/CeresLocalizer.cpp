@@ -61,7 +61,7 @@ void CeresLocalizer::AddResidualBlocks(std::vector<ImgLandmark> img_landmarks) {
 
         if (img_lm.voIDPoints.size() + img_lm.voCorners.size() != landmarks[img_lm.nID].points.size()) {
             std::cerr << "point count does not match! " << img_lm.voIDPoints.size() + img_lm.voCorners.size()
-                      << "(observed) vs. " << landmarks[img_lm.nID].points.size() << "(map)" << std::endl;
+                      << "(observed) vs. " << landmarks[img_lm.nID].points.size() << "(map)\t ID: "<< img_lm.nID << std::endl;
             return;
         };
 
@@ -98,8 +98,16 @@ void CeresLocalizer::SetCameraParamsConstant() {
 
 void CeresLocalizer::Optimize() {
     ceres::Solver::Options options;
+    // set optimization settings
     options.linear_solver_type = ceres::SPARSE_NORMAL_CHOLESKY;
     options.minimizer_progress_to_stdout = false;
+    options.max_num_iterations = 200;
+    options.function_tolerance = 0.0000000000000001;
+    options.gradient_tolerance = 0.0000000000000001;
+    options.parameter_tolerance = 0.0000000000000001;
+    options.min_relative_decrease = 0.0000000000000001;
+
+
     ceres::Solver::Summary summary;
     ceres::Solve(options, &problem, &summary);
     //  std::cout << summary.FullReport() << std::endl;
