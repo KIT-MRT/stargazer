@@ -23,7 +23,7 @@
 
 #include <cmath>
 
-#include "libmv/numeric/numeric.h"
+#include "numeric.h"
 //#include "libmv/logging/logging.h"
 
 namespace libmv {

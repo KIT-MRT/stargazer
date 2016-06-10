@@ -32,9 +32,9 @@
 #include <cmath>
 #include <cstdio>
 
-#include "libmv/logging/logging.h"
-#include "libmv/numeric/function_derivative.h"
-#include "libmv/numeric/numeric.h"
+#include "../logging/logging.h"
+#include "function_derivative.h"
+#include "numeric.h"
 
 namespace libmv {
 

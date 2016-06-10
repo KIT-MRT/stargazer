@@ -21,7 +21,9 @@ struct LM2ImgReprojectionFunctor {
                     T* residuals) const {
 
         // Transform landmark point to camera
-        T u_marker, v_marker;
+        T u_marker = T(0.0);
+        T v_marker = T(0.0);
+
         T x_marker_tmp = T(x_marker);
         T y_marker_tmp = T(y_marker);
 

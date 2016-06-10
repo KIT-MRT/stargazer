@@ -31,8 +31,8 @@
 
 #include <cmath>
 
-#include "libmv/numeric/function_derivative.h"
-#include "libmv/numeric/numeric.h"
+#include "function_derivative.h"
+#include "numeric.h"
 #include <iostream>
 //#include "libmv/logging/logging.h"
 

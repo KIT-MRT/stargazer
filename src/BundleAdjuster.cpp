@@ -26,18 +26,21 @@ void BundleAdjuster::AddCameraPoses(
 
 void BundleAdjuster::AddReprojectionResidualBlocks(
     std::vector<std::vector<Landmark>> measurements) {
-  assert(measurements.size() == camera_poses.size());
+  if(!measurements.size() == camera_poses.size())
+    throw std::runtime_error("Got different amount of measurements and poses");
 
   for (size_t i = 0; i < measurements.size(); i++) {
     for (size_t j = 0; j < measurements[i].size(); j++) {
       auto &observation = measurements[i][j];
 
       Landmark landmark(observation.id);
-      assert(landmarks.count(observation.id) > 0);
-      assert(observation.points.size() == landmark.points.size());
+      if(!landmarks.count(observation.id) > 0)
+        throw std::runtime_error("Observed Landmark id not found in cfg!");
+      if(observation.points.size() != landmark.points.size())
+        throw std::runtime_error("Observed Landmark has different ammount of points then real landmark!");
 
       // Add residual block, for every one of the seen points.
-      for (int k = 0; k < landmark.points.size(); k++) {
+      for (size_t k = 0; k < landmark.points.size(); k++) {
 
         // Test reprojection error
         double u, v;
