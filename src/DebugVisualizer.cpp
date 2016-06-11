@@ -35,10 +35,10 @@ void DebugVisualizer::DrawLandmarks(cv::Mat& img, const std::vector<ImgLandmark>
 
     for (auto& lm : landmarks) {
         for (auto& imgPoint : lm.voCorners) {
-            circle(img, imgPoint, 2, cv::Scalar(255, 128, 0), 2); // Magenta
+            circle(img, imgPoint, 3, cv::Scalar(255, 0, 0), 2); // Blue
         }
         for (auto& imgPoint : lm.voIDPoints) {
-            circle(img, imgPoint, 3, cv::Scalar(255, 0, 0), 2); // Red
+            circle(img, imgPoint, 2, cv::Scalar(255, 128, 0), 2); // Magenta
         }
 
         std::string text = "ID: ";
@@ -69,7 +69,7 @@ void DebugVisualizer::DrawLandmarks(cv::Mat& img, const landmark_map_t& landmark
 
             /// Corner Points
             if (i > 3)
-                circle(img, imgPoint, 3, cv::Scalar(255, 0, 255), 2); // Orange
+                circle(img, imgPoint, 2, cv::Scalar(255, 0, 255), 2); // Orange
             else
                 circle(img, imgPoint, 3, cv::Scalar(0, 0, 255), 2); // Red
         }
