@@ -5,7 +5,7 @@
 #pragma once
 
 #include "CoordinateTransformations.h"
-#include "StargazerTypes.h"
+#include "StargazerImgTypes.h"
 #include "internal/CostFunction.h"
 #include "ros/ros.h"
 
@@ -19,7 +19,7 @@ public:
   BundleAdjuster();
 
   void AddReprojectionResidualBlocks(
-      std::vector<std::vector<Landmark>> measurements);
+      std::vector<std::vector<ImgLandmark>> measurements);
 
   ceres::Problem problem;
   camera_params_t camera_intrinsics;
