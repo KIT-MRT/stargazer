@@ -80,7 +80,7 @@ struct World2ImgReprojectionFunctor {
     // the client code.
     static ceres::CostFunction* Create(const double u_observed, const double v_observed, const double x_marker,
                                        const double y_marker, const double z_marker) {
-        return (new ceres::AutoDiffCostFunction<World2ImgReprojectionFunctor, 2, 6, 6>(
+        return (new ceres::AutoDiffCostFunction<World2ImgReprojectionFunctor, 2, (int)POSE::N_PARAMS, (int)INTRINSICS::N_PARAMS>(
             new World2ImgReprojectionFunctor(u_observed, v_observed, x_marker, y_marker, z_marker)));
     }
 };

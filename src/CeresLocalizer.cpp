@@ -102,13 +102,17 @@ void CeresLocalizer::Optimize() {
     // set optimization settings
     options.linear_solver_type = ceres::SPARSE_NORMAL_CHOLESKY;
     options.minimizer_progress_to_stdout = false;
-    options.max_num_iterations = 200;
-    options.function_tolerance = 0.0000000000000001;
-    options.gradient_tolerance = 0.0000000000000001;
-    options.parameter_tolerance = 0.0000000000000001;
-    options.min_relative_decrease = 0.0000000000000001;
+    options.max_num_iterations = 20;
+    //    options.function_tolerance = 0.0000000000000001;
+    //    options.gradient_tolerance = 0.0000000000000001;
+    //    options.parameter_tolerance = 0.0000000000000001;
+    //    options.min_relative_decrease = 0.0000000000000001;
 
     ceres::Solver::Summary summary;
     ceres::Solve(options, &problem, &summary);
-    //  std::cout << summary.FullReport() << std::endl;
+    if (summary.termination_type != ceres::TerminationType::CONVERGENCE) {
+        std::cerr << "Solver did not converge! " << ceres::TerminationTypeToString(summary.termination_type)
+                  << std::endl;
+        std::cout << summary.FullReport() << std::endl;
+    }
 }
