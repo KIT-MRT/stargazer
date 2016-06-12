@@ -11,7 +11,6 @@
 #include "math.h"
 #include "vector"
 #include "opencv/cv.h"
-#include "opencv/highgui.h"
 
 namespace stargazer {
 
@@ -26,8 +25,6 @@ public:
 
     cv::Mat_<cv::Vec3b> m_oImage;
     cv::Mat m_oGrayImage;
-
-    void setDebug_mode(bool value);
 
     char m_cThreshold;
     float m_fMaxRadiusForPixelCluster;

@@ -38,14 +38,8 @@ LandmarkFinder::~LandmarkFinder() {
 /// Handles the complete processing
 ///--------------------------------------------------------------------------------------///
 int LandmarkFinder::FindLandmarks(const cv::Mat& i_oImage, std::vector<ImgLandmark>& o_vLandmarks) {
-    stringstream out1;
-    string sID;
     std::vector<cv::Point> ClusteredPixels;
     std::vector<Cluster> ClusteredPoints;
-    std::vector<Cluster>::iterator pClusteredPoints;
-    std::vector<cv::Point>::iterator pClusteredPixels;
-    std::vector<ImgLandmark>::iterator pLandmark;
-    cv::Point Test(0, 0);
     i_oImage.assignTo(m_oImage, CV_8UC3);
 
     /// check if input is valid
@@ -82,49 +76,7 @@ int LandmarkFinder::FindLandmarks(const cv::Mat& i_oImage, std::vector<ImgLandma
 
     GetIDs(o_vLandmarks);
 
-    if (debug_mode) {
-        for (pClusteredPoints = ClusteredPoints.begin(); pClusteredPoints != ClusteredPoints.end();
-             pClusteredPoints++) {
-            Test = cvPoint(0, 0);
-            for (pClusteredPixels = pClusteredPoints->begin(); pClusteredPixels != pClusteredPoints->end();
-                 pClusteredPixels++) {
-                Test += *pClusteredPixels;
-            }
-            Test = 1 / float(pClusteredPoints->size()) * Test;
-            circle(m_oImage, Test, m_fMaxRadiusForCluster, cv::Scalar(0, 0, 255), 1); // For Blue: Scalar(255, 0, 0)
-        }
-
-        for (pLandmark = o_vLandmarks.begin(); pLandmark != o_vLandmarks.end(); pLandmark++) {
-            circle(m_oImage, pLandmark->voCorners.at(0), 2, cv::Scalar(0, 255, 0), 2);
-            circle(m_oImage, pLandmark->voCorners.at(1), 2, cv::Scalar(0, 255, 0), 1);
-            circle(m_oImage, pLandmark->voCorners.at(2), 2, cv::Scalar(0, 255, 0), 2);
-            //
-            out1 << pLandmark->nID;
-            sID = out1.str();
-            putText(m_oImage, sID, cvPoint(pLandmark->oPosition.x + m_fMaxRadiusForCluster,
-                                           pLandmark->oPosition.y + m_fMaxRadiusForCluster),
-                    2, 0.4, cvScalar(0, 0, 255));
-            out1.str(std::string());
-        }
-
-        /// from the clusters with corner points, try to find a valid ID to match
-        /// every landmark
-        /// this only works on Landmark clusters
-
-        for (pClusteredPixels = ClusteredPixels.begin(); pClusteredPixels != ClusteredPixels.end();
-             pClusteredPixels++) {
-            circle(m_oImage, *pClusteredPixels, 1, cv::Scalar(255, 0, 0), 1); // For Blue: Scalar(255, 0, 0)
-        }
-
-        cv::namedWindow("Landmark Image", CV_WINDOW_NORMAL);
-        cv::imshow("Landmark Image", m_oImage);
-        cv::waitKey(10);
-    }
     return 0;
-}
-
-void LandmarkFinder::setDebug_mode(bool value) {
-    debug_mode = value;
 }
 
 ///--------------------------------------------------------------------------------------///
@@ -211,11 +163,6 @@ std::vector<cv::Point> LandmarkFinder::FindPoints(cv::Mat& i_oGrayImage) {
 
     /// apply diskfilter to image
     cv::filter2D(m_oGrayImage, filtered, m_oGrayImage.depth(), MyKernel, cv::Point(-1, -1), 0, cv::BORDER_DEFAULT);
-
-    if (debug_mode) {
-        cv::namedWindow("filtered", CV_WINDOW_AUTOSIZE);
-        cv::imshow("filtered", filtered);
-    }
 
     // alternative 1:  without region growing
     /// thresholding for pixels: put all pixels over a threshold in vector
