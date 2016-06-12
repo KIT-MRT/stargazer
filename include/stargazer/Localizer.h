@@ -4,37 +4,42 @@
 
 #pragma once
 
-
-#include <string>
-#include "StargazerTypes.h"
 #include "StargazerConfig.h"
-#include "CoordinateTransformations.h"
-#include "internal/CostFunction.h"
+#include "StargazerImgTypes.h"
+#include "StargazerTypes.h"
 
+namespace stargazer {
 
 class Localizer {
 
- public:
-  Localizer(std::string cfgfile);
+public:
+    Localizer(){};
 
-  ~Localizer() { };
+    Localizer(std::string cfgfile) {
+        readConfig(cfgfile, camera_intrinsics, landmarks);
+    };
 
-  void UpdatePose(std::vector<Landmark> img_landmarks);
+    ~Localizer(){};
 
-  const pose_t &getPose() const { return ego_pose; };
+    virtual void UpdatePose(std::vector<ImgLandmark>& img_landmarks, float dt) = 0;
 
- private:
-  std::map<int, Landmark> landmarks;
-  camera_params_t camera_intrinsics;
-  pose_t ego_pose;
-  ceres::Problem problem;
+    /// Getter
+    const pose_t getPose() const {
+        return ego_pose;
+    }
 
-  bool is_initialized;
+    const std::map<int, Landmark>& getLandmarks() const {
+        return landmarks;
+    }
 
-  void ClearResidualBlocks();
-  void AddResidualBlocks(std::vector<Landmark> img_landmarks);
-  void SetCameraParamsConstant();
-  void Optimize();
+    const camera_params_t& getIntrinsics() const {
+        return camera_intrinsics;
+    }
+
+protected:
+    std::map<int, Landmark> landmarks;
+    camera_params_t camera_intrinsics = {{0., 0., 0., 0., 0., 0.}};
+    pose_t ego_pose = {{0., 0., 0., 0., 0., 0.}};
 };
 
-
+} // namespace stargazer

@@ -1,0 +1,19 @@
+Import( [ "subdir_env" ] )
+
+public_headers = [ "CalibIO.hpp" ]
+
+if not subdir_env["OPENCV_FLAGS"] == "":
+	subdir_env.MergeFlags( subdir_env["OPENCV_FLAGS"] )
+else: 
+	subdir_env.ParseConfig( "pkg-config --libs --cflags opencv" )
+subdir_env.ParseConfig( "pkg-config --libs --cflags eigen3" )
+lib = subdir_env.SharedLibrary( "libCalibIO", [ "CalibIO.cpp" ] )
+
+header_installation = subdir_env.Install( subdir_env["install_headers_dir"], [ File( h ) for h in public_headers ] )
+
+lib_installation    = subdir_env.Install( subdir_env["install_libs_dir"],    [ lib ] )
+
+install_targets = header_installation + lib_installation
+
+Alias( target = "install", source = install_targets )
+

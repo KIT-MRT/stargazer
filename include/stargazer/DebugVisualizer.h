@@ -4,33 +4,40 @@
 
 #pragma once
 
-#include "opencv/highgui.h"
+#include "StargazerImgTypes.h"
+#include "StargazerTypes.h"
 #include "opencv/cv.h"
+#include "opencv/highgui.h"
 
+namespace stargazer {
 
 class DebugVisualizer {
- public:
-  DebugVisualizer();
+public:
+    DebugVisualizer();
 
-  ~DebugVisualizer() { };
+    ~DebugVisualizer(){};
 
-  void ShowImage(cv::Mat &img, std::string name = "Image");
+    void ShowImage(cv::Mat& img, std::string name = "Image");
 
-  // Setters
-  void SetWaitTime(int milliseconds) {
-    m_wait_time = milliseconds;
-  };
+    // Setters
+    void SetWaitTime(int milliseconds) {
+        m_wait_time = milliseconds;
+    };
 
-  void SetWindowMode(int mode) {
-    m_window_mode = mode;
-  }
+    void SetWindowMode(int mode) {
+        m_window_mode = mode;
+    }
 
-  void DrawPoints(cv::Mat &img, std::vector<cv::Point> points);
-  void DrawPoints(cv::Mat &img, std::vector<std::vector<cv::Point>> points);
- private:
-  int m_wait_time;
-  int m_window_mode;
-  cv::Mat baseImg;
+    void DrawPoints(cv::Mat& img, std::vector<cv::Point> points);
+    void DrawPoints(cv::Mat& img, std::vector<std::vector<cv::Point>> points);
+    void DrawLandmarks(cv::Mat& img, const std::vector<ImgLandmark>& landmarks);
+    void DrawLandmarks(cv::Mat& img, const landmark_map_t& landmarks, const camera_params_t& camera_intrinsics,
+                       const pose_t& ego_pose);
+
+private:
+    int m_wait_time;
+    int m_window_mode;
+    cv::Mat baseImg;
 };
 
-
+} // namespace stargazer
