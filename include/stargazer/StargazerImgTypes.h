@@ -13,12 +13,9 @@ namespace stargazer {
 typedef std::vector<cv::Point> Cluster;
 
 struct ImgLandmark {
-  int nID;
-  int nPointCount;
-  int nErrors;
+  uint16_t nID;
   std::vector<cv::Point> voCorners;
   std::vector<cv::Point> voIDPoints;
-  cv::Point oPosition;
 };
 
 inline Landmark convert2Landmark(ImgLandmark &lm_in) {

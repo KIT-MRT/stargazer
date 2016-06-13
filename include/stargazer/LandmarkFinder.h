@@ -21,30 +21,41 @@ public:
     ~LandmarkFinder();
 
     /// methods
-    int FindLandmarks(const cv::Mat& i_oImage, std::vector<ImgLandmark>& o_vLandmarks);
+    int DetectLandmarks(const cv::Mat& img, std::vector<ImgLandmark>& detected_landmarks);
 
-    cv::Mat_<cv::Vec3b> m_oImage;
-    cv::Mat m_oGrayImage;
+    cv::Mat_<cv::Vec3b> rawImage_;
+    cv::Mat grayImage_;
+    cv::Mat filteredImage_;
+    std::vector<cv::Point> clusteredPixels_;
+    std::vector<Cluster> clusteredPoints_;
 
-    char m_cThreshold;
-    float m_fMaxRadiusForPixelCluster;
-    unsigned int m_nMinPixelForCluster;
-    unsigned int m_nMaxPixelForCluster;
-    float m_fMaxRadiusForCluster;
-    unsigned int m_nMinPointsPerLandmark;
-    unsigned int m_nMaxPointsPerLandmark;
-    std::vector<int> m_vnIDs;
-    bool debug_mode;
+    uint8_t threshold;
+    float maxRadiusForPixelCluster;
+    uint16_t minPixelForCluster;
+    uint16_t maxPixelForCluster;
+    float maxRadiusForCluster;
+    uint16_t minPointsPerLandmark;
+    uint16_t maxPointsPerLandmark;
+    std::vector<uint16_t> valid_ids_;
 
 private:
-    std::vector<ImgLandmark> FindCorners(std::vector<Cluster>& Clusters);
-    std::vector<cv::Point> FindPoints(cv::Mat& i_oGrayImage);
-    void FindClusters(std::vector<cv::Point>& i_voPoints, std::vector<Cluster>& o_voCluster,
-                      const float i_fRadiusThreshold, const unsigned int i_nMinPointsThreshold,
-                      const unsigned int i_nMaxPointsThreshold);
-    int GetIDs(std::vector<ImgLandmark>& io_voLandmarks);
-    void Check(cv::Mat& Filtered, int XPos, int YPos, int Threshold, int& Pixelcount, int& SummedX, int& SummedY);
-    void vec_sort(std::vector<int>& ids, std::vector<cv::Point>& points);
+    void FilterImage(const cv::Mat& img_in, cv::Mat& img_out);
+    std::vector<cv::Point> FindPoints(cv::Mat& img_in);
+    void FindClusters(const std::vector<cv::Point>& points_in, std::vector<Cluster>& clusters,
+                      const float radiusThreshold, const unsigned int minPointsThreshold,
+                      const unsigned int maxPointsThreshold);
+    bool FindCorners(std::vector<cv::Point>& point_list, std::vector<cv::Point>& corner_points);
+    std::vector<ImgLandmark> FindLandmarks(const std::vector<Cluster>& clusteredPoints);
+    int GetIDs(std::vector<ImgLandmark>& landmarks);
+
+    bool CalculateIdForward(ImgLandmark& landmark, std::vector<uint16_t>& valid_ids);
+    bool CalculateIdBackward(ImgLandmark& landmark, std::vector<uint16_t>& valid_ids);
+
+    void parallel_vector_sort(std::vector<uint16_t>& ids, std::vector<cv::Point>& points);
+    cv::Point getVector(const cv::Point& from, const cv::Point& to);
+    float getDistance(const cv::Point& p1, const cv::Point& p2);
+    float getNorm(const cv::Point& p);
+    float getCrossProduct(const cv::Point& v1, const cv::Point& v2);
 };
 
 } // namespace stargazer

@@ -28,16 +28,17 @@ public:
         m_window_mode = mode;
     }
 
-    void DrawPoints(cv::Mat& img, std::vector<cv::Point> points);
-    void DrawPoints(cv::Mat& img, std::vector<std::vector<cv::Point>> points);
+    void ShowPoints(const cv::Mat& img, const std::vector<cv::Point> points);
+    void ShowClusters(const cv::Mat& img, const std::vector<std::vector<cv::Point>> points);
     void DrawLandmarks(cv::Mat& img, const std::vector<ImgLandmark>& landmarks);
     void DrawLandmarks(cv::Mat& img, const landmark_map_t& landmarks, const camera_params_t& camera_intrinsics,
                        const pose_t& ego_pose);
 
-private:
+ private:
     int m_wait_time;
     int m_window_mode;
     cv::Mat baseImg;
+    void prepareImg(cv::Mat &img);
 };
 
 } // namespace stargazer

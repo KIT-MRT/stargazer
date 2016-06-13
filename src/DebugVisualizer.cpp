@@ -10,25 +10,40 @@ using namespace stargazer;
 DebugVisualizer::DebugVisualizer() : m_window_mode(CV_WINDOW_NORMAL), m_wait_time(1) {
 }
 
+void DebugVisualizer::prepareImg(cv::Mat& img) {
+    if (img.type() == CV_8UC1) {
+        // input image is grayscale
+        cvtColor(img, img, CV_GRAY2RGB);
+    } else {
+    }
+}
 void DebugVisualizer::ShowImage(cv::Mat& img, std::string name) {
     cv::namedWindow(name, m_window_mode);
     cv::imshow(name, img);
     cv::waitKey(m_wait_time);
 }
 
-void DebugVisualizer::DrawPoints(cv::Mat& img, std::vector<cv::Point> points) {
+void DebugVisualizer::ShowPoints(const cv::Mat& img, const std::vector<cv::Point> points) {
     cv::Mat temp = img.clone();
+    prepareImg(temp);
     for (auto& point : points)
-        circle(temp, point, 3, cv::Scalar(0, 0, 255), 2); // Red
+        circle(temp, point, 1, cv::Scalar(255, 0, 0), 2); // Blue
     ShowImage(temp, "Points");
 }
 
-void DebugVisualizer::DrawPoints(cv::Mat& img, std::vector<std::vector<cv::Point>> points) {
+void DebugVisualizer::ShowClusters(const cv::Mat& img, const std::vector<std::vector<cv::Point>> points) {
     cv::Mat temp = img.clone();
-    for (auto& group : points)
-        for (auto& point : group)
-            circle(temp, point, 3, cv::Scalar(0, 255, 0), 2); // Red
-    ShowImage(temp, "PointGroups");
+    prepareImg(temp);
+    for (auto& group : points) {
+        cv::Point median(0, 0);
+        for (auto& point : group) {
+            median += point;
+            circle(temp, point, 1, cv::Scalar(255, 0, 0), 2); // Blue
+        }
+        median *= 1.0 / group.size();
+        circle(temp, median, 30, cv::Scalar(0, 255, 0), 2); // Green
+    }
+    ShowImage(temp, "Clusters");
 }
 
 void DebugVisualizer::DrawLandmarks(cv::Mat& img, const std::vector<ImgLandmark>& landmarks) {
