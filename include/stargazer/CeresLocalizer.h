@@ -18,8 +18,13 @@ public:
 
     virtual void UpdatePose(std::vector<ImgLandmark>& img_landmarks, float dt) override;
 
+    const ceres::Solver::Summary& getSummary() const {
+        return summary;
+    }
+
 private:
     ceres::Problem problem;
+    ceres::Solver::Summary summary;
 
     bool is_initialized;
 

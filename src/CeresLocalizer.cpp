@@ -108,11 +108,5 @@ void CeresLocalizer::Optimize() {
     //    options.parameter_tolerance = 0.0000000000000001;
     //    options.min_relative_decrease = 0.0000000000000001;
 
-    ceres::Solver::Summary summary;
     ceres::Solve(options, &problem, &summary);
-    if (summary.termination_type != ceres::TerminationType::CONVERGENCE) {
-        std::cerr << "Solver did not converge! " << ceres::TerminationTypeToString(summary.termination_type)
-                  << std::endl;
-        std::cout << summary.FullReport() << std::endl;
-    }
 }

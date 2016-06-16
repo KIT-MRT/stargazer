@@ -24,6 +24,7 @@ public:
     void Optimize();
     void SetParametersConstant();
     void SetLandmarkConstant(landmark_map_t::key_type id);
+    void SetPoseConstant(size_t id);
     void ClearProblem();
 
     const camera_params_t& getIntrinsics() const {

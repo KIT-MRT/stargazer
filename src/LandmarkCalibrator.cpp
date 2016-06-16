@@ -71,7 +71,7 @@ void LandmarkCalibrator::Optimize() {
     options.num_linear_solver_threads = 8;
     options.linear_solver_type = ceres::SPARSE_NORMAL_CHOLESKY;
     options.minimizer_progress_to_stdout = true;
-    options.max_num_iterations = 50;
+    options.max_num_iterations = 200;
     options.function_tolerance = 0.000001;
     options.gradient_tolerance = 0.000001;
     options.parameter_tolerance = 0.000001;
@@ -84,6 +84,14 @@ void LandmarkCalibrator::Optimize() {
 void LandmarkCalibrator::SetLandmarkConstant(landmark_map_t::key_type id) {
     if (problem.HasParameterBlock(landmarks_[id].pose.data()))
         problem.SetParameterBlockConstant(landmarks_[id].pose.data());
+    else
+        throw std::runtime_error("No parameter used of landmark that should get fixed");
+
+}
+
+void LandmarkCalibrator::SetPoseConstant(size_t id) {
+    if (problem.HasParameterBlock(camera_poses_[id].data()))
+        problem.SetParameterBlockConstant(camera_poses_[id].data());
     else
         throw std::runtime_error("No parameter used of landmark that should get fixed");
 

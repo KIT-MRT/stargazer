@@ -294,6 +294,7 @@ std::vector<ImgLandmark> LandmarkFinder::FindLandmarks(const std::vector<Cluster
         newLandmark.voIDPoints =
             cluster; /// all points in this cluster are copied to the ID point vector for further examination
 
+            /// FindCorners will move the three corner points into the corners vector
         if (!FindCorners(newLandmark.voIDPoints, newLandmark.voCorners))
             continue;
 
