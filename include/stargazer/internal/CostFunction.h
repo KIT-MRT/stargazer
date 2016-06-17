@@ -18,7 +18,6 @@
 
 #pragma once
 
-
 // Ceres includes
 #include "../CoordinateTransformations.h"
 #include "../StargazerTypes.h"
@@ -27,13 +26,14 @@
 namespace stargazer {
 
 /**
- * @brief Cost functor for ceres optimization. Computes the error of by transforming a landmark point into image coordinates
+ * @brief Cost functor for ceres optimization. Computes the error of by transforming a landmark point into image
+ * coordinates
  *
  */
 struct LM2ImgReprojectionFunctor {
 
     double u_observed, v_observed; /**< Image coordinates of observed point */
-    double x_marker, y_marker; /**< Landmark coordinates of map point */
+    double x_marker, y_marker;     /**< Landmark coordinates of map point */
 
     /**
      * @brief Constructor
@@ -98,7 +98,7 @@ struct LM2ImgReprojectionFunctor {
  */
 struct World2ImgReprojectionFunctor {
 
-    double u_observed, v_observed; /**< Image coordinates of observed point */
+    double u_observed, v_observed;       /**< Image coordinates of observed point */
     double x_marker, y_marker, z_marker; /**< World coordinates of map point */
 
     /**
@@ -156,7 +156,8 @@ struct World2ImgReprojectionFunctor {
      */
     static ceres::CostFunction* Create(const double u_observed, const double v_observed, const double x_marker,
                                        const double y_marker, const double z_marker) {
-        return (new ceres::AutoDiffCostFunction<World2ImgReprojectionFunctor, 2, (int)POSE::N_PARAMS, (int)INTRINSICS::N_PARAMS>(
+        return (new ceres::AutoDiffCostFunction<World2ImgReprojectionFunctor, 2, (int)POSE::N_PARAMS,
+                                                (int)INTRINSICS::N_PARAMS>(
             new World2ImgReprojectionFunctor(u_observed, v_observed, x_marker, y_marker, z_marker)));
     }
 };

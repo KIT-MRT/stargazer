@@ -57,7 +57,8 @@ void LandmarkCalibrator::AddReprojectionResidualBlocks(
                 // Test reprojection error
                 double u, v;
                 transformLM2Img<double>(&real_lm.points[k][(int)POINT::X], &real_lm.points[k][(int)POINT::Y],
-                                        real_lm.pose.data(), camera_poses_[i].data(), camera_intrinsics_.data(), &u, &v);
+                                        real_lm.pose.data(), camera_poses_[i].data(), camera_intrinsics_.data(), &u,
+                                        &v);
 
                 ceres::CostFunction* cost_function = LM2ImgReprojectionFunctor::Create(
                     point_under_test->x, point_under_test->y, real_lm.points[k][(int)POINT::X],
@@ -100,7 +101,6 @@ void LandmarkCalibrator::SetLandmarkConstant(landmark_map_t::key_type id) {
         problem.SetParameterBlockConstant(landmarks_[id].pose.data());
     else
         throw std::runtime_error("No parameter used of landmark that should get fixed");
-
 }
 
 void LandmarkCalibrator::SetPoseConstant(size_t id) {
@@ -108,7 +108,6 @@ void LandmarkCalibrator::SetPoseConstant(size_t id) {
         problem.SetParameterBlockConstant(camera_poses_[id].data());
     else
         throw std::runtime_error("No parameter used of landmark that should get fixed");
-
 }
 
 void LandmarkCalibrator::SetParametersConstant() {

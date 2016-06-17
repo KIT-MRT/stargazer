@@ -60,19 +60,19 @@ public:
      */
     int DetectLandmarks(const cv::Mat& img, std::vector<ImgLandmark>& detected_landmarks);
 
-    cv::Mat_<cv::Vec3b> rawImage_; /**< Keeps a copy of the input image */
-    cv::Mat grayImage_; /**< Keeps a copy of the converted grayvalue image */
-    cv::Mat filteredImage_; /**< Keeps a copy of the filtered iamge */
+    cv::Mat_<cv::Vec3b> rawImage_;           /**< Keeps a copy of the input image */
+    cv::Mat grayImage_;                      /**< Keeps a copy of the converted grayvalue image */
+    cv::Mat filteredImage_;                  /**< Keeps a copy of the filtered iamge */
     std::vector<cv::Point> clusteredPixels_; /**< Keeps a copy of pixel clusters found */
-    std::vector<Cluster> clusteredPoints_; /**< Keeps a copy of point clusters found*/
+    std::vector<Cluster> clusteredPoints_;   /**< Keeps a copy of point clusters found*/
 
-    uint8_t threshold; /**< Threshold for grayvalue thresholding 0-254*/
-    float maxRadiusForPixelCluster; /**< Maximum radius for clustering pixels to marker points*/
-    uint16_t minPixelForCluster; /**< Minimum count of pixels per marker point*/
-    uint16_t maxPixelForCluster; /**< Maximum count of pixels per marker point*/
-    float maxRadiusForCluster; /**< Maximum radius for clustering marker points to landmarks*/
-    uint16_t minPointsPerLandmark; /**< Minimum count of marker points per landmark (0)*/
-    uint16_t maxPointsPerLandmark; /**< Maximum count of marker points per landmark (depends on grid used)*/
+    uint8_t threshold;                /**< Threshold for grayvalue thresholding 0-254*/
+    float maxRadiusForPixelCluster;   /**< Maximum radius for clustering pixels to marker points*/
+    uint16_t minPixelForCluster;      /**< Minimum count of pixels per marker point*/
+    uint16_t maxPixelForCluster;      /**< Maximum count of pixels per marker point*/
+    float maxRadiusForCluster;        /**< Maximum radius for clustering marker points to landmarks*/
+    uint16_t minPointsPerLandmark;    /**< Minimum count of marker points per landmark (0)*/
+    uint16_t maxPointsPerLandmark;    /**< Maximum count of marker points per landmark (depends on grid used)*/
     std::vector<uint16_t> valid_ids_; /**< Vector of valid IDs, read from map*/
 
 private:
@@ -103,7 +103,8 @@ private:
                       const float radiusThreshold, const unsigned int minPointsThreshold,
                       const unsigned int maxPointsThreshold);
     /**
-     * @brief Identifies the three corner points of a landmark and moves them into the second vector. It utilizes a score function to find the triple.
+     * @brief Identifies the three corner points of a landmark and moves them into the second vector. It utilizes a
+     * score function to find the triple.
      *
      * @param point_list    input list (found corner points get removed)
      * @param corner_points output list (holds the found corner points)
@@ -126,7 +127,8 @@ private:
     int GetIDs(std::vector<ImgLandmark>& landmarks);
 
     /**
-     * @brief   Tryies to calculate the landmarks id by transforming the observed points into unary landmark coordinates.
+     * @brief   Tryies to calculate the landmarks id by transforming the observed points into unary landmark
+     * coordinates.
      *
      * @param landmark
      * @param valid_ids
@@ -134,7 +136,8 @@ private:
      */
     bool CalculateIdForward(ImgLandmark& landmark, std::vector<uint16_t>& valid_ids);
     /**
-     * @brief   Tryies to calculate the landmarks id by looking in the filtered image, whether a bright point can be seen where it is assumed.
+     * @brief   Tryies to calculate the landmarks id by looking in the filtered image, whether a bright point can be
+     * seen where it is assumed.
      *
      * @param landmark
      * @param valid_ids
