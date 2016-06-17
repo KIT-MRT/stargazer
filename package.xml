@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>stargazer</name>
+  <version>1.0.0</version>
+  <description>A landmark-based visual indoor localization system for mobile robots</description>
+
+  <license>GPLv3</license>
+  <maintainer email="claudio.bandera@kit.edu">Claudio Bandera</maintainer>
+  <author email="claudio.bandera@kit.edu">Claudio Bandera</author>
+  <url type="repository">https://github.com/KIT-MRT/stargazer.git</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <test_depend>gtest</test_depend>
+  <!-- 
+    Documentation for dependencies:
+    <build_depend>            Build-time dependency required to build 
+                              this package, e.g. boost, opencv.
+    <build_export_depend>     Exported build-time dependency required to 
+                              build packages that depend on this package,
+                              e.g. boost, opencv.
+    <exec_depend>             Execution dependency required to run this 
+                              package, e.g. boost, opencv.
+    <depend>                  Build-time, exported build-time and execution
+                              dependency. This is a bundled synonym for
+                              <build_depend>, <build_export_depend> and
+                              <exec_depend>.
+  -->
+
+  <depend>opencv</depend>
+  <depend>libceres-dev</depend>
+  <depend>yaml-cpp</depend>
+  <depend>boost</depend>
+  <depend>Eigen</depend>
+
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+  </export>
+</package>
