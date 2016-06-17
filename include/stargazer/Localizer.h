@@ -25,36 +25,74 @@
 
 namespace stargazer {
 
+/**
+ * @brief This is the abstract localizer class. Given a set of image landmarks, it computes the cameras pose based on information taken from the map file.
+ *
+ */
 class Localizer {
 
 public:
+    /**
+     * @brief Default stub constructor
+     *
+     */
     Localizer(){};
 
+    /**
+     * @brief Constructor.
+     *
+     * @param cfgfile Path to map file with camera intrinsics and landmark poses.
+     * @remark The config file has to be generated with ::writeConfig!
+     */
     Localizer(std::string cfgfile) {
         readConfig(cfgfile, camera_intrinsics, landmarks);
     };
 
+    /**
+     * @brief Default destructor
+     *
+     */
     ~Localizer(){};
 
+    /**
+     * @brief Main update method. Computes pose from landmark observations and stores it in Localizer::ego_pose
+     *
+     * @param img_landmarks Vector of all observed landmarks in image coordinates
+     * @param dt Time since last update
+     */
     virtual void UpdatePose(std::vector<ImgLandmark>& img_landmarks, float dt) = 0;
 
-    /// Getter
+    /**
+     * @brief Getter for computed pose from last call to Localizer::UpdatePose
+     *
+     * @return const pose_t 6D Pose of the camera
+     */
     const pose_t getPose() const {
         return ego_pose;
     }
 
+    /**
+     * @brief Getter for map of landmarks
+     *
+     * @return const std::map<int, Landmark>
+     */
     const std::map<int, Landmark>& getLandmarks() const {
         return landmarks;
     }
 
+    /**
+     * @brief Getter for the cameras' intrinsic parameters
+     *
+     * @return const camera_params_t
+     */
     const camera_params_t& getIntrinsics() const {
         return camera_intrinsics;
     }
 
 protected:
-    std::map<int, Landmark> landmarks;
-    camera_params_t camera_intrinsics = {{0., 0., 0., 0., 0., 0.}};
-    pose_t ego_pose = {{0., 0., 0., 0., 0., 0.}};
+    std::map<int, Landmark> landmarks; /**< Map of landmarks, read from config */
+    camera_params_t camera_intrinsics = {{0., 0., 0., 0., 0., 0.}}; /**< Parameter of camera, read from config*/
+    pose_t ego_pose = {{0., 0., 0., 0., 0., 0.}}; /**< Ego pose as computed by last call to Localizer::UpdatePose */
 };
 
 } // namespace stargazer

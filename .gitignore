@@ -26,3 +26,5 @@
 *.exe
 *.out
 *.app
+CMakeLists.txt.user
+doc_compiled/

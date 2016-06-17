@@ -32,47 +32,153 @@
 
 namespace stargazer {
 
+/**
+ * @brief This class detects landmarks in images.
+ *
+ */
 class LandmarkFinder {
 public:
-    /// constructors and destructors
+    /**
+     * @brief Constructor.
+     *
+     * @param cfgfile Path to map file with camera intrinsics and landmark poses.
+     * @remark The config file has to be generated with ::writeConfig!
+     */
     LandmarkFinder(std::string cfgfile);
+    /**
+     * @brief Destructor
+     *
+     */
     ~LandmarkFinder();
 
-    /// methods
+    /**
+     * @brief Main worker function. Writes all detected landmarks into vector
+     *
+     * @param img   Image to analyze
+     * @param detected_landmarks    Output vector of detected landmarks
+     * @return int  Error code
+     */
     int DetectLandmarks(const cv::Mat& img, std::vector<ImgLandmark>& detected_landmarks);
 
-    cv::Mat_<cv::Vec3b> rawImage_;
-    cv::Mat grayImage_;
-    cv::Mat filteredImage_;
-    std::vector<cv::Point> clusteredPixels_;
-    std::vector<Cluster> clusteredPoints_;
+    cv::Mat_<cv::Vec3b> rawImage_; /**< Keeps a copy of the input image */
+    cv::Mat grayImage_; /**< Keeps a copy of the converted grayvalue image */
+    cv::Mat filteredImage_; /**< Keeps a copy of the filtered iamge */
+    std::vector<cv::Point> clusteredPixels_; /**< Keeps a copy of pixel clusters found */
+    std::vector<Cluster> clusteredPoints_; /**< Keeps a copy of point clusters found*/
 
-    uint8_t threshold;
-    float maxRadiusForPixelCluster;
-    uint16_t minPixelForCluster;
-    uint16_t maxPixelForCluster;
-    float maxRadiusForCluster;
-    uint16_t minPointsPerLandmark;
-    uint16_t maxPointsPerLandmark;
-    std::vector<uint16_t> valid_ids_;
+    uint8_t threshold; /**< Threshold for grayvalue thresholding 0-254*/
+    float maxRadiusForPixelCluster; /**< Maximum radius for clustering pixels to marker points*/
+    uint16_t minPixelForCluster; /**< Minimum count of pixels per marker point*/
+    uint16_t maxPixelForCluster; /**< Maximum count of pixels per marker point*/
+    float maxRadiusForCluster; /**< Maximum radius for clustering marker points to landmarks*/
+    uint16_t minPointsPerLandmark; /**< Minimum count of marker points per landmark (0)*/
+    uint16_t maxPointsPerLandmark; /**< Maximum count of marker points per landmark (depends on grid used)*/
+    std::vector<uint16_t> valid_ids_; /**< Vector of valid IDs, read from map*/
 
 private:
+    /**
+     * @brief Applies a difference of gaussian matched filter to the image
+     *
+     * @param img_in    raw image
+     * @param img_out   filtered image
+     */
     void FilterImage(const cv::Mat& img_in, cv::Mat& img_out);
+    /**
+     * @brief Finds hypotheses for marker points by thresholding the input image and clustering the pixels.
+     *
+     * @param img_in
+     * @return std::vector<cv::Point>
+     */
     std::vector<cv::Point> FindPoints(cv::Mat& img_in);
+    /**
+     * @brief Finds hypotheses for landmarks by clustering the input points
+     *
+     * @param points_in
+     * @param clusters
+     * @param radiusThreshold
+     * @param minPointsThreshold
+     * @param maxPointsThreshold
+     */
     void FindClusters(const std::vector<cv::Point>& points_in, std::vector<Cluster>& clusters,
                       const float radiusThreshold, const unsigned int minPointsThreshold,
                       const unsigned int maxPointsThreshold);
+    /**
+     * @brief Identifies the three corner points of a landmark and moves them into the second vector. It utilizes a score function to find the triple.
+     *
+     * @param point_list    input list (found corner points get removed)
+     * @param corner_points output list (holds the found corner points)
+     * @return bool indicates success
+     */
     bool FindCorners(std::vector<cv::Point>& point_list, std::vector<cv::Point>& corner_points);
+    /**
+     * @brief Finds valid landmark observations from the input hypotheses
+     *
+     * @param clusteredPoints
+     * @return std::vector<ImgLandmark>
+     */
     std::vector<ImgLandmark> FindLandmarks(const std::vector<Cluster>& clusteredPoints);
+    /**
+     * @brief Tries to identify the landmarks ID
+     *
+     * @param landmarks vector of observations
+     * @return int  success
+     */
     int GetIDs(std::vector<ImgLandmark>& landmarks);
 
+    /**
+     * @brief   Tryies to calculate the landmarks id by transforming the observed points into unary landmark coordinates.
+     *
+     * @param landmark
+     * @param valid_ids
+     * @return bool Success
+     */
     bool CalculateIdForward(ImgLandmark& landmark, std::vector<uint16_t>& valid_ids);
+    /**
+     * @brief   Tryies to calculate the landmarks id by looking in the filtered image, whether a bright point can be seen where it is assumed.
+     *
+     * @param landmark
+     * @param valid_ids
+     * @return bool
+     */
     bool CalculateIdBackward(ImgLandmark& landmark, std::vector<uint16_t>& valid_ids);
 
+    /**
+     * @brief Sorts both vectors, based on the first one.
+     *
+     * @param ids
+     * @param points
+     */
     void parallel_vector_sort(std::vector<uint16_t>& ids, std::vector<cv::Point>& points);
+    /**
+     * @brief Creates a vector from first to second point
+     *
+     * @param from
+     * @param to
+     * @return cv::Point
+     */
     cv::Point getVector(const cv::Point& from, const cv::Point& to);
+    /**
+     * @brief Computes the distance between two points.
+     *
+     * @param p1
+     * @param p2
+     * @return float
+     */
     float getDistance(const cv::Point& p1, const cv::Point& p2);
+    /**
+     * @brief Computes the norm of a vector
+     *
+     * @param p
+     * @return float
+     */
     float getNorm(const cv::Point& p);
+    /**
+     * @brief Computes the cross product of two vectors
+     *
+     * @param v1
+     * @param v2
+     * @return float
+     */
     float getCrossProduct(const cv::Point& v1, const cv::Point& v2);
 };
 

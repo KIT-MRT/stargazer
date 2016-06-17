@@ -25,14 +25,28 @@
 
 namespace stargazer {
 
+/**
+ * @brief A cluster is an unordered collection of points, it represents a hypothesis for a landmark.
+ *
+ */
 typedef std::vector<cv::Point> Cluster;
 
+/**
+ * @brief An image landmark holds the information of a observed landmark. All coordinates are in image coordinates.
+ *
+ */
 struct ImgLandmark {
-  uint16_t nID;
-  std::vector<cv::Point> voCorners;
-  std::vector<cv::Point> voIDPoints;
+  uint16_t nID; /**< TODO: describe */
+  std::vector<cv::Point> voCorners; /**< TODO: describe */
+  std::vector<cv::Point> voIDPoints; /**< TODO: describe */
 };
 
+/**
+ * @brief Converts an ImgLandmark to a Map Landmark
+ *
+ * @param lm_in
+ * @return Landmark
+ */
 inline Landmark convert2Landmark(ImgLandmark &lm_in) {
   Landmark lm_out(lm_in.nID);
   lm_out.points.clear();

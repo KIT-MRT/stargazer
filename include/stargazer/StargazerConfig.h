@@ -29,6 +29,13 @@
 
 namespace stargazer {
 
+/**
+ * @brief
+ *
+ * @param cfgfile
+ * @param camera_intrinsics
+ * @param landmarks
+ */
 inline void readConfig(std::string cfgfile, camera_params_t& camera_intrinsics, landmark_map_t& landmarks) {
     YAML::Node config;
 
@@ -74,6 +81,13 @@ inline void readConfig(std::string cfgfile, camera_params_t& camera_intrinsics, 
     }
 }
 
+/**
+ * @brief
+ *
+ * @param cfgfile
+ * @param camera_intrinsics
+ * @param landmarks
+ */
 inline void writeConfig(std::string cfgfile, const camera_params_t& camera_intrinsics,
                         const landmark_map_t& landmarks) {
     std::ofstream fout(cfgfile);

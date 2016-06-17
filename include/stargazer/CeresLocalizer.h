@@ -26,27 +26,68 @@
 
 namespace stargazer {
 
+/**
+ * @brief Derived Localizer class, that uses numeric optimization with ceres library, to compute the current pose.
+ * For this, the reprojection error is minimized, meaning the difference between the observed landmarks and their equivalent from the map projected into the camera image.
+ * The parameters to be optimized are the cameras pose parameters.
+ *
+ */
 class CeresLocalizer : public Localizer {
 
 public:
+    /**
+     * @brief Constructor.
+     *
+     * @param cfgfile Path to map file with camera intrinsics and landmark poses.
+     * @remark The config file has to be generated with ::writeConfig!
+     * @remark The CeresLocalizer converts all landmark points into world coordinates after readin!
+     */
     CeresLocalizer(std::string cfgfile);
 
+    /**
+     * @brief Main update method. Computes pose from landmark observations and stores it in Localizer::ego_pose
+     *
+     * @param img_landmarks Vector of all observed landmarks in image coordinates
+     * @param dt Time since last update (unused in this implementation)
+     */
     virtual void UpdatePose(std::vector<ImgLandmark>& img_landmarks, float dt) override;
 
+    /**
+     * @brief Returns the full summary of the ceres optimization process. It contains all relevant information for debugging.
+     *
+     * @return const ceres::Solver::Summary
+     */
     const ceres::Solver::Summary& getSummary() const {
         return summary;
     }
 
 private:
-    ceres::Problem problem;
-    ceres::Solver::Summary summary;
+    ceres::Problem problem; /**< Ceres Prolem */
+    ceres::Solver::Summary summary; /**< Summary of last optimization run */
 
-    bool is_initialized;
+    bool is_initialized; /**< Flag indicating whether the pose is initialized */
 
+    /**
+     * @brief Will remove the residuals from last run.
+     *
+     */
     void ClearResidualBlocks();
+    /**
+     * @brief   Will add a new residual block for every marker of every landmark given in img_landmarks
+     *
+     * @param img_landmarks Vector of observerved landmarks.
+     */
     void AddResidualBlocks(std::vector<ImgLandmark> img_landmarks);
+    /**
+     * @brief Will set the camera parameters constant, so that they do not get changed during optimization.
+     *
+     */
     void SetCameraParamsConstant();
+    /**
+     * @brief This is the actual working method, that sets the ceres configuration and runs to solver.
+     *
+     */
     void Optimize();
 };
 
-} // namespace stargazer
+} /// namespace stargazer
