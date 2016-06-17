@@ -19,10 +19,9 @@ find_package(AutoDeps REQUIRED COMPONENTS ${DEPENDEND_PACKAGES})
 ############################
 ## read source code files ##
 ############################
-file(GLOB_RECURSE PROJECT_HEADER_FILES_INC RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "include/*.h")
-file(GLOB PROJECT_SOURCE_FILES_INC RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "src/*.h")
+file(GLOB_RECURSE PROJECT_HEADER_FILES_INC RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "include/*.h" "include/*.hpp")
+file(GLOB PROJECT_SOURCE_FILES_INC RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "src/*.h" "src/*.hpp")
 file(GLOB PROJECT_SOURCE_FILES_SRC RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "src/*.cpp")
-set(PROJECT_SOURCE_FILES_SRC ${PROJECT_SOURCE_FILES_SRC} include/stargazer/libCalibIO/CalibIO.cpp)
 if (PROJECT_SOURCE_FILES_SRC)
 	set(LIBRARY_NAME ${PROJECT_NAME})
 endif()
@@ -64,7 +63,7 @@ if (PROJECT_SOURCE_FILES_SRC)
 	  ${PROJECT_SOURCE_FILES_SRC}
 	)
 	# Specify libraries to link a library or executable target against
-	target_link_libraries(${PROJECT_NAME}
+	target_link_libraries(${LIBRARY_NAME}
 	  ${catkin_LIBRARIES}
 	  ${mrt_LIBRARIES}
 	)
@@ -84,7 +83,7 @@ endif()
 # Mark c++ header files for installation
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-  FILES_MATCHING PATTERN "*.h"
+  FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
 )
 #install(FILES
 #  res/test.png

@@ -1,8 +1,23 @@
 //
-// Created by bandera on 01.04.16.
+// This file is part of the stargazer library.
 //
+// Copyright 2016 Claudio Bandera <claudio.bandera@kit.edu (Karlsruhe Institute of Technology)
+//
+// The stargazer library is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// The stargazer library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
+
 
 #include "StargazerTypes.h"
 #include "ceres/rotation.h"
@@ -11,6 +26,16 @@
 namespace stargazer {
 
 template <typename T>
+/**
+ * @brief This function will transform a point, given in landmark coordinates into world coordinates
+ *
+ * @param x_in  x value of input point in landmark coordinates
+ * @param y_in  y value of input point in landmark coordinates
+ * @param lm_pose the six dimensional pose of the landmark (rotation in rodriguez angles)
+ * @param x_out x value of ouput point in world coordinates
+ * @param y_out y value of ouput point in world coordinates
+ * @param z_out z value of ouput point in world coordinates
+ */
 void transformLM2World(const T *const x_in, const T *const y_in,
                        const T *const lm_pose, T *const x_out, T *const y_out,
                        T *const z_out) {
@@ -40,6 +65,18 @@ void transformLM2World(const T *const x_in, const T *const y_in,
 }
 
 template <typename T>
+/**
+
+ * @brief This function will transform a point, given in world coordinates into image coordinates
+ *
+ * @param x_in  x value of input point in world coordinates
+ * @param y_in  y value of input point in world coordinates
+ * @param z_in  z value of input point in world coordinates
+ * @param camera_pose the six dimensional pose of the camera (rotation in rodriguez angles)
+ * @param camera_intrinsics the cameras intrinsic parameters
+ * @param x_out x value of ouput point in image coordinates
+ * @param y_out y value of ouput point in image coordinates
+ */
 void transformWorld2Img(const T *const x_in, const T *const y_in,
                         const T *const z_in, const T *const camera_pose,
                         const T *const camera_intrinsics, T *const x_out,
@@ -93,6 +130,17 @@ void transformWorld2Img(const T *const x_in, const T *const y_in,
 }
 
 template <typename T>
+/**
+ * @brief This function will transform a point, given in landmark coordinates into image coordinates
+ *
+ * @param x_in  x value of input point in landmark coordinates
+ * @param y_in  y value of input point in landmark coordinates
+ * @param lm_pose the six dimensional pose of the landmark (rotation in rodriguez angles)
+ * @param camera_pose the six dimensional pose of the camera (rotation in rodriguez angles)
+ * @param camera_intrinsics the cameras intrinsic parameters
+ * @param x_out x value of ouput point in image coordinates
+ * @param y_out y value of ouput point in image coordinates
+ */
 void transformLM2Img(const T *const x_in, const T *const y_in,
                      const T *const lm_pose, const T *const camera_pose,
                      const T *const camera_intrinsics, T *const x_out,
