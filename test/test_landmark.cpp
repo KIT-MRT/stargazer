@@ -42,38 +42,38 @@
 using namespace stargazer;
 
 TEST(Landmark, CornerPoints) {
-  Landmark a = Landmark(0);
+    Landmark a = Landmark(0);
 
-  // Count
-  ASSERT_EQ(3, a.points.size());
+    // Count
+    ASSERT_EQ(3, a.points.size());
 
-  // Coordinates
-  ASSERT_EQ(0, a.points[0][(int)POINT::X]);
-  ASSERT_EQ(0, a.points[0][(int)POINT::Y]);
+    // Coordinates
+    ASSERT_EQ(0, a.points[0][(int)POINT::X]);
+    ASSERT_EQ(0, a.points[0][(int)POINT::Y]);
 
-  ASSERT_EQ(3 * Landmark::kGridDistance, a.points[1][(int)POINT::X]);
-  ASSERT_EQ(0 * Landmark::kGridDistance, a.points[1][(int)POINT::Y]);
+    ASSERT_EQ(3 * Landmark::kGridDistance, a.points[1][(int)POINT::X]);
+    ASSERT_EQ(0 * Landmark::kGridDistance, a.points[1][(int)POINT::Y]);
 
-  ASSERT_EQ(3 * Landmark::kGridDistance, a.points[2][(int)POINT::X]);
-  ASSERT_EQ(3 * Landmark::kGridDistance, a.points[2][(int)POINT::Y]);
+    ASSERT_EQ(3 * Landmark::kGridDistance, a.points[2][(int)POINT::X]);
+    ASSERT_EQ(3 * Landmark::kGridDistance, a.points[2][(int)POINT::Y]);
 }
 
 TEST(Landmark, TestID4184) {
-  // 4184 in Hex is 16772 in decimal
-  Landmark a = Landmark(16772);
+    // 4184 in Hex is 16772 in decimal
+    Landmark a = Landmark(16772);
 
-  // Count
-  ASSERT_EQ(7, a.points.size());
+    // Count
+    ASSERT_EQ(7, a.points.size());
 
-  ASSERT_EQ(2 * Landmark::kGridDistance, a.points[3][(int)POINT::X]);
-  ASSERT_EQ(0 * Landmark::kGridDistance, a.points[3][(int)POINT::Y]);
+    ASSERT_EQ(2 * Landmark::kGridDistance, a.points[3][(int)POINT::X]);
+    ASSERT_EQ(0 * Landmark::kGridDistance, a.points[3][(int)POINT::Y]);
 
-  ASSERT_EQ(3 * Landmark::kGridDistance, a.points[4][(int)POINT::X]);
-  ASSERT_EQ(1 * Landmark::kGridDistance, a.points[4][(int)POINT::Y]);
+    ASSERT_EQ(3 * Landmark::kGridDistance, a.points[4][(int)POINT::X]);
+    ASSERT_EQ(1 * Landmark::kGridDistance, a.points[4][(int)POINT::Y]);
 
-  ASSERT_EQ(0 * Landmark::kGridDistance, a.points[5][(int)POINT::X]);
-  ASSERT_EQ(2 * Landmark::kGridDistance, a.points[5][(int)POINT::Y]);
+    ASSERT_EQ(0 * Landmark::kGridDistance, a.points[5][(int)POINT::X]);
+    ASSERT_EQ(2 * Landmark::kGridDistance, a.points[5][(int)POINT::Y]);
 
-  ASSERT_EQ(2 * Landmark::kGridDistance, a.points[6][(int)POINT::X]);
-  ASSERT_EQ(3 * Landmark::kGridDistance, a.points[6][(int)POINT::Y]);
+    ASSERT_EQ(2 * Landmark::kGridDistance, a.points[6][(int)POINT::X]);
+    ASSERT_EQ(3 * Landmark::kGridDistance, a.points[6][(int)POINT::Y]);
 }

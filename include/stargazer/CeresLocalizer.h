@@ -18,7 +18,6 @@
 
 #pragma once
 
-
 #include <string>
 #include "CoordinateTransformations.h"
 #include "Localizer.h"
@@ -28,7 +27,8 @@ namespace stargazer {
 
 /**
  * @brief Derived Localizer class, that uses numeric optimization with ceres library, to compute the current pose.
- * For this, the reprojection error is minimized, meaning the difference between the observed landmarks and their equivalent from the map projected into the camera image.
+ * For this, the reprojection error is minimized, meaning the difference between the observed landmarks and their
+ * equivalent from the map projected into the camera image.
  * The parameters to be optimized are the cameras pose parameters.
  *
  */
@@ -53,7 +53,8 @@ public:
     virtual void UpdatePose(std::vector<ImgLandmark>& img_landmarks, float dt) override;
 
     /**
-     * @brief Returns the full summary of the ceres optimization process. It contains all relevant information for debugging.
+     * @brief Returns the full summary of the ceres optimization process. It contains all relevant information for
+     * debugging.
      *
      * @return const ceres::Solver::Summary
      */
@@ -62,7 +63,7 @@ public:
     }
 
 private:
-    ceres::Problem problem; /**< Ceres Prolem */
+    ceres::Problem problem;         /**< Ceres Prolem */
     ceres::Solver::Summary summary; /**< Summary of last optimization run */
 
     bool is_initialized; /**< Flag indicating whether the pose is initialized */

@@ -18,7 +18,6 @@
 
 #pragma once
 
-
 #include "CoordinateTransformations.h"
 #include "StargazerImgTypes.h"
 #include "internal/CostFunction.h"
@@ -30,7 +29,8 @@
 namespace stargazer {
 
 /**
- * @brief This is the class responsible for map generation. It computes a full bundle adjustment SLAM optimizing all observations of a full calibration sequenz in one optimization problem.
+ * @brief This is the class responsible for map generation. It computes a full bundle adjustment SLAM optimizing all
+ * observations of a full calibration sequenz in one optimization problem.
  *
  */
 class LandmarkCalibrator {
@@ -44,7 +44,8 @@ public:
     LandmarkCalibrator(std::string cfgfile);
 
     /**
-     * @brief Adds all residual blocks to the problem. For every marker of every seen landmark at every pose a residual block is added to the problem.
+     * @brief Adds all residual blocks to the problem. For every marker of every seen landmark at every pose a residual
+     * block is added to the problem.
      *
      * @param observed_poses    Initial guess of the cameras poses
      * @param observed_landmarks    Vector of all observed Image landmarks
@@ -63,13 +64,15 @@ public:
      */
     void SetParametersConstant();
     /**
-     * @brief Sets an individual landmarks pose constant. This is usefull, for fixing the maps coordinate system to one landmark.
+     * @brief Sets an individual landmarks pose constant. This is usefull, for fixing the maps coordinate system to one
+     * landmark.
      *
      * @param id    Id of the landmark to hold constant.
      */
     void SetLandmarkConstant(landmark_map_t::key_type id);
     /**
-     * @brief Sets an individual camera pose constant. This is usefull, for fixing the maps coordinate system to one pose (normally the first).
+     * @brief Sets an individual camera pose constant. This is usefull, for fixing the maps coordinate system to one
+     * pose (normally the first).
      *
      * @param id
      */
@@ -108,10 +111,10 @@ public:
     }
 
 private:
-    ceres::Problem problem; /**< Ceres problem */
+    ceres::Problem problem;             /**< Ceres problem */
     camera_params_t camera_intrinsics_; /**< Camera parameters */
-    landmark_map_t landmarks_; /**< Map of landmarks. Points have to be defined in landmark coordinates!*/
-    std::vector<pose_t> camera_poses_; /**< Camera poses */
+    landmark_map_t landmarks_;          /**< Map of landmarks. Points have to be defined in landmark coordinates!*/
+    std::vector<pose_t> camera_poses_;  /**< Camera poses */
 };
 
 } // namespace stargazer

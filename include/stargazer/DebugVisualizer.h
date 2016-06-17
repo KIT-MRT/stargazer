@@ -18,7 +18,6 @@
 
 #pragma once
 
-
 #include "StargazerImgTypes.h"
 #include "StargazerTypes.h"
 #include "opencv/cv.h"
@@ -54,7 +53,8 @@ public:
 
     // Setters
     /**
-     * @brief Value passed to cv::waitKey. Defines how long the image should be displayed. If 0 is specified, the window will stay open until a key is pressed.
+     * @brief Value passed to cv::waitKey. Defines how long the image should be displayed. If 0 is specified, the window
+     * will stay open until a key is pressed.
      *
      * @param milliseconds
      */
@@ -107,14 +107,14 @@ public:
                        const pose_t& ego_pose);
 
 private:
-    int m_wait_time; /**< Time to wait when displaying image */
+    int m_wait_time;   /**< Time to wait when displaying image */
     int m_window_mode; /**< cvWindowProperty */
-    cv::Mat baseImg; /**< dummy image */
-    /**
-     * @brief Converts image to color image
-     *
-     * @param img
-     */
+    cv::Mat baseImg;   /**< dummy image */
+                       /**
+                        * @brief Converts image to color image
+                        *
+                        * @param img
+                        */
     void prepareImg(cv::Mat& img);
 };
 

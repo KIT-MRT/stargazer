@@ -18,10 +18,9 @@
 
 #pragma once
 
-
+#include <vector>
 #include "StargazerTypes.h"
 #include "opencv/cv.h"
-#include <vector>
 
 namespace stargazer {
 
@@ -36,9 +35,9 @@ typedef std::vector<cv::Point> Cluster;
  *
  */
 struct ImgLandmark {
-  uint16_t nID; /**< TODO: describe */
-  std::vector<cv::Point> voCorners; /**< TODO: describe */
-  std::vector<cv::Point> voIDPoints; /**< TODO: describe */
+    uint16_t nID;                      /**< TODO: describe */
+    std::vector<cv::Point> voCorners;  /**< TODO: describe */
+    std::vector<cv::Point> voIDPoints; /**< TODO: describe */
 };
 
 /**
@@ -47,20 +46,20 @@ struct ImgLandmark {
  * @param lm_in
  * @return Landmark
  */
-inline Landmark convert2Landmark(ImgLandmark &lm_in) {
-  Landmark lm_out(lm_in.nID);
-  lm_out.points.clear();
+inline Landmark convert2Landmark(ImgLandmark& lm_in) {
+    Landmark lm_out(lm_in.nID);
+    lm_out.points.clear();
 
-  for (auto &el : lm_in.voCorners) {
-    Point pt = {(double)el.x, (double)el.y, 0};
-    lm_out.points.push_back(pt);
-  }
-  for (auto &el : lm_in.voIDPoints) {
-    Point pt = {(double)el.x, (double)el.y, 0};
-    lm_out.points.push_back(pt);
-  }
+    for (auto& el : lm_in.voCorners) {
+        Point pt = {(double)el.x, (double)el.y, 0};
+        lm_out.points.push_back(pt);
+    }
+    for (auto& el : lm_in.voIDPoints) {
+        Point pt = {(double)el.x, (double)el.y, 0};
+        lm_out.points.push_back(pt);
+    }
 
-  return lm_out;
+    return lm_out;
 };
 
 } // namespace stargazer

@@ -4,16 +4,16 @@
 //
 //#include "TriangulationLocalizer.h"
 //
-//using namespace stargazer;
+// using namespace stargazer;
 //
-//TriangulationLocalizer::TriangulationLocalizer(std::string cfgfile)
+// TriangulationLocalizer::TriangulationLocalizer(std::string cfgfile)
 //        : Localizer(cfgfile), m_oStateVector(5, 1, CV_32FC1), m_oCovarianceMatrix(5, 5, CV_32FC1),
 //          m_oStateTransitionMatrix(5, 5, CV_32FC1), m_oProcessNoise(5, 5, CV_32FC1),
 //          m_oCameraIntrinsics(3, 3, CV_32FC1), m_oMeasModel(3, 5, CV_32FC1) {
 //    m_bTriangulationLocalizerInit = false;
 //}
 //
-//void TriangulationLocalizer::UpdatePose(std::vector<ImgLandmark>& img_landmarks, float fDeltaT) {
+// void TriangulationLocalizer::UpdatePose(std::vector<ImgLandmark>& img_landmarks, float fDeltaT) {
 //    std::vector<pose_t> assumptions;
 //    std::vector<std::vector<int>> supporters;
 //    std::vector<double> errors;
@@ -185,7 +185,7 @@
 ///////////////////////////////////////
 ///// KALMAN FILTER
 ///////////////////////////////////////
-//int TriangulationLocalizer::InitKF(cv::Mat& i_oInitialState, cv::Mat& i_oInitialCovariance) {
+// int TriangulationLocalizer::InitKF(cv::Mat& i_oInitialState, cv::Mat& i_oInitialCovariance) {
 //    /// set initial state vector
 //    m_oStateVector = cv::Mat::zeros(5, 1, CV_32FC1);
 //    m_oStateVector.at<float>(0, 0) = i_oInitialState.at<float>(0, 0);
@@ -210,7 +210,7 @@
 //    return 0;
 //}
 //
-//int TriangulationLocalizer::PredictKF(float fDeltaT) {
+// int TriangulationLocalizer::PredictKF(float fDeltaT) {
 //    float fTheta = m_oStateVector.at<float>(2, 0);
 //    float fV = m_oStateVector.at<float>(3, 0);
 //    float fThetaDot = m_oStateVector.at<float>(4, 0);
@@ -275,7 +275,7 @@
 //    return 0;
 //}
 //
-//int TriangulationLocalizer::UpdateKF(cv::Mat& i_oMeasurement, cv::Mat& i_oMeasurementNoise) {
+// int TriangulationLocalizer::UpdateKF(cv::Mat& i_oMeasurement, cv::Mat& i_oMeasurementNoise) {
 //    /// Discrete Kalman filter measurement update
 //    /* Measurement is of the form
 //     *      (X)
@@ -328,7 +328,7 @@
 ///////////////////////////////////////
 ///// HELPER FUNCTIONS
 ///////////////////////////////////////
-//cv::Mat TriangulationLocalizer::calcReprojectionError(ImgLandmark& lm, pose_t position) {
+// cv::Mat TriangulationLocalizer::calcReprojectionError(ImgLandmark& lm, pose_t position) {
 //    cv::Mat errorMatrix = cv::Mat::zeros(3, 3, CV_32FC1);
 //
 //    for (size_t i = 0; i < landmarks[lm.nID].points.size(); i++) {
@@ -363,7 +363,7 @@
 //    return errorMatrix;
 //}
 //
-//pose_t TriangulationLocalizer::TriangulateTwoPoints(const Point& p_world_1, const cv::Point& p_img_1,
+// pose_t TriangulationLocalizer::TriangulateTwoPoints(const Point& p_world_1, const cv::Point& p_img_1,
 //                                                    const Point& p_world_2, const cv::Point& p_img_2) {
 //    ///    Pos = Vehicle Position
 //    ///    a1  = angle from landmark 1 to vehicle
@@ -479,7 +479,7 @@
 //    return pose;
 //}
 //
-//Eigen::VectorXd PoseFunctor::operator()(Eigen::Vector3d Input) const {
+// Eigen::VectorXd PoseFunctor::operator()(Eigen::Vector3d Input) const {
 //    Eigen::VectorXd Output(pSupporters->size());
 //
 //    while (M_PI < Input(2)) {

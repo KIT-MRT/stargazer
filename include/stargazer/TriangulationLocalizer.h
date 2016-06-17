@@ -23,9 +23,9 @@
 //#include "libCalibIO/CalibIO.hpp"
 //#include "libmv/numeric/levenberg_marquardt.h"
 //
-//namespace stargazer {
+// namespace stargazer {
 //
-//typedef struct {
+// typedef struct {
 //    int ID;
 //    float H;
 //    float X;
@@ -41,9 +41,9 @@
 // * theta_dot    Yawrate
 // * */
 //
-//class TriangulationLocalizer : public Localizer {
+// class TriangulationLocalizer : public Localizer {
 //
-//public:
+// public:
 //    TriangulationLocalizer(std::string cfgfile);
 //
 //    void UpdatePose(std::vector<ImgLandmark>& img_landmarks, float dt) override;
@@ -56,7 +56,7 @@
 //    /// Public Helper Functions
 //    cv::Mat calcReprojectionError(ImgLandmark& lm, pose_t position);
 //
-//private:
+// private:
 //    /// Known landmarks
 //    std::vector<LandmarkPosition> m_asLandmarkLUT;
 //
@@ -80,7 +80,7 @@
 ///////////////////////////////////////
 ///// OTHER
 ///////////////////////////////////////
-//inline int TriangulationLocalizer::int_pow(int x, int p) {
+// inline int TriangulationLocalizer::int_pow(int x, int p) {
 //    if (p == 0)
 //        return 1;
 //    if (p == 1)
@@ -89,7 +89,7 @@
 //}
 //
 //// LibMv minimization
-//struct PoseFunctor {
+// struct PoseFunctor {
 //    typedef Eigen::VectorXd FMatrixType;
 //    typedef Eigen::Vector3d XMatrixType;
 //    Eigen::VectorXd operator()(Eigen::Vector3d Input) const;
