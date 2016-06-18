@@ -30,6 +30,7 @@
   <depend>mrt_ceres</depend>
   <depend>yaml-cpp</depend>
   <depend>boost</depend>
+  <depend>eigen</depend>
 
   <export>
     <!-- Other tools can request additional information be placed here -->
