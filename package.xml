@@ -30,7 +30,7 @@
   <depend>libceres-dev</depend>
   <depend>yaml-cpp</depend>
   <depend>boost</depend>
-  <depend>Eigen</depend>
+  <depend>eigen</depend>
 
   <export>
     <!-- Other tools can request additional information be placed here -->

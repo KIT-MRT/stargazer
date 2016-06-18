@@ -65,12 +65,22 @@ add_library(${LIBRARY_NAME}
         ${PROJECT_SOURCE_FILES_SRC}
         )
 # Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${LIBRARY_NAME}
         ${catkin_LIBRARIES}
         ${OpenCV_LIBRARIES}
         ${CERES_LIBRARIES}
         yaml-cpp
         )
+
+#add demo executable
+add_executable(stargazer_demo
+        example/demo.cpp
+        )
+# Specify libraries to link a library or executable target against
+target_link_libraries(stargazer_demo
+        ${LIBRARY_NAME}
+        )
+
 #############
 ## Install ##
 #############
@@ -97,11 +107,11 @@ install(DIRECTORY include/${PROJECT_NAME}/
 #############
 # Add gtest based cpp test target and link libraries
 if (CATKIN_ENABLE_TESTING)
-	file(GLOB PROJECT_TEST_FILES_SRC RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "test/*.cpp")
-	foreach(PROJECT_TEST_FILE_SRC ${PROJECT_TEST_FILES_SRC})
-		get_filename_component(PROJECT_TEST_NAME ${PROJECT_TEST_FILE_SRC} NAME_WE)
+    file(GLOB PROJECT_TEST_FILES_SRC RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "test/*.cpp")
+    foreach (PROJECT_TEST_FILE_SRC ${PROJECT_TEST_FILES_SRC})
+        get_filename_component(PROJECT_TEST_NAME ${PROJECT_TEST_FILE_SRC} NAME_WE)
 
-		catkin_add_gtest(${PROJECT_TEST_NAME}-test ${PROJECT_TEST_FILE_SRC} WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/test/")
-		target_link_libraries(${PROJECT_TEST_NAME}-test ${LIBRARY_NAME} ${catkin_LIBRARIES} gtest_main)
-	endforeach()
-endif()
+        catkin_add_gtest(${PROJECT_TEST_NAME}-test ${PROJECT_TEST_FILE_SRC} WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/test/")
+        target_link_libraries(${PROJECT_TEST_NAME}-test ${LIBRARY_NAME} ${catkin_LIBRARIES} gtest_main)
+    endforeach ()
+endif ()
