@@ -28,6 +28,9 @@ LandmarkFinder::LandmarkFinder(std::string cfgfile) {
 
     /// set parameters
     threshold = 20;
+    tight_filter_size = 3;
+    wide_filter_size = 11;
+
     maxRadiusForPixelCluster = 3;
     minPixelForCluster = 1;
     maxPixelForCluster = 1000;
@@ -97,21 +100,14 @@ int LandmarkFinder::DetectLandmarks(const cv::Mat& img, std::vector<ImgLandmark>
 ///--------------------------------------------------------------------------------------///
 void LandmarkFinder::FilterImage(const cv::Mat& img_in, cv::Mat& img_out) {
 
-    /// declare filter kernel
-    // TODO Make kernel filter parameterizable
-    // clang-format off
-  static float Kernel_pill[7][7] = {{-1,  -1,  -1,  -1,  -1,  -1,  -1},
-                                    {-1,   0,   0,   0,   0,   0,  -1},
-                                    {-1,   0, 0.5, 0.5, 0.5,   0,  -1},
-                                    {-1,   0, 0.5,   1, 0.5,   0,  -1},
-                                    {-1,   0, 0.5, 0.5, 0.5,   0,  -1},
-                                    {-1,   0,   0,   0,   0,   0,  -1},
-                                    {-1,  -1,  -1,  -1,  -1,  -1,  -1}};
-  static cv::Mat MyKernel = cv::Mat(7, 7, CV_32F, Kernel_pill).clone(); // 32bit float
-    // clang-format on
-
-    /// apply diskfilter to image
-    cv::filter2D(img_in, img_out, img_in.depth(), MyKernel, cv::Point(-1, -1), 0, cv::BORDER_DEFAULT);
+    cv::Mat tight_filtered, wide_filtered;
+    if (tight_filter_size == 0) {
+        tight_filtered = img_in;
+    } else {
+        cv::boxFilter(img_in, tight_filtered, -1, cv::Size(tight_filter_size, tight_filter_size), cv::Point(-1, -1), true, cv::BORDER_DEFAULT);
+    }
+    cv::boxFilter(img_in, wide_filtered, -1, cv::Size(wide_filter_size, wide_filter_size), cv::Point(-1, -1), true, cv::BORDER_DEFAULT);
+    img_out = tight_filtered - wide_filtered;
 }
 
 ///--------------------------------------------------------------------------------------///

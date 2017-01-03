@@ -67,6 +67,8 @@ public:
     std::vector<Cluster> clusteredPoints_;   /**< Keeps a copy of point clusters found*/
 
     uint8_t threshold;                /**< Threshold for grayvalue thresholding 0-254*/
+    uint32_t tight_filter_size;
+    uint32_t wide_filter_size;
     float maxRadiusForPixelCluster;   /**< Maximum radius for clustering pixels to marker points*/
     uint16_t minPixelForCluster;      /**< Minimum count of pixels per marker point*/
     uint16_t maxPixelForCluster;      /**< Maximum count of pixels per marker point*/
