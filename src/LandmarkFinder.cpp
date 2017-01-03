@@ -64,15 +64,15 @@ int LandmarkFinder::DetectLandmarks(const cv::Mat& img, std::vector<ImgLandmark>
     /// check if input is valid
     // Explanation for CV_ Codes :
     // CV_[The number of bits per item][Signed or Unsigned][Type Prefix]C[The channel number]
-    img.assignTo(rawImage_, CV_8UC3); // 8bit unsigned with 3 channels
-    if (!rawImage_.data) {            /// otherwise: return with error
+    img.assignTo(grayImage_, CV_8UC1); // 8bit unsigned with 3 channels
+    if (!grayImage_.data) {            /// otherwise: return with error
         std::cerr << "Input data is invalid" << std::endl;
         return -1;
     }
     detected_landmarks.clear();
 
     /// convert color to gray for further processing
-    cvtColor(rawImage_, grayImage_, CV_BGR2GRAY);
+    cvtColor(grayImage_, rawImage_, CV_GRAY2BGR);
 
     /// smooth image
     FilterImage(grayImage_, filteredImage_);
