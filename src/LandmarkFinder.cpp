@@ -117,14 +117,11 @@ void LandmarkFinder::FilterImage(const cv::Mat& img_in, cv::Mat& img_out) {
 std::vector<cv::Point> LandmarkFinder::FindPoints(cv::Mat& img_in) {
 
     /// thresholding for pixels: put all pixels over a threshold in vector
+    cv::Mat binary;
+    cv::threshold(img_in, binary, threshold, 255, cv::THRESH_BINARY);
+
     std::vector<cv::Point> pixels;
-    for (int x = 0; x < img_in.cols; x++) {
-        for (int y = 0; y < img_in.rows; y++) {
-            if (threshold < img_in.at<uint8_t>(y, x)) {
-                pixels.push_back(cv::Point(x, y));
-            }
-        }
-    }
+    cv::findNonZero(binary, pixels);
 
     /// use this vector to group all pixels
     /// todo: this can be done more efficiently, e.g. region growing
