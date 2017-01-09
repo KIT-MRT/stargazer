@@ -72,9 +72,6 @@ int LandmarkFinder::DetectLandmarks(const cv::Mat& img, std::vector<ImgLandmark>
     }
     detected_landmarks.clear();
 
-    /// convert color to gray for further processing
-    cvtColor(grayImage_, rawImage_, CV_GRAY2BGR);
-
     /// smooth image
     FilterImage(grayImage_, filteredImage_);
     /// This method finds bright points in image

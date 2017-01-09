@@ -60,9 +60,8 @@ public:
      */
     int DetectLandmarks(const cv::Mat& img, std::vector<ImgLandmark>& detected_landmarks);
 
-    cv::Mat_<cv::Vec3b> rawImage_;           /**< Keeps a copy of the input image */
-    cv::Mat grayImage_;                      /**< Keeps a copy of the converted grayvalue image */
-    cv::Mat filteredImage_;                  /**< Keeps a copy of the filtered iamge */
+    cv::Mat grayImage_;                      /**< Keeps a copy of the grayvalue image */
+    cv::Mat filteredImage_;                  /**< Keeps a copy of the filtered image */
     std::vector<cv::Point> clusteredPixels_; /**< Keeps a copy of pixel clusters found */
     std::vector<Cluster> clusteredPoints_;   /**< Keeps a copy of point clusters found*/
 
