@@ -17,6 +17,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "LandmarkFinder.h"
+#include <boost/range/adaptor/reversed.hpp>
 
 using namespace std;
 using namespace stargazer;
@@ -155,7 +156,8 @@ void LandmarkFinder::FindClusters(const std::vector<cv::Point>& points_in, std::
     {
         bool clusterFound = 0; /// set flag that not used yet
 
-        for (auto& cluster : clusters) {         /// go thru all clusters
+        /// the last created cluster is most liley the one we are looking for
+        for (auto& cluster : boost::adaptors::reverse(clusters)) {/// go thru all clusters
             for (auto& clusterPoint : cluster) { /// go thru all points in this cluster
                 /// if distance is smaller than threshold, add point to cluster
                 if (getDistance(clusterPoint, thisPoint) <= radiusThreshold) {
