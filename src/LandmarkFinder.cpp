@@ -129,6 +129,7 @@ std::vector<cv::Point> LandmarkFinder::FindPoints(cv::Mat& img_in) {
     /// compute mean of each pixel cluster and put it into output vector
     /// todo: this can be done more efficiently
     std::vector<cv::Point> points;
+    points.reserve(clusteredPixels.size());
     for (auto& cluster : clusteredPixels) {
         cv::Point thisPoint = cv::Point(0, 0);
         for (auto& pixel : cluster) { /// go thru all points in this cluster
@@ -157,7 +158,7 @@ void LandmarkFinder::FindClusters(const std::vector<cv::Point>& points_in, std::
         for (auto& cluster : boost::adaptors::reverse(clusters)) {/// go thru all clusters
             for (auto& clusterPoint : cluster) { /// go thru all points in this cluster
                 /// if distance is smaller than threshold, add point to cluster
-                if (getDistance(clusterPoint, thisPoint) <= radiusThreshold) {
+                if (cv::norm(clusterPoint - thisPoint) <= radiusThreshold) {
                     cluster.push_back(thisPoint);
                     clusterFound = true;
                     break; /// because point has been added to cluster, no further search is neccessary
@@ -210,27 +211,27 @@ bool LandmarkFinder::FindCorners(std::vector<cv::Point>& point_list, std::vector
         cv::Point& firstPoint = point_list[i];
         for (size_t j = i + 1; j < point_list.size(); j++) {
             cv::Point& secondPoint = point_list[j];
-            cv::Point v12 = getVector(secondPoint, firstPoint);
+            cv::Point v12 = firstPoint - secondPoint;
             for (size_t k = j + 1; k < point_list.size(); k++) {
                 cv::Point& thirdPoint = point_list[k];
-                cv::Point v31 = getVector(thirdPoint, firstPoint);
-                cv::Point v32 = getVector(thirdPoint, secondPoint);
+                cv::Point v31 = firstPoint - thirdPoint;
+                cv::Point v32 = secondPoint - thirdPoint;
 
                 /// Since we test every combination only once, make sure the lengths are correct:
                 // norm(v12) > norm(v31) >= (v32)
-                if ((getNorm(v31) > fp * getNorm(v32)) && (getNorm(v31) > fp * getNorm(v12))) {
+                if ((cv::norm(v31) > fp * cv::norm(v32)) && (cv::norm(v31) > fp * cv::norm(v12))) {
                     v12 = v31; // v12 should be longest -> hypotenuse
-                    v31 = getVector(secondPoint, firstPoint);
+                    v31 = firstPoint - secondPoint;
                     v32 = v32;
-                } else if ((getNorm(v32) > fp * getNorm(v31)) && (getNorm(v32) > fp * getNorm(v12))) {
+                } else if ((cv::norm(v32) > fp * cv::norm(v31)) && (cv::norm(v32) > fp * cv::norm(v12))) {
                     v12 = v32;
                     v32 = v31;
-                    v31 = getVector(secondPoint, firstPoint);
+                    v31 = firstPoint - secondPoint;
                 }
 
-                float dist12 = getNorm(v12);
-                float dist31 = getNorm(v31);
-                float dist32 = getNorm(v32);
+                float dist12 = cv::norm(v12);
+                float dist31 = cv::norm(v31);
+                float dist32 = cv::norm(v32);
                 float sumOfLength = dist12 + dist31 + dist32;
 
                 // Project v32 onto v31 -> resulting length should be close to zero
@@ -259,16 +260,16 @@ bool LandmarkFinder::FindCorners(std::vector<cv::Point>& point_list, std::vector
     }
 
     /// The three distances have to be updated for calculations in the next steps
-    cv::Point v12 = getVector(*cornerOne, *cornerTwo);
-    cv::Point v31 = getVector(*cornerThree, *cornerOne);
-    cv::Point v32 = getVector(*cornerThree, *cornerTwo);
+    cv::Point v12 = *cornerTwo - *cornerOne;
+    cv::Point v31 = *cornerOne - *cornerThree;
+    cv::Point v32 = *cornerTwo - *cornerThree;
 
     /// Compare the distances and get the diagonal of the landmark
     /// note the reversed order: it's 1-3-2, because the corner 3 is the one
     /// between 1 and 2 this helps for post-processing
-    if ((getNorm(v12) > fp * getNorm(v31)) && (getNorm(v12) > fp * getNorm(v32))) {
+    if ((cv::norm(v12) > fp * cv::norm(v31)) && (cv::norm(v12) > fp * cv::norm(v32))) {
         ;
-    } else if ((getNorm(v31) > fp * getNorm(v32)) && (getNorm(v31) > fp * getNorm(v12))) {
+    } else if ((cv::norm(v31) > fp * cv::norm(v32)) && (cv::norm(v31) > fp * cv::norm(v12))) {
         std::swap(cornerTwo, cornerThree);
     } else {
         std::swap(cornerOne, cornerThree);
@@ -330,17 +331,14 @@ bool LandmarkFinder::CalculateIdForward(ImgLandmark& landmark, std::vector<uint1
 
     // TODO move these checks into FindCorners function
     /// second: get the x- and y-axis of the landmark
-    cv::Point oTwoOne = getVector(*oCornerTwo, *oCornerOne);
-    cv::Point oTwoThree = getVector(*oCornerTwo, *oCornerThree);
+    cv::Point oTwoOne = *oCornerOne - *oCornerTwo;
+    cv::Point oTwoThree = *oCornerThree - *oCornerTwo;
 
     /// third: make sure, they are in the right order.
     /// we do this by checking if the cross product is positive
-    float fCrossProduct = getCrossProduct(oTwoOne, oTwoThree);
-
-    if (0 > fCrossProduct) {
+    if (0 > oTwoOne.cross(oTwoThree)) {
         std::swap(oCornerOne, oCornerThree);
-        oTwoOne = getVector(*oCornerTwo, *oCornerOne);
-        oTwoThree = getVector(*oCornerTwo, *oCornerThree);
+        std::swap(oTwoOne, oTwoThree);
         std::swap(landmark.voCorners.at(0), landmark.voCorners.at(2));
     }
 
@@ -369,31 +367,23 @@ bool LandmarkFinder::CalculateIdForward(ImgLandmark& landmark, std::vector<uint1
     /// the point under examination
     cv::Mat ThisPoint(2, 1, CV_32FC1);
 
-    /// the x and y value of the point
-    float x = 0;
-    float y = 0;
-
     /// the total ID
     uint16_t ID = 0;
 
-    /// the value a certain point contributes to the ID
-    uint16_t ThisPointID = 0;
-
     /// go thru all ID points in this landmark structure
-    std::vector<cv::Point>::iterator pPointsIt;
     std::vector<uint16_t> pPointsIDs;
-    for (pPointsIt = landmark.voIDPoints.begin(); pPointsIt != landmark.voIDPoints.end(); pPointsIt++) {
+    for (const auto& pPoints : landmark.voIDPoints) {
         /// first step: bring the ID point in relation to the origin of the
         /// landmark
-        ThisPoint.at<float>(0, 0) = float(pPointsIt->x) - float(oCornerTwo->x);
-        ThisPoint.at<float>(1, 0) = float(pPointsIt->y) - float(oCornerTwo->y);
+        ThisPoint.at<float>(0, 0) = float(pPoints.x - oCornerTwo->x);
+        ThisPoint.at<float>(1, 0) = float(pPoints.y - oCornerTwo->y);
 
         /// apply transfrom
         ThisPoint = Transform * ThisPoint;
 
         /// next step is the quantization in values between 0 and 3
-        x = ThisPoint.at<float>(0, 0);
-        y = ThisPoint.at<float>(1, 0);
+        float x = ThisPoint.at<float>(0, 0);
+        float y = ThisPoint.at<float>(1, 0);
 
         /// it's 1-y because in the definition of the landmark ID the x axis runs
         /// down
@@ -410,7 +400,7 @@ bool LandmarkFinder::CalculateIdForward(ImgLandmark& landmark, std::vector<uint1
         ///                             y steps are binary shifts of 4 bit blocks
         ///                             see http://hagisonic.com/ for more
         ///                             information on this
-        ThisPointID = static_cast<uint16_t>((1 << nX) << 4 * nY);
+        uint16_t ThisPointID = static_cast<uint16_t>((1 << nX) << 4 * nY);
         pPointsIDs.push_back(ThisPointID);
 
         /// add this point's contribution to the landmark ID
@@ -453,16 +443,13 @@ bool LandmarkFinder::CalculateIdBackward(ImgLandmark& landmark, std::vector<uint
     const cv::Point* oCornerTwo = &landmark.voCorners.at(1);
     const cv::Point* oCornerThree = &landmark.voCorners.at(2);
 
-    cv::Point oTwoOne = getVector(*oCornerTwo, *oCornerOne);
-    cv::Point oTwoThree = getVector(*oCornerTwo, *oCornerThree);
+    cv::Point oTwoOne = *oCornerOne - *oCornerTwo;
+    cv::Point oTwoThree = *oCornerThree - *oCornerTwo;
 
     /// make it a right hand system
-    float fCrossProduct = getCrossProduct(oTwoOne, oTwoThree);
-
-    if (0 > fCrossProduct) {
+    if (0 > oTwoOne.cross(oTwoThree)) {
         std::swap(oCornerOne, oCornerThree);
-        oTwoOne = getVector(*oCornerTwo, *oCornerOne);
-        oTwoThree = getVector(*oCornerTwo, *oCornerThree);
+        std::swap(oTwoOne, oTwoThree);
         std::swap(landmark.voCorners.at(0), landmark.voCorners.at(2));
     }
 
@@ -609,18 +596,3 @@ void LandmarkFinder::parallel_vector_sort(std::vector<uint16_t>& ids, std::vecto
     }
 }
 
-cv::Point LandmarkFinder::getVector(const cv::Point& from, const cv::Point& to) {
-    return cv::Point(to.x - from.x, to.y - from.y);
-}
-
-float LandmarkFinder::getDistance(const cv::Point& p1, const cv::Point& p2) {
-    return std::hypot(p2.x - p1.x, p2.y - p1.y);
-}
-
-float LandmarkFinder::getNorm(const cv::Point& p) {
-    return std::hypot(p.x, p.y);
-}
-
-float LandmarkFinder::getCrossProduct(const cv::Point& v1, const cv::Point& v2) {
-    return float(v1.x) * float(v2.y) - float(v1.y) * float(v2.x);
-}
