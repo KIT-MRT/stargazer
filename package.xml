@@ -5,7 +5,7 @@
   <description>A landmark-based visual indoor localization system for mobile robots</description>
 
   <license>GPLv3</license>
-  <maintainer email="claudio.bandera@kit.edu">Claudio Bandera</maintainer>
+  <maintainer email="piotr.orzechowski@kit.edu">Piotr Orzechowski</maintainer>
   <author email="claudio.bandera@kit.edu">Claudio Bandera</author>
   <url type="repository">https://github.com/KIT-MRT/stargazer.git</url>
 
