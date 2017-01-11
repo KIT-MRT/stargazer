@@ -18,6 +18,7 @@
 
 #include "DebugVisualizer.h"
 #include "CoordinateTransformations.h"
+#include <opencv2/imgproc.hpp>
 
 using namespace stargazer;
 
