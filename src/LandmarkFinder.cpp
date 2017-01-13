@@ -102,9 +102,11 @@ void LandmarkFinder::FilterImage(const cv::Mat& img_in, cv::Mat& img_out) {
     if (tight_filter_size == 0) {
         tight_filtered = img_in;
     } else {
-        cv::boxFilter(img_in, tight_filtered, -1, cv::Size(tight_filter_size, tight_filter_size), cv::Point(-1, -1), true, cv::BORDER_DEFAULT);
+        cv::boxFilter(img_in, tight_filtered, -1, cv::Size(tight_filter_size, tight_filter_size), cv::Point(-1, -1),
+                      true, cv::BORDER_DEFAULT);
     }
-    cv::boxFilter(img_in, wide_filtered, -1, cv::Size(wide_filter_size, wide_filter_size), cv::Point(-1, -1), true, cv::BORDER_DEFAULT);
+    cv::boxFilter(img_in, wide_filtered, -1, cv::Size(wide_filter_size, wide_filter_size), cv::Point(-1, -1), true,
+                  cv::BORDER_DEFAULT);
     img_out = tight_filtered - wide_filtered;
 }
 
@@ -155,8 +157,8 @@ void LandmarkFinder::FindClusters(const std::vector<cv::Point>& points_in, std::
         bool clusterFound = 0; /// set flag that not used yet
 
         /// the last created cluster is most liley the one we are looking for
-        for (auto& cluster : boost::adaptors::reverse(clusters)) {/// go thru all clusters
-            for (auto& clusterPoint : cluster) { /// go thru all points in this cluster
+        for (auto& cluster : boost::adaptors::reverse(clusters)) { /// go thru all clusters
+            for (auto& clusterPoint : cluster) {                   /// go thru all points in this cluster
                 /// if distance is smaller than threshold, add point to cluster
                 if (cv::norm(clusterPoint - thisPoint) <= radiusThreshold) {
                     cluster.push_back(thisPoint);
@@ -595,4 +597,3 @@ void LandmarkFinder::parallel_vector_sort(std::vector<uint16_t>& ids, std::vecto
         }
     }
 }
-

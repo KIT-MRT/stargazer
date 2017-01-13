@@ -25,10 +25,10 @@
 #include <fstream>
 #include <iostream>
 #include <boost/lexical_cast.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #include "iostream"
 #include "math.h"
 #include "vector"
-#include <opencv2/imgproc/imgproc.hpp>
 
 namespace stargazer {
 
@@ -65,7 +65,7 @@ public:
     std::vector<cv::Point> clusteredPixels_; /**< Keeps a copy of pixel clusters found */
     std::vector<Cluster> clusteredPoints_;   /**< Keeps a copy of point clusters found*/
 
-    uint8_t threshold;                /**< Threshold for grayvalue thresholding 0-254*/
+    uint8_t threshold; /**< Threshold for grayvalue thresholding 0-254*/
     uint32_t tight_filter_size;
     uint32_t wide_filter_size;
     float maxRadiusForPixelCluster;   /**< Maximum radius for clustering pixels to marker points*/

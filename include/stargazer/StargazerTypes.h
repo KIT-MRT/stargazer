@@ -108,9 +108,9 @@ struct Landmark {
     std::array<double, (int)POSE::N_PARAMS> pose = {{0., 0., 0., 0., 0., 0.}}; /**< The landmarks pose */
     std::vector<Point> points;           /**< Vector of landmark points. The first three are the corners */
     static constexpr int kGridCount = 4; /**< Defines how many rows and columns the landmark has */
-    static constexpr double
-        kGridDistance = 0.08; /**< Defines the distance between two landmark LEDs in meters. This is important for
-                                 esimating the scale. */
+    static constexpr double kGridDistance =
+        0.08; /**< Defines the distance between two landmark LEDs in meters. This is important for
+                 esimating the scale. */
 };
 
 /**
