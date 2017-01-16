@@ -20,6 +20,8 @@
 #include <ceres/ceres.h>
 #include <opencv/highgui.h>
 
+#include "internal/CostFunction.h"
+
 using namespace stargazer;
 
 CeresLocalizer::CeresLocalizer(std::string cfgfile) : Localizer(cfgfile) {
@@ -28,7 +30,7 @@ CeresLocalizer::CeresLocalizer(std::string cfgfile) : Localizer(cfgfile) {
     for (auto& el : landmarks) {
         for (auto& pt : el.second.points) {
             double x, y, z;
-            transformLM2World(&pt[(int)POINT::X], &pt[(int)POINT::Y], el.second.pose.data(), &x, &y, &z);
+            transformLandMarkToWorld(pt[(int)POINT::X], pt[(int)POINT::Y], el.second.pose.data(), &x, &y, &z);
             pt = {x, y, z};
         }
     }
@@ -84,11 +86,11 @@ void CeresLocalizer::AddResidualBlocks(std::vector<ImgLandmark> img_landmarks) {
         for (size_t k = 0; k < landmarks[img_lm.nID].points.size(); k++) {
             ceres::CostFunction* cost_function;
             if (k < 3) {
-                cost_function = World2ImgReprojectionFunctor::Create(
+                cost_function = WorldToImageReprojectionFunctor::Create(
                     img_lm.voCorners[k].x, img_lm.voCorners[k].y, landmarks[img_lm.nID].points[k][(int)POINT::X],
                     landmarks[img_lm.nID].points[k][(int)POINT::Y], landmarks[img_lm.nID].points[k][(int)POINT::Z]);
             } else {
-                cost_function = World2ImgReprojectionFunctor::Create(
+                cost_function = WorldToImageReprojectionFunctor::Create(
                     img_lm.voIDPoints[k - 3].x, img_lm.voIDPoints[k - 3].y,
                     landmarks[img_lm.nID].points[k][(int)POINT::X], landmarks[img_lm.nID].points[k][(int)POINT::Y],
                     landmarks[img_lm.nID].points[k][(int)POINT::Z]);

@@ -18,6 +18,7 @@
 
 #include "LandmarkCalibrator.h"
 #include "StargazerConfig.h"
+#include "internal/CostFunction.h"
 
 using namespace stargazer;
 
@@ -56,11 +57,11 @@ void LandmarkCalibrator::AddReprojectionResidualBlocks(
 
                 // Test reprojection error
                 double u, v;
-                transformLM2Img<double>(&real_lm.points[k][(int)POINT::X], &real_lm.points[k][(int)POINT::Y],
-                                        real_lm.pose.data(), camera_poses_[i].data(), camera_intrinsics_.data(), &u,
-                                        &v);
+                transformLandMarkToImage<double>(real_lm.points[k][(int)POINT::X], real_lm.points[k][(int)POINT::Y],
+                                                 real_lm.pose.data(), camera_poses_[i].data(),
+                                                 camera_intrinsics_.data(), &u, &v);
 
-                ceres::CostFunction* cost_function = LM2ImgReprojectionFunctor::Create(
+                ceres::CostFunction* cost_function = LandMarkToImageReprojectionFunctor::Create(
                     point_under_test->x, point_under_test->y, real_lm.points[k][(int)POINT::X],
                     real_lm.points[k][(int)POINT::Y]);
 

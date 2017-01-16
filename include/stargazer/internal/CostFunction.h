@@ -30,7 +30,7 @@ namespace stargazer {
  * coordinates
  *
  */
-struct LM2ImgReprojectionFunctor {
+struct LandMarkToImageReprojectionFunctor {
 
     double u_observed, v_observed; /**< Image coordinates of observed point */
     double x_marker, y_marker;     /**< Landmark coordinates of map point */
@@ -43,7 +43,7 @@ struct LM2ImgReprojectionFunctor {
      * @param x_marker      x-coordinate of map point
      * @param y_marker      y-coordinate of map point
      */
-    LM2ImgReprojectionFunctor(double u_observed, double v_observed, double x_marker, double y_marker)
+    LandMarkToImageReprojectionFunctor(double u_observed, double v_observed, double x_marker, double y_marker)
             : u_observed(u_observed), v_observed(v_observed), x_marker(x_marker), y_marker(y_marker) {
     }
 
@@ -51,23 +51,21 @@ struct LM2ImgReprojectionFunctor {
     /**
      * @brief   Computes the error based on input parameters
      *
-     * @param lm_pose   Pose of landmark
+     * @param landmark_pose   Pose of landmark
      * @param camera_pose   Pose of camera
      * @param camera_intrinsics Intrinsic camera parameters
      * @param residuals Residual array
      * @return bool Flag indicating success or failure
      */
-    bool operator()(const T* const lm_pose, const T* const camera_pose, const T* const camera_intrinsics,
+    bool operator()(const T* const landmark_pose, const T* const camera_pose, const T* const camera_intrinsics,
                     T* residuals) const {
 
         // Transform landmark point to camera
         T u_marker = T(0.0);
         T v_marker = T(0.0);
 
-        T x_marker_tmp = T(x_marker);
-        T y_marker_tmp = T(y_marker);
-
-        transformLM2Img<T>(&x_marker_tmp, &y_marker_tmp, lm_pose, camera_pose, camera_intrinsics, &u_marker, &v_marker);
+        transformLandMarkToImage<T>(T(x_marker), T(y_marker), landmark_pose, camera_pose, camera_intrinsics, &u_marker,
+                                    &v_marker);
 
         // Compute residual
         residuals[0] = u_marker - T(u_observed);
@@ -87,8 +85,8 @@ struct LM2ImgReprojectionFunctor {
      */
     static ceres::CostFunction* Create(const double u_observed, const double v_observed, const double x_marker,
                                        const double y_marker) {
-        return (new ceres::AutoDiffCostFunction<LM2ImgReprojectionFunctor, 2, 6, 6, 6>(
-            new LM2ImgReprojectionFunctor(u_observed, v_observed, x_marker, y_marker)));
+        return (new ceres::AutoDiffCostFunction<LandMarkToImageReprojectionFunctor, 2, 6, 6, 6>(
+            new LandMarkToImageReprojectionFunctor(u_observed, v_observed, x_marker, y_marker)));
     }
 };
 
@@ -96,7 +94,7 @@ struct LM2ImgReprojectionFunctor {
  * @brief Cost functor for ceres optimization. Computes the error by transforming a world point into image coordinates
  *
  */
-struct World2ImgReprojectionFunctor {
+struct WorldToImageReprojectionFunctor {
 
     double u_observed, v_observed;       /**< Image coordinates of observed point */
     double x_marker, y_marker, z_marker; /**< World coordinates of map point */
@@ -110,8 +108,8 @@ struct World2ImgReprojectionFunctor {
      * @param y_marker      y-coordinate of map point
      * @param z_marker      z-coordinate of map point
      */
-    World2ImgReprojectionFunctor(double u_observed, double v_observed, double x_marker, double y_marker,
-                                 double z_marker)
+    WorldToImageReprojectionFunctor(double u_observed, double v_observed, double x_marker, double y_marker,
+                                    double z_marker)
             : u_observed(u_observed), v_observed(v_observed), x_marker(x_marker), y_marker(y_marker),
               z_marker(z_marker) {
     }
@@ -131,11 +129,8 @@ struct World2ImgReprojectionFunctor {
         T u_marker = T(0.0);
         T v_marker = T(0.0);
 
-        T x_marker_tmp = T(x_marker);
-        T y_marker_tmp = T(y_marker);
-        T z_marker_tmp = T(z_marker);
-        transformWorld2Img<T>(&x_marker_tmp, &y_marker_tmp, &z_marker_tmp, camera_pose, camera_intrinsics, &u_marker,
-                              &v_marker);
+        transformWorldToImg<T>(T(x_marker), T(y_marker), T(z_marker), camera_pose, camera_intrinsics, &u_marker,
+                               &v_marker);
 
         // Compute residual
         residuals[0] = u_marker - T(u_observed);
@@ -156,9 +151,9 @@ struct World2ImgReprojectionFunctor {
      */
     static ceres::CostFunction* Create(const double u_observed, const double v_observed, const double x_marker,
                                        const double y_marker, const double z_marker) {
-        return (new ceres::AutoDiffCostFunction<World2ImgReprojectionFunctor, 2, (int)POSE::N_PARAMS,
+        return (new ceres::AutoDiffCostFunction<WorldToImageReprojectionFunctor, 2, (int)POSE::N_PARAMS,
                                                 (int)INTRINSICS::N_PARAMS>(
-            new World2ImgReprojectionFunctor(u_observed, v_observed, x_marker, y_marker, z_marker)));
+            new WorldToImageReprojectionFunctor(u_observed, v_observed, x_marker, y_marker, z_marker)));
     }
 };
 

@@ -19,9 +19,9 @@
 #pragma once
 
 #include <string>
+#include <ceres/ceres.h>
 #include "CoordinateTransformations.h"
 #include "Localizer.h"
-#include "internal/CostFunction.h"
 
 namespace stargazer {
 

@@ -20,7 +20,6 @@
 
 #include "CoordinateTransformations.h"
 #include "StargazerImgTypes.h"
-#include "internal/CostFunction.h"
 
 #include <map>
 #include <vector>
