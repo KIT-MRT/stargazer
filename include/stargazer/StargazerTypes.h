@@ -37,7 +37,7 @@ enum struct POSE { X, Y, Z, Rx, Ry, Rz, N_PARAMS };
  * @brief Definition of the intrinsic camera parameters
  *
  */
-enum struct INTRINSICS { f, u0, v0, alpha, beta, theta, N_PARAMS };
+enum struct INTRINSICS { fu, fv, u0, v0, N_PARAMS };
 
 /**
  * @brief   Definition of the three position parmaters of a point

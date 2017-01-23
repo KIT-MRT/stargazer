@@ -91,18 +91,11 @@ void transformWorldToImg(const T& x_world, const T& y_world, const T& z_world, c
     angleAxisCam[2] = -camera_pose[(int)POSE::Rz];
     ceres::AngleAxisRotatePoint(&angleAxisCam[0], &p_camera[0], &p_camera[0]);
 
-    /* Transform point to image coordinates
-    intrinsics[0] is focal length
-    intrinsics[1] is x0
-    intrinsics[2] is y0
-    intrinsics[3] is alpha
-    intrinsics[4] is beta
-    intrinsics[5] is theta --> assumed 90° */
+    // Transform point to image coordinates
     T p_image[3];
-    p_image[0] = camera_intrinsics[(int)INTRINSICS::f] * camera_intrinsics[(int)INTRINSICS::alpha] * p_camera[0] +
-                 T(0) * p_camera[1] + camera_intrinsics[(int)INTRINSICS::u0] * p_camera[2];
-    p_image[1] = T(0) * p_camera[0] +
-                 camera_intrinsics[(int)INTRINSICS::f] * camera_intrinsics[(int)INTRINSICS::beta] * p_camera[1] / T(1) +
+    p_image[0] = camera_intrinsics[(int)INTRINSICS::fu] * p_camera[0] +
+                 camera_intrinsics[(int)INTRINSICS::u0] * p_camera[2];
+    p_image[1] = camera_intrinsics[(int)INTRINSICS::fv] * p_camera[1] +
                  camera_intrinsics[(int)INTRINSICS::v0] * p_camera[2];
     p_image[2] = p_camera[2];
     if (p_image[2] == T(0)) {

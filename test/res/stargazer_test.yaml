@@ -1,10 +1,8 @@
 CameraIntrinsics:
- f: 279.082
+ fu: 279.082
+ fv: 279.082
  u0: 368.246
  v0: 234.506
- alpha: 1
- beta: 1
- theta: 1.5708
 
 Landmarks:
  - { HexID: 0x0016, x:  4.72485, y:  3.07007, z:    3.263, rx:   2.2214, ry:  -2.2214, rz:        0 }
