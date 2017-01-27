@@ -73,6 +73,8 @@ void LandmarkCalibrator::AddReprojectionResidualBlocks(
                                          real_lm.pose.data(), camera_poses_[i].data(), camera_intrinsics_.data());
             }
         }
+        problem.SetParameterization(camera_poses_[i].data(), new ceres::SubsetParameterization((int)POSE::N_PARAMS, {{(int)POSE::Z}}));
+        camera_poses_[i][(int)POSE::Z] = 0.0;
     }
 }
 
