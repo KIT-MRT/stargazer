@@ -85,7 +85,7 @@ struct LandMarkToImageReprojectionFunctor {
      */
     static ceres::CostFunction* Create(const double u_observed, const double v_observed, const double x_marker,
                                        const double y_marker) {
-        return (new ceres::AutoDiffCostFunction<LandMarkToImageReprojectionFunctor, 2, 6, 6, 6>(
+        return (new ceres::AutoDiffCostFunction<LandMarkToImageReprojectionFunctor, 2, (int)POSE::N_PARAMS, (int)POSE::N_PARAMS, (int)INTRINSICS::N_PARAMS>(
             new LandMarkToImageReprojectionFunctor(u_observed, v_observed, x_marker, y_marker)));
     }
 };
