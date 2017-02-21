@@ -95,11 +95,9 @@ void CeresLocalizer::AddResidualBlocks(std::vector<ImgLandmark> img_landmarks) {
                     landmarks[img_lm.nID].points[k][(int)POINT::X], landmarks[img_lm.nID].points[k][(int)POINT::Y],
                     landmarks[img_lm.nID].points[k][(int)POINT::Z]);
             }
+            // CauchyLoss(9): a pixel-error of 3 is still considered as inlayer
             problem.AddResidualBlock(cost_function,
-                                     new ceres::CauchyLoss(50), // NULL /* squared loss */, //
-                                                                // Alternatively: new
-                                                                // ceres::ScaledLoss(NULL, w_v_des,
-                                                                // ceres::TAKE_OWNERSHIP),
+                                     new ceres::CauchyLoss(9),
                                      ego_pose.data(), camera_intrinsics.data());
         }
     }
