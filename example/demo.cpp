@@ -41,7 +41,8 @@ int main(int argc, char** argv) {
     debugVisualizer.ShowImage(temp, "Detected Landmarks");
 
     // Localize
-    CeresLocalizer localizer(argv[2]);
+    const std::string args(argv[2]);
+    CeresLocalizer localizer(args);
     localizer.UpdatePose(detected_landmarks, 0.0);
     cout << localizer.getSummary().FullReport() << endl << endl;
 

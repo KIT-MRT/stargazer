@@ -24,7 +24,10 @@
 
 using namespace stargazer;
 
-CeresLocalizer::CeresLocalizer(std::string cfgfile) : Localizer(cfgfile) {
+CeresLocalizer::CeresLocalizer(const std::string& cfgfile) : CeresLocalizer(cfgfile, false) {}
+
+CeresLocalizer::CeresLocalizer(const std::string& cfgfile, bool estimate_2d_pose)
+  : Localizer(cfgfile), estimate_2d_pose(estimate_2d_pose) {
 
     // Convert landmark points to worldcoordinates once.
     for (auto& el : landmarks) {
@@ -102,7 +105,12 @@ void CeresLocalizer::AddResidualBlocks(std::vector<ImgLandmark> img_landmarks) {
         }
     }
     if (!is_initialized) {
-        problem.SetParameterization(ego_pose.data(), new ceres::SubsetParameterization((int)POSE::N_PARAMS, {{(int)POSE::Z}}));
+        std::vector<int> constant_parameters = {{(int)POSE::Z}};
+        if (estimate_2d_pose) {
+          constant_parameters.push_back((int)POSE::Rx);
+          constant_parameters.push_back((int)POSE::Ry);
+        }
+        problem.SetParameterization(ego_pose.data(), new ceres::SubsetParameterization((int)POSE::N_PARAMS, constant_parameters));
         ego_pose[(int)POSE::Z] = 0.0;
         is_initialized = true;
     }
