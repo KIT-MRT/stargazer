@@ -24,10 +24,11 @@
 
 using namespace stargazer;
 
-CeresLocalizer::CeresLocalizer(const std::string& cfgfile) : CeresLocalizer(cfgfile, false) {}
+CeresLocalizer::CeresLocalizer(const std::string& cfgfile) : CeresLocalizer(cfgfile, false) {
+}
 
 CeresLocalizer::CeresLocalizer(const std::string& cfgfile, bool estimate_2d_pose)
-  : Localizer(cfgfile), estimate_2d_pose(estimate_2d_pose) {
+        : Localizer(cfgfile), estimate_2d_pose(estimate_2d_pose) {
 
     // Convert landmark points to worldcoordinates once.
     for (auto& el : landmarks) {
@@ -54,7 +55,7 @@ void CeresLocalizer::UpdatePose(std::vector<ImgLandmark>& img_landmarks, float d
         }
         ego_pose[(int)POSE::X] /= img_landmarks.size();
         ego_pose[(int)POSE::Y] /= img_landmarks.size();
-        //is_initialized = true;
+        // is_initialized = true;
     }
 
     // Delete old data
@@ -99,18 +100,18 @@ void CeresLocalizer::AddResidualBlocks(std::vector<ImgLandmark> img_landmarks) {
                     landmarks[img_lm.nID].points[k][(int)POINT::Z]);
             }
             // CauchyLoss(9): a pixel-error of 3 is still considered as inlayer
-            problem.AddResidualBlock(cost_function,
-                                     new ceres::CauchyLoss(9),
-                                     ego_pose.data(), camera_intrinsics.data());
+            problem.AddResidualBlock(cost_function, new ceres::CauchyLoss(9), ego_pose.data(),
+                                     camera_intrinsics.data());
         }
     }
     if (!is_initialized) {
         std::vector<int> constant_parameters = {{(int)POSE::Z}};
         if (estimate_2d_pose) {
-          constant_parameters.push_back((int)POSE::Rx);
-          constant_parameters.push_back((int)POSE::Ry);
+            constant_parameters.push_back((int)POSE::Rx);
+            constant_parameters.push_back((int)POSE::Ry);
         }
-        problem.SetParameterization(ego_pose.data(), new ceres::SubsetParameterization((int)POSE::N_PARAMS, constant_parameters));
+        problem.SetParameterization(ego_pose.data(),
+                                    new ceres::SubsetParameterization((int)POSE::N_PARAMS, constant_parameters));
         ego_pose[(int)POSE::Z] = 0.0;
         is_initialized = true;
     }

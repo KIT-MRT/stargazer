@@ -90,7 +90,7 @@ public:
     }
 
 protected:
-    std::map<int, Landmark> landmarks;                              /**< Map of landmarks, read from config */
+    std::map<int, Landmark> landmarks;                      /**< Map of landmarks, read from config */
     camera_params_t camera_intrinsics = {{0., 0., 0., 0.}}; /**< Parameter of camera, read from config*/
     pose_t ego_pose = {{0., 0., 0., 0., 0., 0.}}; /**< Ego pose as computed by last call to Localizer::UpdatePose */
 };

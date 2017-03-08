@@ -93,10 +93,10 @@ void transformWorldToImg(const T& x_world, const T& y_world, const T& z_world, c
 
     // Transform point to image coordinates
     T p_image[3];
-    p_image[0] = camera_intrinsics[(int)INTRINSICS::fu] * p_camera[0] +
-                 camera_intrinsics[(int)INTRINSICS::u0] * p_camera[2];
-    p_image[1] = camera_intrinsics[(int)INTRINSICS::fv] * p_camera[1] +
-                 camera_intrinsics[(int)INTRINSICS::v0] * p_camera[2];
+    p_image[0] =
+        camera_intrinsics[(int)INTRINSICS::fu] * p_camera[0] + camera_intrinsics[(int)INTRINSICS::u0] * p_camera[2];
+    p_image[1] =
+        camera_intrinsics[(int)INTRINSICS::fv] * p_camera[1] + camera_intrinsics[(int)INTRINSICS::v0] * p_camera[2];
     p_image[2] = p_camera[2];
     if (p_image[2] == T(0)) {
         std::cout << "WARNING; Attempt to divide by 0!" << std::endl;
