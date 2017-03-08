@@ -35,7 +35,7 @@ namespace stargazer {
  * @param camera_intrinsics
  * @param landmarks
  */
-inline void readConfig(std::string cfgfile, camera_params_t& camera_intrinsics, landmark_map_t& landmarks) {
+inline void readConfig(const std::string& cfgfile, camera_params_t& camera_intrinsics, landmark_map_t& landmarks) {
     YAML::Node config;
 
     try {
@@ -49,12 +49,10 @@ inline void readConfig(std::string cfgfile, camera_params_t& camera_intrinsics, 
     }
 
     if (config["CameraIntrinsics"]) {
-        camera_intrinsics[(int)INTRINSICS::f] = config["CameraIntrinsics"]["f"].as<double>();
+        camera_intrinsics[(int)INTRINSICS::fu] = config["CameraIntrinsics"]["fu"].as<double>();
+        camera_intrinsics[(int)INTRINSICS::fv] = config["CameraIntrinsics"]["fv"].as<double>();
         camera_intrinsics[(int)INTRINSICS::u0] = config["CameraIntrinsics"]["u0"].as<double>();
         camera_intrinsics[(int)INTRINSICS::v0] = config["CameraIntrinsics"]["v0"].as<double>();
-        camera_intrinsics[(int)INTRINSICS::alpha] = config["CameraIntrinsics"]["alpha"].as<double>();
-        camera_intrinsics[(int)INTRINSICS::beta] = config["CameraIntrinsics"]["beta"].as<double>();
-        camera_intrinsics[(int)INTRINSICS::theta] = config["CameraIntrinsics"]["theta"].as<double>();
     } else {
         std::string msg = "Stargazer Config file is missing camera_intrinsics!: " + cfgfile;
         throw std::runtime_error(msg);
@@ -92,12 +90,10 @@ inline void writeConfig(std::string cfgfile, const camera_params_t& camera_intri
     std::ofstream fout(cfgfile);
 
     fout << "CameraIntrinsics:\n";
-    fout << " f: " << camera_intrinsics[(int)INTRINSICS::f] << "\n";
+    fout << " fu: " << camera_intrinsics[(int)INTRINSICS::fu] << "\n";
+    fout << " fv: " << camera_intrinsics[(int)INTRINSICS::fv] << "\n";
     fout << " u0: " << camera_intrinsics[(int)INTRINSICS::u0] << "\n";
     fout << " v0: " << camera_intrinsics[(int)INTRINSICS::v0] << "\n";
-    fout << " alpha: " << camera_intrinsics[(int)INTRINSICS::alpha] << "\n";
-    fout << " beta: " << camera_intrinsics[(int)INTRINSICS::beta] << "\n";
-    fout << " theta: " << camera_intrinsics[(int)INTRINSICS::theta] << "\n";
     fout << "\n";
     fout << "Landmarks:\n";
 

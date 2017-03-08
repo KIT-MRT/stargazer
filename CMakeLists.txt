@@ -5,9 +5,10 @@ project(stargazer)
 ###################
 ## find packages ##
 ###################
-include(UseMrtModules)
+find_package(mrt_cmake_modules REQUIRED)
 include(UseMrtStdCompilerFlags)
 include(UseMrtAutoTarget)
+include(MrtParamGenerator)
 
 include(GatherDeps)
 #remove libs, which cannot be find automatically

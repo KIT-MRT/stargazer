@@ -106,8 +106,8 @@ void DebugVisualizer::DrawLandmarks(cv::Mat& img, const landmark_map_t& landmark
             double x = 0.0;
             double y = 0.0;
 
-            transformWorld2Img(&pt[(int)POINT::X], &pt[(int)POINT::Y], &pt[(int)POINT::Z], ego_pose.data(),
-                               camera_intrinsics.data(), &x, &y);
+            transformWorldToImg(pt[(int)POINT::X], pt[(int)POINT::Y], pt[(int)POINT::Z], ego_pose.data(),
+                                camera_intrinsics.data(), &x, &y);
             imgPoint.x = static_cast<int>(x);
             imgPoint.y = static_cast<int>(y);
 

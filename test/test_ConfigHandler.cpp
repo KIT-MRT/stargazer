@@ -43,31 +43,26 @@ using namespace stargazer;
 
 TEST(ConfigHandler, Read) {
 
-    std::string cfgfile{"/home/bandera/repos/MRT/stargazer_ws/src/stargazer/"
-                        "test/res/stargazer.yaml"};
+    std::string cfgfile{"res/stargazer.yaml"};
     camera_params_t camera_intrinsics;
     landmark_map_t landmarks;
     ASSERT_NO_THROW(readConfig(cfgfile, camera_intrinsics, landmarks));
 
-    ASSERT_EQ(279.082, camera_intrinsics[(int)INTRINSICS::f]);
+    ASSERT_EQ(279.082, camera_intrinsics[(int)INTRINSICS::fu]);
+    ASSERT_EQ(279.082, camera_intrinsics[(int)INTRINSICS::fv]);
     ASSERT_EQ(368.246, camera_intrinsics[(int)INTRINSICS::u0]);
     ASSERT_EQ(234.506, camera_intrinsics[(int)INTRINSICS::v0]);
-    ASSERT_EQ(1, camera_intrinsics[(int)INTRINSICS::alpha]);
-    ASSERT_EQ(1, camera_intrinsics[(int)INTRINSICS::beta]);
-    ASSERT_EQ(1.570796327, camera_intrinsics[(int)INTRINSICS::theta]);
 
     ASSERT_EQ(19, landmarks.size());
 }
 
 TEST(ConfigHandler, Write) {
-    std::string cfgfile{"/home/bandera/repos/MRT/stargazer_ws/src/stargazer/"
-                        "test/res/stargazer.yaml"};
+    std::string cfgfile{"res/stargazer.yaml"};
     camera_params_t camera_intrinsics;
     landmark_map_t landmarks;
     ASSERT_NO_THROW(readConfig(cfgfile, camera_intrinsics, landmarks));
 
-    std::string testfile{"/home/bandera/repos/MRT/stargazer_ws/src/stargazer/"
-                         "test/res/stargazer_test.yaml"};
+    std::string testfile{"res/stargazer_test.yaml"};
     ASSERT_NO_THROW(writeConfig(testfile, camera_intrinsics, landmarks));
     camera_params_t camera_intrinsics_test;
     landmark_map_t landmarks_test;

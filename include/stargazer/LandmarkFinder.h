@@ -25,10 +25,10 @@
 #include <fstream>
 #include <iostream>
 #include <boost/lexical_cast.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #include "iostream"
 #include "math.h"
 #include "vector"
-#include "opencv/cv.h"
 
 namespace stargazer {
 
@@ -60,13 +60,14 @@ public:
      */
     int DetectLandmarks(const cv::Mat& img, std::vector<ImgLandmark>& detected_landmarks);
 
-    cv::Mat_<cv::Vec3b> rawImage_;           /**< Keeps a copy of the input image */
-    cv::Mat grayImage_;                      /**< Keeps a copy of the converted grayvalue image */
-    cv::Mat filteredImage_;                  /**< Keeps a copy of the filtered iamge */
+    cv::Mat grayImage_;                      /**< Keeps a copy of the grayvalue image */
+    cv::Mat filteredImage_;                  /**< Keeps a copy of the filtered image */
     std::vector<cv::Point> clusteredPixels_; /**< Keeps a copy of pixel clusters found */
     std::vector<Cluster> clusteredPoints_;   /**< Keeps a copy of point clusters found*/
 
-    uint8_t threshold;                /**< Threshold for grayvalue thresholding 0-254*/
+    uint8_t threshold; /**< Threshold for grayvalue thresholding 0-254*/
+    uint32_t tight_filter_size;
+    uint32_t wide_filter_size;
     float maxRadiusForPixelCluster;   /**< Maximum radius for clustering pixels to marker points*/
     uint16_t minPixelForCluster;      /**< Minimum count of pixels per marker point*/
     uint16_t maxPixelForCluster;      /**< Maximum count of pixels per marker point*/
@@ -152,37 +153,6 @@ private:
      * @param points
      */
     void parallel_vector_sort(std::vector<uint16_t>& ids, std::vector<cv::Point>& points);
-    /**
-     * @brief Creates a vector from first to second point
-     *
-     * @param from
-     * @param to
-     * @return cv::Point
-     */
-    cv::Point getVector(const cv::Point& from, const cv::Point& to);
-    /**
-     * @brief Computes the distance between two points.
-     *
-     * @param p1
-     * @param p2
-     * @return float
-     */
-    float getDistance(const cv::Point& p1, const cv::Point& p2);
-    /**
-     * @brief Computes the norm of a vector
-     *
-     * @param p
-     * @return float
-     */
-    float getNorm(const cv::Point& p);
-    /**
-     * @brief Computes the cross product of two vectors
-     *
-     * @param v1
-     * @param v2
-     * @return float
-     */
-    float getCrossProduct(const cv::Point& v1, const cv::Point& v2);
 };
 
 } // namespace stargazer

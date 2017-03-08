@@ -44,7 +44,7 @@ public:
      * @param cfgfile Path to map file with camera intrinsics and landmark poses.
      * @remark The config file has to be generated with ::writeConfig!
      */
-    Localizer(std::string cfgfile) {
+    Localizer(const std::string& cfgfile) {
         readConfig(cfgfile, camera_intrinsics, landmarks);
     };
 
@@ -90,8 +90,8 @@ public:
     }
 
 protected:
-    std::map<int, Landmark> landmarks;                              /**< Map of landmarks, read from config */
-    camera_params_t camera_intrinsics = {{0., 0., 0., 0., 0., 0.}}; /**< Parameter of camera, read from config*/
+    std::map<int, Landmark> landmarks;                      /**< Map of landmarks, read from config */
+    camera_params_t camera_intrinsics = {{0., 0., 0., 0.}}; /**< Parameter of camera, read from config*/
     pose_t ego_pose = {{0., 0., 0., 0., 0., 0.}}; /**< Ego pose as computed by last call to Localizer::UpdatePose */
 };
 
