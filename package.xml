@@ -26,6 +26,8 @@
                               <exec_depend>.
   -->
 
+  <build_depend>mrt_cmake_modules</build_depend>
+
   <depend>mrt_opencv</depend>
   <depend>mrt_ceres</depend>
   <depend>yaml-cpp</depend>
