@@ -41,7 +41,7 @@ void LandmarkCalibrator::AddReprojectionResidualBlocks(
         for (size_t j = 0; j < observed_landmarks[i].size(); j++) {
             auto& observation = observed_landmarks[i][j];
 
-            if (!landmarks_.count(observation.nID) > 0)
+            if (landmarks_.count(observation.nID) == 0)
                 throw std::runtime_error("Observed Landmark id not found in cfg!");
 
             Landmark& real_lm = landmarks_.at(observation.nID);
