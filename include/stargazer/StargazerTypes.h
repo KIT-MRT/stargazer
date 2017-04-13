@@ -55,7 +55,8 @@ typedef std::array<double, (int)POINT::N_PARAMS> Point;
  */
 typedef std::array<double, (int)INTRINSICS::N_PARAMS> camera_params_t;
 /**
- * @brief   This object hold the parameters of a translation and orientation pose. See ::POSE for the indexing scheme.
+ * @brief   This object hold the parameters of a translation and orientation pose. See ::POSE for
+ * the indexing scheme.
  *
  */
 typedef std::array<double, (int)POSE::N_PARAMS> pose_t;
@@ -64,12 +65,14 @@ typedef std::array<double, (int)POSE::N_PARAMS> pose_t;
  * @brief Point generator function for a given ID.
  *
  * @param ID    Landmark ID
- * @return std::vector<Point> List of points in landmark coordinates. The first three are the three corner points.
+ * @return std::vector<Point> List of points in landmark coordinates. The first three are the three
+ * corner points.
  */
 std::vector<Point> getLandmarkPoints(int ID); // Forward declaration
 
 /**
- * @brief This class resembles a map landmark. After construction with the id, the landmark holds its marker points in
+ * @brief This class resembles a map landmark. After construction with the id, the landmark holds
+ * its marker points in
  * landmark coordinates.
  *
  */
@@ -104,9 +107,10 @@ struct Landmark {
      */
     Landmark(int ID) : id(ID), points(getLandmarkPoints(ID)){};
 
-    int id;                                                                    /**< The landmarks id */
-    std::array<double, (int)POSE::N_PARAMS> pose = {{0., 0., 0., 0., 0., 0.}}; /**< The landmarks pose */
-    std::vector<Point> points;           /**< Vector of landmark points. The first three are the corners */
+    int id; /**< The landmarks id */
+    std::array<double, (int)POSE::N_PARAMS> pose = {
+        {0., 0., 0., 0., 0., 0.}}; /**< The landmarks pose */
+    std::vector<Point> points; /**< Vector of landmark points. The first three are the corners */
     static constexpr int kGridCount = 4; /**< Defines how many rows and columns the landmark has */
     static constexpr double kGridDistance =
         0.08; /**< Defines the distance between two landmark LEDs in meters. This is important for
@@ -154,10 +158,10 @@ inline std::vector<Point> getLandmarkPoints(int ID) {
         ID -= col;
         // Convert to binary
         for (int x = 0; x < Landmark::kGridCount; x++) { // For every row
-            if (col % 2 != 0) {                          // Modulo 2 effectively converts the number to binary.
+            if (col % 2 != 0) { // Modulo 2 effectively converts the number to binary.
                 // If this returns 1, we have a point
                 // Point found
-                int id = y * Landmark::kGridCount + x;
+                // int id = y * Landmark::kGridCount + x;
                 Point pt = {x * Landmark::kGridDistance, y * Landmark::kGridDistance, 0};
                 points.push_back(pt);
             }

@@ -26,7 +26,8 @@
 namespace stargazer {
 
 /**
- * @brief This class is used for debugging. It contains several methods for visualizing points and landmarks.
+ * @brief This class is used for debugging. It contains several methods for visualizing points and
+ * landmarks.
  *
  */
 class DebugVisualizer {
@@ -35,13 +36,13 @@ public:
      * @brief Constructor
      *
      */
-    DebugVisualizer();
+    inline DebugVisualizer(){};
 
     /**
      * @brief Destructor
      *
      */
-    ~DebugVisualizer(){};
+    inline ~DebugVisualizer(){};
 
     /**
      * @brief Open a cv::namedWindow and display the img
@@ -53,7 +54,8 @@ public:
 
     // Setters
     /**
-     * @brief Value passed to cv::waitKey. Defines how long the image should be displayed. If 0 is specified, the window
+     * @brief Value passed to cv::waitKey. Defines how long the image should be displayed. If 0 is
+     * specified, the window
      * will stay open until a key is pressed.
      *
      * @param milliseconds
@@ -65,7 +67,8 @@ public:
     /**
      * @brief Setter for the window mode to use.
      *
-     * @param mode Can be any of CV_WINDOW_NORMAL (set by default), CV_WINDOW_AUTOSIZE, CV_WINDOW_OPENGL
+     * @param mode Can be any of CV_WINDOW_NORMAL (set by default), CV_WINDOW_AUTOSIZE,
+     * CV_WINDOW_OPENGL
      */
     void SetWindowMode(int mode) {
         m_window_mode = mode;
@@ -103,18 +106,20 @@ public:
      * @param camera_intrinsics Camera parameters
      * @param ego_pose  Camera pose
      */
-    void DrawLandmarks(cv::Mat& img, const landmark_map_t& landmarks, const camera_params_t& camera_intrinsics,
+    void DrawLandmarks(cv::Mat& img,
+                       const landmark_map_t& landmarks,
+                       const camera_params_t& camera_intrinsics,
                        const pose_t& ego_pose);
 
 private:
-    int m_wait_time;   /**< Time to wait when displaying image */
-    int m_window_mode; /**< cvWindowProperty */
-    cv::Mat baseImg;   /**< dummy image */
-                       /**
-                        * @brief Converts image to color image
-                        *
-                        * @param img
-                        */
+    int m_wait_time{1};                  /**< Time to wait when displaying image */
+    int m_window_mode{CV_WINDOW_NORMAL}; /**< cvWindowProperty */
+    cv::Mat baseImg;                     /**< dummy image */
+                                         /**
+                                          * @brief Converts image to color image
+                                          *
+                                          * @param img
+                                          */
     void prepareImg(cv::Mat& img);
 };
 

@@ -27,12 +27,14 @@ LandmarkCalibrator::LandmarkCalibrator(std::string cfgfile) {
 };
 
 void LandmarkCalibrator::AddReprojectionResidualBlocks(
-    const std::vector<pose_t>& observed_poses, const std::vector<std::vector<ImgLandmark>>& observed_landmarks) {
+    const std::vector<pose_t>& observed_poses,
+    const std::vector<std::vector<ImgLandmark>>& observed_landmarks) {
 
     if (observed_landmarks.size() != observed_poses.size())
         throw std::runtime_error("Got different amount of observations for landmarks and poses");
 
-    // Copy poses, as we keep and modify them. Landmark observations get only copied into costfunctor.
+    // Copy poses, as we keep and modify them. Landmark observations get only copied into
+    // costfunctor.
     camera_poses_ = observed_poses;
 
     for (size_t i = 0; i < observed_landmarks.size(); i++) {
@@ -44,8 +46,10 @@ void LandmarkCalibrator::AddReprojectionResidualBlocks(
 
             Landmark& real_lm = landmarks_.at(observation.nID);
 
-            if (observation.voCorners.size() + observation.voIDPoints.size() != real_lm.points.size())
-                throw std::runtime_error("Observed Landmark has different ammount of points then real landmark!");
+            if (observation.voCorners.size() + observation.voIDPoints.size() !=
+                real_lm.points.size())
+                throw std::runtime_error(
+                    "Observed Landmark has different ammount of points then real landmark!");
 
             // Add residual block, for every one of the seen points.
             for (size_t k = 0; k < real_lm.points.size(); k++) {
@@ -57,24 +61,33 @@ void LandmarkCalibrator::AddReprojectionResidualBlocks(
 
                 // Test reprojection error
                 double u, v;
-                transformLandMarkToImage<double>(real_lm.points[k][(int)POINT::X], real_lm.points[k][(int)POINT::Y],
-                                                 real_lm.pose.data(), camera_poses_[i].data(),
-                                                 camera_intrinsics_.data(), &u, &v);
+                transformLandMarkToImage<double>(real_lm.points[k][(int)POINT::X],
+                                                 real_lm.points[k][(int)POINT::Y],
+                                                 real_lm.pose.data(),
+                                                 camera_poses_[i].data(),
+                                                 camera_intrinsics_.data(),
+                                                 &u,
+                                                 &v);
 
-                ceres::CostFunction* cost_function = LandMarkToImageReprojectionFunctor::Create(
-                    point_under_test->x, point_under_test->y, real_lm.points[k][(int)POINT::X],
-                    real_lm.points[k][(int)POINT::Y]);
+                ceres::CostFunction* cost_function =
+                    LandMarkToImageReprojectionFunctor::Create(point_under_test->x,
+                                                               point_under_test->y,
+                                                               real_lm.points[k][(int)POINT::X],
+                                                               real_lm.points[k][(int)POINT::Y]);
 
                 problem.AddResidualBlock(cost_function,
                                          new ceres::CauchyLoss(50), // NULL /* squared loss */, //
                                                                     // Alternatively: new
-                                                                    // ceres::ScaledLoss(NULL, w_v_des,
-                                                                    // ceres::TAKE_OWNERSHIP),
-                                         real_lm.pose.data(), camera_poses_[i].data(), camera_intrinsics_.data());
+                                         // ceres::ScaledLoss(NULL, w_v_des,
+                                         // ceres::TAKE_OWNERSHIP),
+                                         real_lm.pose.data(),
+                                         camera_poses_[i].data(),
+                                         camera_intrinsics_.data());
             }
         }
-        problem.SetParameterization(camera_poses_[i].data(),
-                                    new ceres::SubsetParameterization((int)POSE::N_PARAMS, {{(int)POSE::Z}}));
+        problem.SetParameterization(
+            camera_poses_[i].data(),
+            new ceres::SubsetParameterization((int)POSE::N_PARAMS, {{(int)POSE::Z}}));
         camera_poses_[i][(int)POSE::Z] = 0.0;
     }
 }
@@ -120,18 +133,19 @@ void LandmarkCalibrator::SetParametersConstant() {
 
     // Set Landmark rotation parameters constant
     std::vector<int> constant_landmark_params = {(int)POSE::Rx, (int)POSE::Ry, (int)POSE::Rz};
-    ceres::SubsetParameterization* constant_landmark_params_mask =
-        new ceres::SubsetParameterization((int)POSE::N_PARAMS, constant_landmark_params);
+    //    ceres::SubsetParameterization* constant_landmark_params_mask =
+    //        new ceres::SubsetParameterization((int)POSE::N_PARAMS, constant_landmark_params);
     for (auto& lm : landmarks_) {
         if (problem.HasParameterBlock(lm.second.pose.data()))
-            //            problem.SetParameterization(lm.second.pose.data(), constant_landmark_params_mask);
+            //            problem.SetParameterization(lm.second.pose.data(),
+            //            constant_landmark_params_mask);
             problem.SetParameterBlockConstant(lm.second.pose.data());
     }
 
     // Set some pose parameters constant
     std::vector<int> constant_vehicle_params = {(int)POSE::Z, (int)POSE::Rx, (int)POSE::Ry};
-    ceres::SubsetParameterization* constant_vehicle_params_mask =
-        new ceres::SubsetParameterization((int)POSE::N_PARAMS, constant_vehicle_params);
+    //    ceres::SubsetParameterization* constant_vehicle_params_mask =
+    //        new ceres::SubsetParameterization((int)POSE::N_PARAMS, constant_vehicle_params);
     for (auto& pose : camera_poses_) {
         if (problem.HasParameterBlock(pose.data()))
             //            problem.SetParameterization(pose.data(), constant_vehicle_params_mask);

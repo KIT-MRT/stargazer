@@ -27,7 +27,8 @@
 namespace stargazer {
 
 /**
- * @brief This is the class responsible for map generation. It computes a full bundle adjustment SLAM optimizing all
+ * @brief This is the class responsible for map generation. It computes a full bundle adjustment
+ * SLAM optimizing all
  * observations of a full calibration sequenz in one optimization problem.
  *
  */
@@ -42,14 +43,16 @@ public:
     LandmarkCalibrator(std::string cfgfile);
 
     /**
-     * @brief Adds all residual blocks to the problem. For every marker of every seen landmark at every pose a residual
+     * @brief Adds all residual blocks to the problem. For every marker of every seen landmark at
+     * every pose a residual
      * block is added to the problem.
      *
      * @param observed_poses    Initial guess of the cameras poses
      * @param observed_landmarks    Vector of all observed Image landmarks
      */
-    void AddReprojectionResidualBlocks(const std::vector<pose_t>& observed_poses,
-                                       const std::vector<std::vector<ImgLandmark>>& observed_landmarks);
+    void AddReprojectionResidualBlocks(
+        const std::vector<pose_t>& observed_poses,
+        const std::vector<std::vector<ImgLandmark>>& observed_landmarks);
 
     /**
      * @brief Main worker function. It calls the solver of the underlying ceres library.
@@ -62,21 +65,24 @@ public:
      */
     void SetParametersConstant();
     /**
-     * @brief Sets an individual landmarks pose constant. This is usefull, for fixing the maps coordinate system to one
+     * @brief Sets an individual landmarks pose constant. This is usefull, for fixing the maps
+     * coordinate system to one
      * landmark.
      *
      * @param id    Id of the landmark to hold constant.
      */
     void SetLandmarkConstant(landmark_map_t::key_type id);
     /**
-     * @brief Sets an individual camera pose constant. This is usefull, for fixing the maps coordinate system to one
+     * @brief Sets an individual camera pose constant. This is usefull, for fixing the maps
+     * coordinate system to one
      * pose (normally the first).
      *
      * @param id
      */
     void SetPoseConstant(size_t id);
     /**
-     * @brief Removes all parameter and residual blocks from the problem. So that one can start from scratch.
+     * @brief Removes all parameter and residual blocks from the problem. So that one can start from
+     * scratch.
      *
      */
     void ClearProblem();
@@ -111,8 +117,9 @@ public:
 private:
     ceres::Problem problem;             /**< Ceres problem */
     camera_params_t camera_intrinsics_; /**< Camera parameters */
-    landmark_map_t landmarks_;          /**< Map of landmarks. Points have to be defined in landmark coordinates!*/
-    std::vector<pose_t> camera_poses_;  /**< Camera poses */
+    landmark_map_t
+        landmarks_; /**< Map of landmarks. Points have to be defined in landmark coordinates!*/
+    std::vector<pose_t> camera_poses_; /**< Camera poses */
 };
 
 } // namespace stargazer

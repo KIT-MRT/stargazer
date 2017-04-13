@@ -21,11 +21,6 @@
 
 using namespace stargazer;
 
-DebugVisualizer::DebugVisualizer() : m_window_mode(CV_WINDOW_NORMAL), m_wait_time(1) {
-}
-// TODO make this a singleton
-// TODO make waitKey unique
-
 void DebugVisualizer::prepareImg(cv::Mat& img) {
     if (img.type() == CV_8UC1) {
         // input image is grayscale
@@ -48,7 +43,8 @@ cv::Mat DebugVisualizer::ShowPoints(const cv::Mat& img, const std::vector<cv::Po
     return temp;
 }
 
-cv::Mat DebugVisualizer::ShowClusters(const cv::Mat& img, const std::vector<std::vector<cv::Point>> points) {
+cv::Mat DebugVisualizer::ShowClusters(const cv::Mat& img,
+                                      const std::vector<std::vector<cv::Point>> points) {
     cv::Mat temp = img.clone();
     prepareImg(temp);
     for (auto& group : points) {
@@ -80,9 +76,10 @@ void DebugVisualizer::DrawLandmarks(cv::Mat& img, const std::vector<ImgLandmark>
         for (auto& imgPoint : lm.voIDPoints) {
             circle(img, imgPoint, 1, cv::Scalar(73, 119, 0), 2); // FZI Green
         }
-        cv::Point median{(lm.voCorners[2].x + lm.voCorners[0].x) / 2, (lm.voCorners[2].y + lm.voCorners[0].y) / 2};
-        double radius =
-            sqrt(pow(lm.voCorners[2].x - lm.voCorners[0].x, 2) + pow(lm.voCorners[2].y - lm.voCorners[0].y, 2));
+        cv::Point median{(lm.voCorners[2].x + lm.voCorners[0].x) / 2,
+                         (lm.voCorners[2].y + lm.voCorners[0].y) / 2};
+        double radius = sqrt(pow(lm.voCorners[2].x - lm.voCorners[0].x, 2) +
+                             pow(lm.voCorners[2].y - lm.voCorners[0].y, 2));
         circle(img, median, radius, cv::Scalar(163, 101, 0), 2); // FZI Blue
 
         std::string text = "ID: ";
@@ -94,8 +91,10 @@ void DebugVisualizer::DrawLandmarks(cv::Mat& img, const std::vector<ImgLandmark>
     }
 }
 
-void DebugVisualizer::DrawLandmarks(cv::Mat& img, const landmark_map_t& landmarks,
-                                    const camera_params_t& camera_intrinsics, const pose_t& ego_pose) {
+void DebugVisualizer::DrawLandmarks(cv::Mat& img,
+                                    const landmark_map_t& landmarks,
+                                    const camera_params_t& camera_intrinsics,
+                                    const pose_t& ego_pose) {
     cv::Point imgPoint;
 
     for (auto& lm : landmarks) {
@@ -106,8 +105,13 @@ void DebugVisualizer::DrawLandmarks(cv::Mat& img, const landmark_map_t& landmark
             double x = 0.0;
             double y = 0.0;
 
-            transformWorldToImg(pt[(int)POINT::X], pt[(int)POINT::Y], pt[(int)POINT::Z], ego_pose.data(),
-                                camera_intrinsics.data(), &x, &y);
+            transformWorldToImg(pt[(int)POINT::X],
+                                pt[(int)POINT::Y],
+                                pt[(int)POINT::Z],
+                                ego_pose.data(),
+                                camera_intrinsics.data(),
+                                &x,
+                                &y);
             imgPoint.x = static_cast<int>(x);
             imgPoint.y = static_cast<int>(y);
 
