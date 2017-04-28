@@ -5,7 +5,7 @@
   <description>A landmark-based visual indoor localization system for mobile robots</description>
 
   <license>GPLv3</license>
-  <maintainer email="claudio.bandera@kit.edu">Claudio Bandera</maintainer>
+ <maintainer email="wirges@fzi.de">Sascha Wirges</maintainer>
   <author email="claudio.bandera@kit.edu">Claudio Bandera</author>
   <url type="repository">https://gitlab.mrt.uni-karlsruhe.de/bandera/stargazer.git</url>
 
