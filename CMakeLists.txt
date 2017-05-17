@@ -86,5 +86,24 @@ mrt_install(PROGRAMS scripts FILES launch rviz maps res data nodelet_plugins.xml
 #############
 # Add test targets for cpp tests
 if (CATKIN_ENABLE_TESTING)
-    mrt_add_tests(test)
+  catkin_add_gtest(test_config_handler test/test_ConfigHandler.cpp WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/test)
+  add_dependencies(test_config_handler
+    ${catkin_EXPORTED_TARGETS}
+    ${${PROJECT_NAME}_EXPORTED_TARGETS}
+    )
+  target_link_libraries(test_config_handler
+    ${catkin_LIBRARIES}
+    ${mrt_LIBRARIES}
+    ${MRT_ADD_LIBRARY_LIBRARIES}
+    )
+  catkin_add_gtest(test_landmark test/test_landmark)
+  add_dependencies(test_landmark
+    ${catkin_EXPORTED_TARGETS}
+    ${${PROJECT_NAME}_EXPORTED_TARGETS}
+    )
+  target_link_libraries(test_landmark
+    ${catkin_LIBRARIES}
+    ${mrt_LIBRARIES}
+    ${MRT_ADD_LIBRARY_LIBRARIES}
+    )
 endif()

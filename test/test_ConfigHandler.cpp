@@ -69,3 +69,9 @@ TEST(ConfigHandler, Write) {
     ASSERT_NO_THROW(readConfig(testfile, camera_intrinsics_test, landmarks_test));
     ASSERT_EQ(landmarks.size(), landmarks_test.size());
 }
+
+int main(int argc, char** argv) {
+  testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
+}
+
