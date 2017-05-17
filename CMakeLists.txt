@@ -14,12 +14,11 @@ endif()
 ###################
 ## find packages ##
 ###################
-find_package(mrt_cmake_modules REQUIRED)
-
-include(GatherDeps)
-# Remove libs which cannot be found automatically
-#list(REMOVE_ITEM DEPENDEND_PACKAGES <package name 1> <package name 2> ...)
-find_package(AutoDeps REQUIRED COMPONENTS ${DEPENDEND_PACKAGES})
+find_package(catkin REQUIRED)
+find_package(OpenCV REQUIRED)
+find_package(yaml-cpp REQUIRED)
+find_package(Ceres REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 ############################
 ## read source code files ##
@@ -38,8 +37,8 @@ file(GLOB PROJECT_SOURCE_FILES_SRC RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "src/*.c
 # CATKIN_DEPENDS: catkin_packages dependent projects also need
 # DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-    INCLUDE_DIRS include ${mrt_EXPORT_INCLUDE_DIRS}
-    LIBRARIES ${PROJECT_NAME} ${mrt_EXPORT_LIBRARIES}
+    INCLUDE_DIRS include ${catkin_EXPORT_INCLUDE_DIRS}
+    LIBRARIES ${PROJECT_NAME} ${catkin_EXPORT_LIBRARIES}
     CATKIN_DEPENDS ${catkin_EXPORT_DEPENDS}
     )
 
@@ -49,12 +48,13 @@ catkin_package(
 # Add include and library directories
 include_directories(
     include/${PROJECT_NAME}
-    ${mrt_INCLUDE_DIRS}
     ${catkin_INCLUDE_DIRS}
+    ${OpenCV_INCLUDE_DIRS}
+    ${EIGEN3_INCLUDE_DIR}
     )
 
 link_directories(
-    ${mrt_LIBRARY_DIRS}
+    ${catkin_LIBRARY_DIRS}
     )
 
 # Declare a cpp library
@@ -63,23 +63,32 @@ add_library(${PROJECT_NAME}
     ${PROJECT_SOURCE_FILES_INC}
     ${PROJECT_SOURCE_FILES_SRC}
     )
-add_dependencies(
-    ${PROJECT_NAME}
+add_dependencies(${PROJECT_NAME}
     ${catkin_EXPORTED_TARGETS}
-    ${${PROJECT_NAME}_EXPORTED_TARGETS}
     )
 target_link_libraries(${PROJECT_NAME}
     ${catkin_LIBRARIES}
-    ${mrt_LIBRARIES}
-    ${MRT_ADD_LIBRARY_LIBRARIES}
+    ${OpenCV_LIBRARIES}
+    yaml-cpp
     )
 
 
 #############
 ## Install ##
 #############
-# Install all targets, headers by default and scripts and other files if specified (folders or files)
-mrt_install(PROGRAMS scripts FILES launch rviz maps res data nodelet_plugins.xml plugin_description.xml)
+if (TARGET ${PROJECT_NAME})
+    # Mark library for installation
+    install(TARGETS ${PROJECT_NAME}
+            ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+            LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+            RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+            )
+endif ()
+# Mark c++ header files for installation
+install(DIRECTORY include/${PROJECT_NAME}/
+        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+        FILES_MATCHING PATTERN "*.h"
+)
 
 #############
 ## Testing ##
@@ -93,8 +102,7 @@ if (CATKIN_ENABLE_TESTING)
     )
   target_link_libraries(test_config_handler
     ${catkin_LIBRARIES}
-    ${mrt_LIBRARIES}
-    ${MRT_ADD_LIBRARY_LIBRARIES}
+    yaml-cpp
     )
   catkin_add_gtest(test_landmark test/test_landmark)
   add_dependencies(test_landmark
@@ -103,7 +111,5 @@ if (CATKIN_ENABLE_TESTING)
     )
   target_link_libraries(test_landmark
     ${catkin_LIBRARIES}
-    ${mrt_LIBRARIES}
-    ${MRT_ADD_LIBRARY_LIBRARIES}
     )
 endif()
