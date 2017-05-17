@@ -62,10 +62,22 @@ link_directories(
     )
 
 # Declare a cpp library
-mrt_add_library(${PROJECT_NAME}
-    INCLUDES ${PROJECT_HEADER_FILES_INC} ${PROJECT_SOURCE_FILES_INC} 
-    SOURCES ${PROJECT_SOURCE_FILES_SRC}
+add_library(${LIBRARY_NAME}
+    ${PROJECT_HEADER_FILES_INC}
+    ${PROJECT_SOURCE_FILES_INC}
+    ${PROJECT_SOURCE_FILES_SRC}
     )
+add_dependencies(
+    ${LIBRARY_NAME}
+    ${catkin_EXPORTED_TARGETS}
+    ${${PROJECT_NAME}_EXPORTED_TARGETS}
+    )
+target_link_libraries(${LIBRARY_NAME}
+    ${catkin_LIBRARIES}
+    ${mrt_LIBRARIES}
+    ${MRT_ADD_LIBRARY_LIBRARIES}
+    )
+
 
 #############
 ## Install ##
