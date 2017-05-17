@@ -15,22 +15,12 @@ include(GatherDeps)
 #list(REMOVE_ITEM DEPENDEND_PACKAGES <package name 1> <package name 2> ...)
 find_package(AutoDeps REQUIRED COMPONENTS ${DEPENDEND_PACKAGES})
 
-# Manually resolve removed dependend packages
-#find_package(...)
-
-# Mark files or folders for display in IDEs
-mrt_add_to_ide(README.md .gitlab-ci.yml)
-
 ############################
 ## read source code files ##
 ############################
 file(GLOB_RECURSE PROJECT_HEADER_FILES_INC RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "include/*.h" "include/*.hpp")
 file(GLOB PROJECT_SOURCE_FILES_INC RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "src/*.h" "src/*.hpp")
 file(GLOB PROJECT_SOURCE_FILES_SRC RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "src/*.cpp")
-
-if (PROJECT_SOURCE_FILES_SRC)
-    set(LIBRARY_NAME ${PROJECT_NAME})
-endif()
 
 ###################################
 ## catkin specific configuration ##
@@ -43,7 +33,7 @@ endif()
 # DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
     INCLUDE_DIRS include ${mrt_EXPORT_INCLUDE_DIRS}
-    LIBRARIES ${LIBRARY_NAME} ${mrt_EXPORT_LIBRARIES}
+    LIBRARIES ${PROJECT_NAME} ${mrt_EXPORT_LIBRARIES}
     CATKIN_DEPENDS ${catkin_EXPORT_DEPENDS}
     )
 
@@ -62,17 +52,17 @@ link_directories(
     )
 
 # Declare a cpp library
-add_library(${LIBRARY_NAME}
+add_library(${PROJECT_NAME}
     ${PROJECT_HEADER_FILES_INC}
     ${PROJECT_SOURCE_FILES_INC}
     ${PROJECT_SOURCE_FILES_SRC}
     )
 add_dependencies(
-    ${LIBRARY_NAME}
+    ${PROJECT_NAME}
     ${catkin_EXPORTED_TARGETS}
     ${${PROJECT_NAME}_EXPORTED_TARGETS}
     )
-target_link_libraries(${LIBRARY_NAME}
+target_link_libraries(${PROJECT_NAME}
     ${catkin_LIBRARIES}
     ${mrt_LIBRARIES}
     ${MRT_ADD_LIBRARY_LIBRARIES}
