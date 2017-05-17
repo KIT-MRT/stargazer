@@ -21,20 +21,6 @@ find_package(AutoDeps REQUIRED COMPONENTS ${DEPENDEND_PACKAGES})
 # Mark files or folders for display in IDEs
 mrt_add_to_ide(README.md .gitlab-ci.yml)
 
-########################
-## add python modules ##
-########################
-# This adds a python module if located under src/{PROJECT_NAME)
-mrt_python_module_setup()
-
-file(GLOB PROJECT_PYTHON_SOURCE_FILES_SRC RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "python_api/*.cpp")
-if (PROJECT_PYTHON_SOURCE_FILES_SRC)
-    # Add a cpp-python api library. Make sure there are no name collisions with python modules in this project
-    mrt_add_python_api( ${PROJECT_NAME}
-        FILES ${PROJECT_PYTHON_SOURCE_FILES_SRC}
-        )
-endif()
-
 ############################
 ## read source code files ##
 ############################
@@ -90,8 +76,7 @@ mrt_install(PROGRAMS scripts FILES launch rviz maps res data nodelet_plugins.xml
 #############
 ## Testing ##
 #############
-# Add test targets for cpp and python tests
+# Add test targets for cpp tests
 if (CATKIN_ENABLE_TESTING)
     mrt_add_tests(test)
-    mrt_add_nosetests(test)
 endif()
