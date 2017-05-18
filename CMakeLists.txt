@@ -69,6 +69,7 @@ add_dependencies(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     ${catkin_LIBRARIES}
     ${OpenCV_LIBRARIES}
+    ${CERES_LIBRARIES}
     yaml-cpp
     )
 
