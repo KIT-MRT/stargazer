@@ -7,7 +7,7 @@
   <license>GPLv3</license>
   <maintainer email="wirges@fzi.de">Sascha Wirges</maintainer>
   <author email="claudio.bandera@kit.edu">Claudio Bandera</author>
-  <url type="repository">https://gitlab.mrt.uni-karlsruhe.de/bandera/stargazer.git</url>
+  <url type="repository">https://github.com/KIT-MRT/stargazer.git</url>
 
   <buildtool_depend>catkin</buildtool_depend>
   <test_depend>gtest</test_depend>
