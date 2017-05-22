@@ -5,16 +5,16 @@
   <description>A landmark-based visual indoor localization system for mobile robots</description>
 
   <license>GPLv3</license>
- <maintainer email="wirges@fzi.de">Sascha Wirges</maintainer>
+  <maintainer email="wirges@fzi.de">Sascha Wirges</maintainer>
   <author email="claudio.bandera@kit.edu">Claudio Bandera</author>
   <url type="repository">https://gitlab.mrt.uni-karlsruhe.de/bandera/stargazer.git</url>
 
   <buildtool_depend>catkin</buildtool_depend>
   <test_depend>gtest</test_depend>
 
-  <depend>mrt_opencv</depend>
-  <depend>mrt_ceres</depend>
-  <depend>yaml-cpp</depend>
   <depend>boost</depend>
+  <depend>ceres</depend>
   <depend>eigen</depend>
+  <depend>opencv</depend>
+  <depend>yaml-cpp</depend>
 </package>
