@@ -1,6 +1,15 @@
-#pkg_version=1.3
-cmake_minimum_required(VERSION 2.8.3)
+#pkg_version=2.0.3
+# Modify only if you know what you are doing!
+cmake_minimum_required(VERSION 2.8.12)
 project(stargazer)
+
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+if(COMPILER_SUPPORTS_CXX11)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+else()
+    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+endif()
 
 ###################
 ## find packages ##
@@ -14,10 +23,9 @@ find_package(Eigen3 REQUIRED)
 ############################
 ## read source code files ##
 ############################
-file(GLOB_RECURSE PROJECT_HEADER_FILES_INC RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "include/*.h")
-file(GLOB PROJECT_SOURCE_FILES_INC RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "src/*.h")
+file(GLOB_RECURSE PROJECT_HEADER_FILES_INC RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "include/*.h" "include/*.hpp")
+file(GLOB PROJECT_SOURCE_FILES_INC RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "src/*.h" "src/*.hpp")
 file(GLOB PROJECT_SOURCE_FILES_SRC RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "src/*.cpp")
-set(LIBRARY_NAME ${PROJECT_NAME})
 
 ###################################
 ## catkin specific configuration ##
@@ -29,57 +37,42 @@ set(LIBRARY_NAME ${PROJECT_NAME})
 # CATKIN_DEPENDS: catkin_packages dependent projects also need
 # DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-        INCLUDE_DIRS include
-        LIBRARIES ${LIBRARY_NAME}
-)
-
+    INCLUDE_DIRS include ${catkin_EXPORT_INCLUDE_DIRS}
+    LIBRARIES ${PROJECT_NAME} ${catkin_EXPORT_LIBRARIES}
+    CATKIN_DEPENDS ${catkin_EXPORT_DEPENDS}
+    )
 
 ###########
 ## Build ##
 ###########
-#compiler flags
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++14" Cpp14CompilerFlag)
-if (${Cpp14CompilerFlag})
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS "17")
-    #no additional flag is required
-else ()
-    message(FATAL_ERROR "Compiler does not have c++14 support. Use at least g++4.9 or Visual Studio 2013 and newer.")
-endif ()
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -g")
-
 # Add include and library directories
 include_directories(
-        include/${LIBRARY_NAME}
-        ${catkin_INCLUDE_DIRS}
-        ${OpenCV2_INCLUDE_DIRS}
-        ${EIGEN3_INCLUDE_DIR}
-        ${CERES_INCLUDE_DIRS}
-)
+    include/${PROJECT_NAME}
+    ${catkin_INCLUDE_DIRS}
+    ${OpenCV_INCLUDE_DIRS}
+    ${EIGEN3_INCLUDE_DIR}
+    )
+
+link_directories(
+    ${catkin_LIBRARY_DIRS}
+    )
 
 # Declare a cpp library
-add_library(${LIBRARY_NAME}
-        ${PROJECT_HEADER_FILES_INC}
-        ${PROJECT_SOURCE_FILES_INC}
-        ${PROJECT_SOURCE_FILES_SRC}
-        )
-# Specify libraries to link a library or executable target against
-target_link_libraries(${LIBRARY_NAME}
-        ${catkin_LIBRARIES}
-        ${OpenCV_LIBRARIES}
-        ${CERES_LIBRARIES}
-        yaml-cpp
-        )
+add_library(${PROJECT_NAME}
+    ${PROJECT_HEADER_FILES_INC}
+    ${PROJECT_SOURCE_FILES_INC}
+    ${PROJECT_SOURCE_FILES_SRC}
+    )
+add_dependencies(${PROJECT_NAME}
+    ${catkin_EXPORTED_TARGETS}
+    )
+target_link_libraries(${PROJECT_NAME}
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBRARIES}
+    ${CERES_LIBRARIES}
+    yaml-cpp
+    )
 
-#add demo executable
-add_executable(stargazer_demo
-        example/demo.cpp
-        )
-# Specify libraries to link a library or executable target against
-target_link_libraries(stargazer_demo
-        ${LIBRARY_NAME}
-        )
 
 #############
 ## Install ##
@@ -96,22 +89,28 @@ endif ()
 install(DIRECTORY include/${PROJECT_NAME}/
         DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
         FILES_MATCHING PATTERN "*.h"
-        )
-#install(FILES
-#  res/test.png
-#  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-#)
+)
 
 #############
 ## Testing ##
 #############
-# Add gtest based cpp test target and link libraries
+# Add test targets for cpp tests
 if (CATKIN_ENABLE_TESTING)
-    file(GLOB PROJECT_TEST_FILES_SRC RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "test/*.cpp")
-    foreach (PROJECT_TEST_FILE_SRC ${PROJECT_TEST_FILES_SRC})
-        get_filename_component(PROJECT_TEST_NAME ${PROJECT_TEST_FILE_SRC} NAME_WE)
-
-        catkin_add_gtest(${PROJECT_TEST_NAME}-test ${PROJECT_TEST_FILE_SRC} WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/test/")
-        target_link_libraries(${PROJECT_TEST_NAME}-test ${LIBRARY_NAME} ${catkin_LIBRARIES} gtest_main)
-    endforeach ()
-endif ()
+  catkin_add_gtest(test_config_handler test/test_ConfigHandler.cpp WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/test)
+  add_dependencies(test_config_handler
+    ${catkin_EXPORTED_TARGETS}
+    ${${PROJECT_NAME}_EXPORTED_TARGETS}
+    )
+  target_link_libraries(test_config_handler
+    ${catkin_LIBRARIES}
+    yaml-cpp
+    )
+  catkin_add_gtest(test_landmark test/test_landmark)
+  add_dependencies(test_landmark
+    ${catkin_EXPORTED_TARGETS}
+    ${${PROJECT_NAME}_EXPORTED_TARGETS}
+    )
+  target_link_libraries(test_landmark
+    ${catkin_LIBRARIES}
+    )
+endif()

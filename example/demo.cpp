@@ -23,12 +23,10 @@ int main(int argc, char** argv) {
     cout << "Displaying images, press any key to continue.... " << endl;
 
     // Invert images for better visibilty
-    cv::bitwise_not(landmarkFinder.rawImage_, landmarkFinder.rawImage_);
     cv::bitwise_not(landmarkFinder.grayImage_, landmarkFinder.grayImage_);
     cv::bitwise_not(landmarkFinder.filteredImage_, landmarkFinder.filteredImage_);
 
     // Show images
-    debugVisualizer.ShowImage(landmarkFinder.rawImage_, "Raw Image");
     debugVisualizer.ShowImage(landmarkFinder.grayImage_, "Gray Image");
     debugVisualizer.ShowImage(landmarkFinder.filteredImage_, "Filtered Image");
 
@@ -37,12 +35,14 @@ int main(int argc, char** argv) {
     auto cluster_img = debugVisualizer.ShowClusters(landmarkFinder.filteredImage_, landmarkFinder.clusteredPoints_);
 
     // Show landmarks
-    cv::Mat temp = landmarkFinder.rawImage_.clone();
+    cv::Mat temp;
+    cvtColor(landmarkFinder.grayImage_, temp, CV_GRAY2BGR);
     debugVisualizer.DrawLandmarks(temp, detected_landmarks);
     debugVisualizer.ShowImage(temp, "Detected Landmarks");
 
     // Localize
-    CeresLocalizer localizer(argv[2]);
+    const std::string args(argv[2]);
+    CeresLocalizer localizer(args);
     localizer.UpdatePose(detected_landmarks, 0.0);
     cout << localizer.getSummary().FullReport() << endl << endl;
 

@@ -19,9 +19,9 @@
 #pragma once
 
 #include <string>
+#include <ceres/ceres.h>
 #include "CoordinateTransformations.h"
 #include "Localizer.h"
-#include "internal/CostFunction.h"
 
 namespace stargazer {
 
@@ -42,7 +42,17 @@ public:
      * @remark The config file has to be generated with ::writeConfig!
      * @remark The CeresLocalizer converts all landmark points into world coordinates after readin!
      */
-    CeresLocalizer(std::string cfgfile);
+    CeresLocalizer(const std::string& cfgfile);
+
+    /**
+     * @brief Constructor.
+     *
+     * @param cfgfile Path to map file with camera intrinsics and landmark poses.
+     * @param estimae_2d_pose whether the whole 3d pose shall be estimatet or just the 2d pose.
+     * @remark The config file has to be generated with ::writeConfig!
+     * @remark The CeresLocalizer converts all landmark points into world coordinates after readin!
+     */
+    CeresLocalizer(const std::string& cfgfile, bool estimate_2d_pose);
 
     /**
      * @brief Main update method. Computes pose from landmark observations and stores it in Localizer::ego_pose
@@ -67,6 +77,8 @@ private:
     ceres::Solver::Summary summary; /**< Summary of last optimization run */
 
     bool is_initialized; /**< Flag indicating whether the pose is initialized */
+
+    bool estimate_2d_pose = false;
 
     /**
      * @brief Will remove the residuals from last run.

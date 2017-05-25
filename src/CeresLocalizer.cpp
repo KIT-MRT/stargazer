@@ -20,15 +20,21 @@
 #include <ceres/ceres.h>
 #include <opencv/highgui.h>
 
+#include "internal/CostFunction.h"
+
 using namespace stargazer;
 
-CeresLocalizer::CeresLocalizer(std::string cfgfile) : Localizer(cfgfile) {
+CeresLocalizer::CeresLocalizer(const std::string& cfgfile) : CeresLocalizer(cfgfile, false) {
+}
+
+CeresLocalizer::CeresLocalizer(const std::string& cfgfile, bool estimate_2d_pose)
+        : Localizer(cfgfile), estimate_2d_pose(estimate_2d_pose) {
 
     // Convert landmark points to worldcoordinates once.
     for (auto& el : landmarks) {
         for (auto& pt : el.second.points) {
             double x, y, z;
-            transformLM2World(&pt[(int)POINT::X], &pt[(int)POINT::Y], el.second.pose.data(), &x, &y, &z);
+            transformLandMarkToWorld(pt[(int)POINT::X], pt[(int)POINT::Y], el.second.pose.data(), &x, &y, &z);
             pt = {x, y, z};
         }
     }
@@ -49,7 +55,7 @@ void CeresLocalizer::UpdatePose(std::vector<ImgLandmark>& img_landmarks, float d
         }
         ego_pose[(int)POSE::X] /= img_landmarks.size();
         ego_pose[(int)POSE::Y] /= img_landmarks.size();
-        is_initialized = true;
+        // is_initialized = true;
     }
 
     // Delete old data
@@ -84,24 +90,31 @@ void CeresLocalizer::AddResidualBlocks(std::vector<ImgLandmark> img_landmarks) {
         for (size_t k = 0; k < landmarks[img_lm.nID].points.size(); k++) {
             ceres::CostFunction* cost_function;
             if (k < 3) {
-                cost_function = World2ImgReprojectionFunctor::Create(
+                cost_function = WorldToImageReprojectionFunctor::Create(
                     img_lm.voCorners[k].x, img_lm.voCorners[k].y, landmarks[img_lm.nID].points[k][(int)POINT::X],
                     landmarks[img_lm.nID].points[k][(int)POINT::Y], landmarks[img_lm.nID].points[k][(int)POINT::Z]);
             } else {
-                cost_function = World2ImgReprojectionFunctor::Create(
+                cost_function = WorldToImageReprojectionFunctor::Create(
                     img_lm.voIDPoints[k - 3].x, img_lm.voIDPoints[k - 3].y,
                     landmarks[img_lm.nID].points[k][(int)POINT::X], landmarks[img_lm.nID].points[k][(int)POINT::Y],
                     landmarks[img_lm.nID].points[k][(int)POINT::Z]);
             }
-            problem.AddResidualBlock(cost_function,
-                                     new ceres::CauchyLoss(50), // NULL /* squared loss */, //
-                                                                // Alternatively: new
-                                                                // ceres::ScaledLoss(NULL, w_v_des,
-                                                                // ceres::TAKE_OWNERSHIP),
-                                     ego_pose.data(), camera_intrinsics.data());
+            // CauchyLoss(9): a pixel-error of 3 is still considered as inlayer
+            problem.AddResidualBlock(cost_function, new ceres::CauchyLoss(9), ego_pose.data(),
+                                     camera_intrinsics.data());
         }
     }
-
+    if (!is_initialized) {
+        std::vector<int> constant_parameters = {{(int)POSE::Z}};
+        if (estimate_2d_pose) {
+            constant_parameters.push_back((int)POSE::Rx);
+            constant_parameters.push_back((int)POSE::Ry);
+        }
+        problem.SetParameterization(ego_pose.data(),
+                                    new ceres::SubsetParameterization((int)POSE::N_PARAMS, constant_parameters));
+        ego_pose[(int)POSE::Z] = 0.0;
+        is_initialized = true;
+    }
     SetCameraParamsConstant();
 }
 
