@@ -33,6 +33,10 @@ A simple usage example is included and will be build with the library. It reside
 
     ./devel/lib/stargazer/stargazer_demo res/frame0135.jpg res/stargazer.yaml-cpp
 
+If you do not use catkin, the command is sligtly different:
+
+    ./build/devel/lib/stargazer/stargazer_demo res/frame0135.jpg res/stargazer.yaml-cpp
+
 
 # Documentation
 The library is fully documented with Doxygen comments. Build the documentation by running
