@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
         cout << " Usage: " << argv[0] << " <image_file> <config_file>" << endl;
         return -1;
     }
-    cv::Mat input_image = cv::imread(argv[1], CV_LOAD_IMAGE_COLOR); // Read the filea
+    cv::Mat input_image = cv::imread(argv[1], CV_LOAD_IMAGE_COLOR); // Read the file
 
     DebugVisualizer debugVisualizer;
     debugVisualizer.SetWaitTime(-1); // Wait until user has pressed key
