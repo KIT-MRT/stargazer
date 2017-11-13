@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
         cout << " Usage: " << argv[0] << " <image_file> <config_file>" << endl;
         return -1;
     }
-    cv::Mat input_image = cv::imread(argv[1], CV_LOAD_IMAGE_COLOR); // Read the file
+    cv::Mat input_image = cv::imread(argv[1], CV_LOAD_IMAGE_COLOR); // Read the filea
 
     DebugVisualizer debugVisualizer;
     debugVisualizer.SetWaitTime(-1); // Wait until user has pressed key
@@ -18,7 +18,10 @@ int main(int argc, char** argv) {
 
     LandmarkFinder landmarkFinder(argv[2]);
     std::vector<ImgLandmark> detected_landmarks;
-    landmarkFinder.DetectLandmarks(input_image, detected_landmarks);
+    // DetectLandmarks expects gray-value-images (CV_8UC1)
+    cv::Mat input_image_grey;
+    cv::cvtColor(input_image, input_image_grey, CV_BGR2GRAY);
+    landmarkFinder.DetectLandmarks(input_image_grey, detected_landmarks);
 
     cout << "Displaying images, press any key to continue.... " << endl;
 
