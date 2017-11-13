@@ -28,9 +28,9 @@ int main(int argc, char** argv) {
 
     std::vector<ImgLandmark> detected_landmarks;
     // DetectLandmarks expects gray-value-images (CV_8UC1)
-    cv::Mat input_image_grey;
-    cv::cvtColor(input_image, input_image_grey, CV_BGR2GRAY);
-    landmarkFinder.DetectLandmarks(input_image_grey, detected_landmarks);
+    cv::Mat input_image_gray;
+    cv::cvtColor(input_image, input_image_gray, CV_BGR2GRAY);
+    landmarkFinder.DetectLandmarks(input_image_gray, detected_landmarks);
 
     cout << "Displaying images, press any key to continue.... " << endl;
 
