@@ -31,7 +31,11 @@ Install via
 ## Example
 A simple usage example is included and will be build with the library. It resides in `devel/lib/stargazer/` run it by handing it the path to the example file and config:
 
-    ./devel/lib/stargazer/stargazer_demo res/frame0135.jpg res/stargazer.yaml-cpp
+    ./devel/lib/stargazer/stargazer_demo res/frame0135.jpg res/stargazer.yaml
+
+If you do not use catkin, the command is sligtly different:
+
+    ./build/devel/lib/stargazer/stargazer_demo res/frame0135.jpg res/stargazer.yaml
 
 
 # Documentation

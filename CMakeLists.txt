@@ -73,6 +73,23 @@ target_link_libraries(${PROJECT_NAME}
     yaml-cpp
     )
 
+add_executable(${PROJECT_NAME}-demo
+    example/demo.cpp
+    )
+
+add_dependencies(${PROJECT_NAME}-demo
+    ${PROJECT_NAME}
+    )
+
+target_link_libraries(${PROJECT_NAME}-demo
+    ${PROJECT_NAME}
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBRARIES}
+    ${CERES_LIBRARIES}
+    yaml-cpp
+    )
+
+
 
 #############
 ## Install ##

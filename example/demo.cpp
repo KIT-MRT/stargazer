@@ -17,8 +17,20 @@ int main(int argc, char** argv) {
     debugVisualizer.SetWindowMode(CV_WINDOW_NORMAL);
 
     LandmarkFinder landmarkFinder(argv[2]);
+    landmarkFinder.threshold = 80;
+    landmarkFinder.tight_filter_size = 3;
+    landmarkFinder.wide_filter_size = 31;
+    landmarkFinder.maxRadiusForPixelCluster = 3;
+    landmarkFinder.minPixelForCluster = 1;
+    landmarkFinder.maxPixelForCluster = 1000;
+    landmarkFinder.minPointsPerLandmark = 1;
+    landmarkFinder.maxPointsPerLandmark = 9;
+
     std::vector<ImgLandmark> detected_landmarks;
-    landmarkFinder.DetectLandmarks(input_image, detected_landmarks);
+    // DetectLandmarks expects gray-value-images (CV_8UC1)
+    cv::Mat input_image_gray;
+    cv::cvtColor(input_image, input_image_gray, CV_BGR2GRAY);
+    landmarkFinder.DetectLandmarks(input_image_gray, detected_landmarks);
 
     cout << "Displaying images, press any key to continue.... " << endl;
 
